@@ -48,13 +48,6 @@ h1 {
   line-height: 1.1;
 }
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  /* padding: 2rem; */
-  text-align: center;
-}
-
 /* .card {
   padding: 2em;
 } */
@@ -111,6 +104,14 @@ button:focus-visible {
 
 /*******************/
 
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  /* padding: 2rem; */
+  text-align: center;
+  display: flex;
+}
+
 #battle-ui {
   border: 1px solid red;
   display: flex;
@@ -139,4 +140,16 @@ button:focus-visible {
 #middle-lane {
   height: 240px;
   border: 1px solid green;
+}
+
+#turn-sequence {
+  text-align: left;
+}
+
+/* #turn-sequence > .character-name {
+} */
+
+#turn-sequence > .turn-item > .time-to-next-turn {
+  font-weight: bold;
+  color: goldenrod
 }

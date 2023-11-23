@@ -1,6 +1,8 @@
 import "./style.css";
 
 const battleLanesUI = Array.from(document.querySelectorAll(".battle-lane"));
+const turnSequenceUI = document.querySelector("#turn-sequence")!;
+const testBtn = document.querySelector("#test-btn") as HTMLButtonElement;
 // const battleUI = document.querySelector("#battle-ui");
 // const slots = Array.from(document.querySelectorAll(".lane-slot"));
 // const [enemyBackSlots, enemyFrontSlots, heroFrontSlots, heroBackSlots] = [
@@ -10,8 +12,13 @@ const battleLanesUI = Array.from(document.querySelectorAll(".battle-lane"));
 //   battleLanesUI[3].children,
 // ].map((HTMLels) => Array.from(HTMLels));
 
+testBtn.onclick = () => {
+  updateTurnSequence();
+};
+
 const enemies = [
   {
+    id: idMaker(),
     name: "Skeleton 01",
     type: "enemy",
     hp: 120,
@@ -26,6 +33,7 @@ const enemies = [
     },
   },
   {
+    id: idMaker(),
     name: "Demon",
     type: "enemy",
     hp: 250,
@@ -40,6 +48,7 @@ const enemies = [
     },
   },
   {
+    id: idMaker(),
     name: "Skeleton 02",
     type: "enemy",
     hp: 120,
@@ -54,6 +63,7 @@ const enemies = [
     },
   },
   {
+    id: idMaker(),
     name: "Ice Sorcerer",
     type: "enemy",
     hp: 320,
@@ -71,6 +81,7 @@ const enemies = [
 
 const heroes = [
   {
+    id: idMaker(),
     name: "Abigail",
     type: "hero",
     hp: 520,
@@ -85,6 +96,7 @@ const heroes = [
     },
   },
   {
+    id: idMaker(),
     name: "Savannah",
     type: "hero",
     hp: 570,
@@ -99,6 +111,7 @@ const heroes = [
     },
   },
   {
+    id: idMaker(),
     name: "Turok",
     type: "hero",
     hp: 640,
@@ -116,12 +129,51 @@ const heroes = [
 
 const allCharacters = [...enemies, ...heroes];
 
-const turnSequence = initializeTurnSequence();
-
+let turnSequence: any[] = [];
 let currentTurn = null;
 let turnCount = 0;
 
-function displayCharacters(entity: any) {
+function idMaker(length = 12) {
+  const ID_CHARS =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-";
+  return Array(length)
+    .fill(0)
+    .map((_) => ID_CHARS.split("")[Math.round(Math.random() * ID_CHARS.length)])
+    .join("");
+}
+
+function getTurnDuration(speed: number) {
+  return 1000 / speed;
+}
+
+function calculateNextTurnTime(turn: any) {
+  return turn.nextTurnAt + turn.turnDuration;
+}
+
+function chooseTargetForEnemy(enemy: any) {
+  let possibleTargets: any[];
+
+  if (enemy.actions.attack.type === "ranged") {
+    possibleTargets = [...heroes];
+  } else if (enemy.actions.attack.type === "melee") {
+    const [heroesInTheFront, heroesInTheBack] = [
+      heroes.filter((e) => e.position.lane === "front"),
+      heroes.filter((e) => e.position.lane === "back"),
+    ];
+    if (heroesInTheFront.length > 0) {
+      possibleTargets = [...heroesInTheFront];
+    } else {
+      possibleTargets = [...heroesInTheBack];
+    }
+  } else {
+    possibleTargets = [...heroes];
+  }
+
+  const idx = Math.floor(Math.random() * possibleTargets.length);
+  return possibleTargets[idx];
+}
+
+function drawCharacter(entity: any) {
   const battleLane = battleLanesUI.find(
     (el) =>
       el.classList.contains(`${entity.type}-lane`) &&
@@ -146,15 +198,27 @@ function displayCharacters(entity: any) {
   img.src = entity.imgUrl;
 }
 
+function drawCharacters() {
+  allCharacters.forEach(drawCharacter);
+}
+
 function initializeTurnSequence() {
-  return allCharacters
+  turnSequence = allCharacters
     .map((c) => ({
+      entityId: c.id,
       name: c.name,
       turnDuration: getTurnDuration(c.speed),
       nextTurnAt: getTurnDuration(c.speed),
       turnsPlayed: 0,
     }))
     .sort((a, b) => a.nextTurnAt - b.nextTurnAt);
+
+  drawTurnSequence();
+
+  setTimeout(() => {
+    turnCount++;
+    handleCharacterTurn(allCharacters[0]);
+  }, 2000);
 }
 
 function updateTurnSequence() {
@@ -171,8 +235,6 @@ function updateTurnSequence() {
   for (let i = 0; i < turnSequence.length; i++) {
     const timeDiff = turnSequence[i].nextTurnAt - nextTurn.nextTurnAt;
 
-    // console.log({ [i]: turnSequence[i], nextTurn, timeDiff });
-
     if (timeDiff > 0 && timeDiff < smallestPositiveTimeDiff) {
       smallestPositiveTimeDiff = timeDiff;
       insertionIdx = i;
@@ -182,26 +244,60 @@ function updateTurnSequence() {
   turnCount++;
   turnSequence.splice(insertionIdx, 0, nextTurn);
 
-  console.log(turnCount, ...turnSequence.slice());
-  return turnSequence;
+  const character = allCharacters.find(
+    (c) => c.id === turnSequence[0].entityId
+  );
+
+  handleCharacterTurn(character);
+  drawTurnSequence();
 }
 
-function getTurnDuration(speed: number) {
-  return 1000 / speed;
+function drawTurnSequence() {
+  console.log(turnCount, ...turnSequence);
+  turnSequenceUI.innerHTML = "";
+
+  for (let i = 0; i < turnSequence.length; i++) {
+    const turn = turnSequence[i];
+    const timeToNextTurn = turn.nextTurnAt - turnSequence[0].nextTurnAt;
+    const timeToNextTurnStr =
+      i === 0 ? " now" : i === 1 ? " next" : ` ${timeToNextTurn.toFixed(2)}`;
+
+    const div = document.createElement("div");
+    const nameText = document.createElement("small");
+    const timeText = document.createElement("small");
+
+    nameText.classList.add("character-name");
+    nameText.textContent = turn.name;
+
+    timeText.classList.add("time-to-next-turn");
+    timeText.textContent = timeToNextTurnStr;
+
+    div.classList.add("turn-item");
+    div.append(nameText, timeText);
+
+    turnSequenceUI.append(div);
+  }
 }
 
-function calculateNextTurnTime(turn: any) {
-  return turn.nextTurnAt + turn.turnDuration;
+function handleCharacterTurn(entity: any) {
+  console.log(`it's ${entity.name}'s turn`);
+
+  if (entity.type === "enemy") {
+    const target = chooseTargetForEnemy(entity);
+    console.log(
+      `${entity.name} performs a ${entity.actions.attack.type} attack against ${target.name}`
+    );
+  } else if (entity.type === "hero") {
+    // chooseRandomEntity(enemies);
+  }
 }
 
 function main() {
-  allCharacters.forEach(displayCharacters);
+  drawCharacters();
 
-  let i = 0;
-  while (i < 100) {
-    updateTurnSequence();
-    i++;
-  }
+  initializeTurnSequence();
+
+  // setInterval(updateTurnSequence, 2000);
 }
 
 main();
