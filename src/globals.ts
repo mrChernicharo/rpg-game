@@ -12,14 +12,53 @@ import { getTurnDuration, idMaker } from "./utils";
 let timeline: Turn[] = [];
 let currentTurn: Turn | null = null;
 let turnCount = 0;
-let battleStarted = false;
 let battleState: BattleState;
 let playerAction: PlayerAction;
+let selectedItem: InventoryItem | null = null;
 let inventory: InventoryItem[] = [
   { id: idMaker(), name: "Potion", type: "consumable", quantity: 3 },
   { id: idMaker(), name: "Ether", type: "consumable", quantity: 2 },
   { id: idMaker(), name: "Short Sword", type: "equipment", quantity: 1 },
 ];
+
+export const panes = {
+  getReady: () => ({ type: "text", content: "Get Ready!" }),
+  battleStart: () => ({ type: "text", content: "Battle Start!" }),
+  battleWon: () => ({ type: "text", content: "Battle Won!" }),
+  battleLost: () => ({ type: "text", content: "Battle Lost!" }),
+  enemyAction: (message: string) => ({
+    type: "text",
+    content: message,
+  }),
+  enemyAttack: (message: string) => ({
+    type: "text",
+    content: message,
+  }),
+  heroActions: (args: any) => ({
+    type: "list",
+    content: heroActionItems(args),
+  }),
+  itemSelection: (args: any) => ({
+    type: "list",
+    content: inventoryItems(args),
+  }),
+  itemTargetSelection: (itemName: string) => ({
+    type: "text",
+    content: `who is getting the ${itemName}?`,
+  }),
+  itemUse: (message: string) => ({
+    type: "text",
+    content: message,
+  }),
+  targetSelection: () => ({
+    type: "text",
+    content: `Select Target`,
+  }),
+  heroAttack: (message: string) => ({
+    type: "text",
+    content: message,
+  }),
+} as { [k: string]: (...args: any) => PaneInfo };
 
 function setBattleState(state: BattleState) {
   battleState = state;
@@ -39,6 +78,25 @@ function incrementTurnCount() {
   turnCount++;
 }
 
+function cleanupSelectedItem() {
+  const temp = { ...selectedItem };
+  selectedItem = null;
+  return temp as InventoryItem;
+}
+
+function subtractFromInventory(item: InventoryItem) {
+  const itemIdx = inventory.findIndex((obj) => obj.id === item.id)!;
+  const inventoryItem = inventory[itemIdx];
+
+  if (inventoryItem?.quantity === 1) {
+    inventory.splice(itemIdx, 1);
+  } else {
+    inventoryItem.quantity--;
+  }
+
+  console.log("inventory", inventory);
+}
+
 function initializeTimeline() {
   timeline = allCharacters
     .map((c) => ({
@@ -50,8 +108,21 @@ function initializeTimeline() {
     .sort((a, b) => a.nextTurnAt - b.nextTurnAt);
 
   drawTimeline();
-  battleStarted = true;
 }
+
+export const inventoryItems = (itemList: InventoryItem[]) =>
+  itemList
+    .filter((item) => item.type === "consumable")
+    .map((item) => ({
+      text: `${item.name} x${item.quantity}`,
+      action: () => {
+        console.log("item selected", item);
+        selectedItem = item;
+
+        setBattleState(BattleState.ItemTargetSelect);
+        drawBottomPane(panes.itemTargetSelection(item.name), true);
+      },
+    }));
 
 export const heroActionItems = (...args: any) => [
   {
@@ -60,7 +131,7 @@ export const heroActionItems = (...args: any) => [
       console.log("clicked attack", ...args);
 
       setBattleState(BattleState.TargetSelection);
-      drawBottomPane(panes.targetSelection());
+      drawBottomPane(panes.targetSelection(), true);
 
       // now hero needs to select a target to complete attack action
       // or dismiss attack action
@@ -88,7 +159,7 @@ export const heroActionItems = (...args: any) => [
       setPlayerAction(PlayerAction.Item);
 
       setBattleState(BattleState.ItemSelection);
-      drawBottomPane(panes.itemSelection(inventory));
+      drawBottomPane(panes.itemSelection(inventory), true);
 
       // now hero needs to select an item to complete item action
       // or dismiss item action
@@ -96,62 +167,23 @@ export const heroActionItems = (...args: any) => [
   },
 ];
 
-export const inventoryItems = (itemList: InventoryItem[]) =>
-  itemList
-    .filter((item) => item.type === "consumable")
-    .map((item) => ({
-      text: item.name,
-      extra: `x${item.quantity}`,
-      action: () => {
-        console.log("selected", item);
-      },
-    }));
-
-export const panes: Record<any, any> = {
-  battleStart: () => ({ type: "text", content: "get ready!" }),
-  enemyAction: (message: string) => ({
-    type: "text",
-    content: message,
-  }),
-  enemyAttack: (message: string) => ({
-    type: "text",
-    content: message,
-  }),
-  heroActions: (args: any) => ({
-    type: "list",
-    content: heroActionItems(args),
-  }),
-  itemSelection: (args: any) => ({
-    type: "list",
-    content: inventoryItems(args),
-  }),
-  targetSelection: () => ({
-    type: "text",
-    content: `Select Target`,
-  }),
-  heroAttack: (message: string) => ({
-    type: "text",
-    content: message,
-  }),
-};
-
 const enemies = [
-  // {
-  //   id: idMaker(),
-  //   name: "Skeleton 01",
-  //   type: "enemy",
-  //   hp: 120,
-  //   speed: 70,
-  //   imgUrl: "/sprites/sprite-70.webp",
-  //   position: {
-  //     lane: "front",
-  //     col: "left",
-  //   },
-  //   lastAction: "none",
-  //   actions: {
-  //     attack: { type: "melee", power: 40 },
-  //   },
-  // },
+  {
+    id: idMaker(),
+    name: "Skeleton 01",
+    type: "enemy",
+    hp: 120,
+    speed: 70,
+    imgUrl: "/sprites/sprite-70.webp",
+    position: {
+      lane: "front",
+      col: "left",
+    },
+    lastAction: "none",
+    actions: {
+      attack: { type: "melee", power: 40 },
+    },
+  },
   // {
   //   id: idMaker(),
   //   name: "Demon",
@@ -188,7 +220,8 @@ const enemies = [
     id: idMaker(),
     name: "Ice Sorcerer",
     type: "enemy",
-    hp: 320,
+    hp: 20,
+    // hp: 320,
     speed: 50,
     imgUrl: "/sprites/sprite-78.webp",
     position: {
@@ -204,7 +237,8 @@ const enemies = [
     id: idMaker(),
     name: "Ice Sorcerer",
     type: "enemy",
-    hp: 320,
+    hp: 20,
+    // hp: 320,
     speed: 50,
     imgUrl: "/sprites/sprite-78.webp",
     position: {
@@ -223,7 +257,8 @@ const heroes = [
     id: idMaker(),
     name: "Abigail",
     type: "hero",
-    hp: 520,
+    hp: 20,
+    // hp: 520,
     speed: 54,
     imgUrl: "/sprites/sprite-09.webp",
     position: {
@@ -239,7 +274,8 @@ const heroes = [
     id: idMaker(),
     name: "Savannah",
     type: "hero",
-    hp: 570,
+    hp: 70,
+    // hp: 570,
     speed: 62,
     imgUrl: "/sprites/sprite-04.webp",
     position: {
@@ -255,7 +291,8 @@ const heroes = [
     id: idMaker(),
     name: "Turok",
     type: "hero",
-    hp: 640,
+    hp: 40,
+    // hp: 640,
     speed: 45,
     imgUrl: "/sprites/sprite-27.webp",
     position: {
@@ -275,9 +312,9 @@ export {
   timeline,
   currentTurn,
   turnCount,
-  battleStarted,
   battleState,
   playerAction,
+  selectedItem,
   enemies,
   heroes,
   allCharacters,
@@ -286,4 +323,6 @@ export {
   setBattleState,
   setPlayerAction,
   incrementTurnCount,
+  cleanupSelectedItem,
+  subtractFromInventory,
 };

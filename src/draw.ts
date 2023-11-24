@@ -5,45 +5,48 @@ import {
   timelineUI,
   turnCountUI,
   bottomSection,
+  dismissBtn,
 } from "./dom";
 import { allCharacters, timeline } from "./globals";
 import { Character, PaneInfo } from "./types";
 import { wait } from "./utils";
 
-function drawCharacter(entity: Character): void {
-  const battleLane = battleLanesUI.find(
-    (el) =>
-      el.classList.contains(`${entity.type}-lane`) &&
-      el.classList.contains(`${entity.position.lane}-row`)
-  )!;
-
-  const slotIndices = {
-    left: 0,
-    center: 1,
-    right: 2,
-  } as const;
-
-  const slotIdx =
-    slotIndices[entity.position.col as "left" | "center" | "right"];
-
-  const slot = Array.from(battleLane.children)[slotIdx];
-  const [topSection, avatar, bottomSection] = Array.from(slot.children);
-  const img = avatar.children[0] as HTMLImageElement;
-  // const img = Array.from(avatar.children).find(
-  //   (el) => el.tagName === "IMG"
-  // ) as HTMLImageElement;
-
-  slot.id = `${entity.id}`;
-  topSection.textContent = entity.name;
-  bottomSection.textContent = `HP ${entity.hp}`;
-  img.src = entity.imgUrl;
-}
-
 function drawCharacters(): void {
-  allCharacters.forEach(drawCharacter);
+  allCharacters.forEach((entity) => {
+    const battleLane = battleLanesUI.find(
+      (el) =>
+        el.classList.contains(`${entity.type}-lane`) &&
+        el.classList.contains(`${entity.position.lane}-row`)
+    )!;
 
-  // const activeCharacterSlot: string = currentTurn?.entityId ?? "";
-  // console.log({ activeCharacterSlot, currentTurn });
+    const slotIndices = {
+      left: 0,
+      center: 1,
+      right: 2,
+    } as const;
+
+    const slotIdx =
+      slotIndices[entity.position.col as "left" | "center" | "right"];
+
+    const slot = Array.from(battleLane.children)[slotIdx];
+    const [topSection, avatar, bottomSection] = Array.from(slot.children);
+    const img = avatar.children[0] as HTMLImageElement;
+    const overlayEl = Array.from(slot.children).find((el) =>
+      el.classList.contains("img-efx-overlay")
+    );
+    // console.log({ slot, overlayEl });
+
+    slot.id = `${entity.id}`;
+    topSection.textContent = entity.name;
+    bottomSection.textContent = `HP ${entity.hp}`;
+    img.src = entity.imgUrl;
+
+    if (entity.hp <= 0) {
+      overlayEl?.classList.add("dead");
+    } else if (overlayEl?.classList.contains("dead")) {
+      overlayEl?.classList.remove("dead");
+    }
+  });
 }
 
 function drawTimeline(): void {
@@ -114,12 +117,29 @@ async function drawDefenseEffect(hero: Character): Promise<void> {
   slotEl?.classList.remove(`defense-perform`);
 }
 
+async function drawItemEffect(
+  sender: Character,
+  receiver: Character
+): Promise<void> {
+  const senderSlot = getSlotElementById(sender.id);
+  const receiverSlot = getSlotElementById(receiver.id);
+
+  senderSlot.classList.add("item-send");
+  receiverSlot.classList.add("item-receive");
+
+  await wait(1500);
+
+  senderSlot.classList.remove("item-send");
+  receiverSlot.classList.remove("item-receive");
+  return Promise.resolve();
+}
+
 function drawTurnCount(turn: number) {
   const outputEl = turnCountUI?.children[0] as HTMLOutputElement;
   outputEl.textContent = String(turn);
 }
 
-function drawBottomPane(paneInfo: PaneInfo) {
+function drawBottomPane(paneInfo: PaneInfo, showDismissBtn = false) {
   bottomSection.text.innerHTML = "";
   bottomSection.list.innerHTML = "";
 
@@ -139,9 +159,7 @@ function drawBottomPane(paneInfo: PaneInfo) {
       paneInfo.content.forEach((item) => {
         const li = document.createElement("li");
 
-        const text = item.extra ? `${item.text} ${item.extra}` : item.text;
-
-        li.textContent = text;
+        li.textContent = item.text;
         li.classList.add("list-option", item.text.replaceAll(" ", "-"));
         li.onclick = () => item.action();
         bottomSection.list.append(li);
@@ -152,15 +170,21 @@ function drawBottomPane(paneInfo: PaneInfo) {
       bottomSection.text.classList.add("hidden");
       break;
   }
+
+  if (showDismissBtn) {
+    dismissBtn.classList.remove("hidden");
+  } else {
+    dismissBtn.classList.add("hidden");
+  }
 }
 
 export {
   drawTimeline,
   drawCharacters,
-  drawCharacter,
   drawSelectedCharacterOutline,
   drawAttackEffect,
   drawTurnCount,
   drawDefenseEffect,
   drawBottomPane,
+  drawItemEffect,
 };

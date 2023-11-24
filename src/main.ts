@@ -1,19 +1,11 @@
 import "./style.css";
-import {
-  battleLanesUI,
-  timelineUI,
-  bottomSection,
-  getSlotOverlayElementById,
-  slots,
-} from "./dom";
-import { calculateNextTurnTime, getTurnDuration, wait } from "./utils";
+import { getSlotOverlayElementById, slots, dismissBtn } from "./dom";
+import { calculateNextTurnTime, wait } from "./utils";
 import {
   battleState,
   timeline,
   playerAction,
-  currentTurn,
   turnCount,
-  battleStarted,
   allCharacters,
   heroes,
   panes,
@@ -22,14 +14,12 @@ import {
   incrementTurnCount,
   initializeTimeline,
   setCurrentTurn,
+  selectedItem,
+  cleanupSelectedItem,
+  subtractFromInventory,
+  enemies,
 } from "./globals";
-import {
-  BattleState,
-  PlayerAction,
-  Character,
-  PaneInfo,
-  InventoryItem,
-} from "./types";
+import { BattleState, PlayerAction, Character } from "./types";
 import {
   drawTimeline,
   drawSelectedCharacterOutline,
@@ -38,17 +28,24 @@ import {
   drawTurnCount,
   drawDefenseEffect,
   drawBottomPane,
+  drawItemEffect,
 } from "./draw";
 
-// window.addEventListener("click", onWindowClick);
 window.addEventListener(
   "hero-attack-target-selected",
   onHeroAttackTargetSelected
 );
 window.addEventListener("hero-defense", onHeroDefense);
+window.addEventListener("item-target-selected", onItemTargetSelected);
 
 slots.forEach((slot) => {
   slot.addEventListener("click", onSlotClick);
+});
+
+dismissBtn.addEventListener("click", (e: MouseEvent) => {
+  setBattleState(BattleState.HeroAction);
+  const hero = getCharacterById(timeline[0].entity.id);
+  drawBottomPane(panes.heroActions(hero));
 });
 
 export function getCharacterById(id: string): Character | undefined {
@@ -57,14 +54,23 @@ export function getCharacterById(id: string): Character | undefined {
 
 function onSlotClick(e: MouseEvent) {
   const slot = (e.target as HTMLElement).closest(".lane-slot") as HTMLLIElement;
+  const selectedCharacter = getCharacterById(slot.id);
+  console.log(":::onSlotClick", slot, selectedCharacter, battleState);
 
   if (battleState === BattleState.TargetSelection) {
-    const selectedCharacter = getCharacterById(slot.id);
-
-    // @TODO: check if valid target
     setPlayerAction(PlayerAction.Attack);
     window.dispatchEvent(
       new CustomEvent("hero-attack-target-selected", {
+        detail: { selectedCharacter },
+      })
+    );
+  }
+
+  if (battleState === BattleState.ItemTargetSelect) {
+    setPlayerAction(PlayerAction.Item);
+    // @TODO: add item info to event payload
+    window.dispatchEvent(
+      new CustomEvent("item-target-selected", {
         detail: { selectedCharacter },
       })
     );
@@ -85,34 +91,49 @@ async function onHeroDefense(data: any) {
 async function onHeroAttackTargetSelected(data: any) {
   const { selectedCharacter: target } = data.detail;
   const hero = getCharacterById(timeline[0].entity.id)!;
-  console.log("onTargetSelected", {
+
+  console.log("onHeroAttackTargetSelected", {
     target,
     hero,
     playerAction,
   });
 
-  switch (playerAction) {
-    case PlayerAction.Attack:
-      drawBottomPane(panes.heroAttack(`${hero.name} attacks ${target.name}`));
-      await handleAttack(hero, target);
-      setPlayerAction(PlayerAction.None);
-      updateTimeline();
-      break;
-    default:
-  }
+  drawBottomPane(panes.heroAttack(`${hero.name} attacks ${target.name}`));
+  await handleAttack(hero, target);
+  setPlayerAction(PlayerAction.None);
+  updateTimeline();
+}
 
-  // perform attack
+async function onItemTargetSelected(data: any) {
+  const { selectedCharacter: target } = data.detail;
+  const hero = getCharacterById(timeline[0].entity.id)!;
+
+  console.log("onItemTargetSelected", {
+    target,
+    hero,
+    playerAction,
+  });
+
+  const message = `${target.name} received ${selectedItem?.name}`;
+
+  setBattleState(BattleState.ItemUse);
+  drawBottomPane(panes.itemUse(message));
+  const item = cleanupSelectedItem();
+  subtractFromInventory(item);
+  await drawItemEffect(hero, target);
+  setPlayerAction(PlayerAction.None);
+  updateTimeline();
 }
 
 function chooseTargetForEnemy(enemy: Character): Character {
   let possibleTargets: Character[];
 
   if (enemy.actions.attack.type === "ranged") {
-    possibleTargets = [...heroes];
+    possibleTargets = [...heroes].filter((h) => h.hp > 0);
   } else if (enemy.actions.attack.type === "melee") {
     const [heroesInTheFront, heroesInTheBack] = [
-      heroes.filter((e) => e.position.lane === "front"),
-      heroes.filter((e) => e.position.lane === "back"),
+      heroes.filter((h) => h.position.lane === "front" && h.hp > 0),
+      heroes.filter((h) => h.position.lane === "back" && h.hp > 0),
     ];
     if (heroesInTheFront.length > 0) {
       possibleTargets = [...heroesInTheFront];
@@ -120,7 +141,7 @@ function chooseTargetForEnemy(enemy: Character): Character {
       possibleTargets = [...heroesInTheBack];
     }
   } else {
-    possibleTargets = [...heroes];
+    possibleTargets = [...heroes].filter((h) => h.hp > 0);
   }
 
   const idx = Math.floor(Math.random() * possibleTargets.length);
@@ -128,6 +149,8 @@ function chooseTargetForEnemy(enemy: Character): Character {
 }
 
 function updateTimeline(): void {
+  if (battleState === BattleState.Ended) return;
+
   const prevTimeline = timeline.slice();
   const currentTurn = timeline.shift()!;
   setCurrentTurn(currentTurn);
@@ -219,15 +242,43 @@ async function handleAttack(
   await drawAttackEffect(attacker, target);
 
   target.hp -= attackPower;
+
+  // handle character kill
+  if (target.hp <= 0) {
+    target.hp = 0;
+    console.log(target.name, "died!");
+    const timelineIdx = timeline.findIndex((o) => o.entity.id === target.id);
+    timeline.splice(timelineIdx, 1);
+  }
+
   drawCharacters();
+
+  // handle battle over
+  if (enemies.every((e) => e.hp <= 0)) {
+    console.log("battle won!");
+    setBattleState(BattleState.Ended);
+    drawBottomPane(panes.battleWon());
+    await wait(3000);
+  }
+
+  if (heroes.every((h) => h.hp <= 0)) {
+    console.log("battle lost!");
+    setBattleState(BattleState.Ended);
+    drawBottomPane(panes.battleLost());
+    await wait(3000);
+  }
 }
 
-function main() {
+async function main() {
   setBattleState(BattleState.Dormant);
   setPlayerAction(PlayerAction.None);
-  drawBottomPane(panes.battleStart());
-
   drawCharacters();
+
+  drawBottomPane(panes.battleStart());
+  await wait(1000);
+  drawBottomPane(panes.getReady());
+  await wait(1000);
+
   initializeTimeline();
 
   // run initial turn

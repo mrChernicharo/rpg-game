@@ -6,6 +6,7 @@ export enum BattleState {
   HeroAction = "hero-action",
   TargetSelection = "target-selection",
   ItemSelection = "item-selection",
+  ItemTargetSelect = "item-target-selection",
   ItemUse = "item-use",
   EnemyAction = "enemy-action",
   EnemyAttack = "enemy-attack",
@@ -46,7 +47,6 @@ export type PaneInfo =
       content: {
         text: string;
         action: (...args: any) => void;
-        extra?: string;
       }[];
     }
   | { type: "none"; content: undefined };

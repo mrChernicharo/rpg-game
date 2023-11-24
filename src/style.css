@@ -118,6 +118,11 @@ button:focus-visible {
   flex-direction: column;
 }
 
+#aside {
+  width: 132px;
+  border: 1px dashed darkblue;
+}
+
 .battle-lane {
   /* border: 1px solid blue; */
   display: flex;
@@ -171,6 +176,8 @@ button:focus-visible {
   width: 358px; /* battle-ui max-width */
   height: 240px;
   border: 1px solid green;
+  position: relative;
+  padding-top: 2rem;
 }
 
 #bottom-pane > #list-content {
@@ -180,6 +187,12 @@ button:focus-visible {
 
 #bottom-pane > #list-content > li:hover {
   border: 1px solid #646cff;
+}
+
+#bottom-pane #dismiss-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 /*****************/
@@ -206,6 +219,11 @@ button:focus-visible {
   opacity: 0.3;
 }
 
+.img-efx-overlay.dead {
+  opacity: 0.6;
+  background-color: rgba(189, 0, 40);
+}
+
 /******************/
 
 .ranged-attack-perform,
@@ -213,9 +231,6 @@ button:focus-visible {
   .avatar-img {
     animation: shake-lr 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
   }
-  /* transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  perspective: 1000px; */
 }
 
 .ranged-attack-receive,
@@ -233,6 +248,19 @@ button:focus-visible {
 .defense-perform {
   .img-efx-overlay {
     animation: shield 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transition: clip-path opacity;
+  }
+}
+
+.item-send {
+  .avatar-img {
+    animation: shake-lr 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+}
+
+.item-receive {
+  .img-efx-overlay {
+    animation: cross 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) 0.7 both;
     transition: clip-path opacity;
   }
 }
@@ -341,5 +369,65 @@ button:focus-visible {
   100% {
     opacity: 0;
     clip-path: polygon(41% 61%, 57% 61%, 72% 70%, 53% 94%, 29% 71%);
+  }
+}
+
+@keyframes cross {
+  0% {
+    clip-path: polygon(33% 16%, 70% 16%, 96% 100%, 4% 100%);
+  }
+
+  20% {
+    clip-path: polygon(
+      19% 31%,
+      35% 25%,
+      42% 9%,
+      59% 9%,
+      65% 25%,
+      83% 30%,
+      83% 47%,
+      65% 50%,
+      59% 90%,
+      43% 90%,
+      35% 50%,
+      19% 44%
+    );
+  }
+
+  60% {
+    opacity: 0.8;
+    clip-path: polygon(
+      10% 25%,
+      35% 25%,
+      35% 0%,
+      65% 0%,
+      65% 25%,
+      90% 25%,
+      90% 50%,
+      65% 50%,
+      65% 100%,
+      35% 100%,
+      35% 50%,
+      10% 50%
+    );
+  }
+
+  100% {
+    opacity: 0;
+
+    clip-path: polygon(
+      19% 31%,
+      35% 25%,
+      42% 9%,
+      59% 9%,
+      65% 25%,
+      83% 30%,
+      83% 47%,
+      65% 50%,
+      59% 90%,
+      43% 90%,
+      35% 50%,
+      19% 44%
+    );
   }
 }

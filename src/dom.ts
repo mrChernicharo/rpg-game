@@ -28,6 +28,9 @@ export const testBtn = document.querySelector("#test-btn") as HTMLButtonElement;
 export const testBtn2 = document.querySelector(
   "#test-btn-2"
 ) as HTMLButtonElement;
+export const dismissBtn = document.querySelector(
+  "#dismiss-btn"
+) as HTMLButtonElement;
 
 export const getSlotElementById = (characterId: string) =>
   document.querySelector(`#${characterId}`)!;
@@ -44,3 +47,4 @@ export const getSlotOverlayElementById = (characterId: string) =>
   Array.from(getSlotElementById(characterId).children).find((child) =>
     child.classList.contains("img-efx-overlay")
   );
+console.log({ dismissBtn });
