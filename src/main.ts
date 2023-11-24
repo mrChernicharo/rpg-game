@@ -43,13 +43,24 @@ let battleStarted = false;
 let ongoingAttack = false;
 let battleState: BattleState;
 
-window.onclick = (e) => {
+// testBtn.onclick = () => {
+//   if (!battleStarted || ongoingAttack) return;
+//   updateTurnSequence();
+// };
+
+// window.onclick = (e) => ;
+
+window.addEventListener("click", onWindowClick);
+
+window.addEventListener("target-selected", onTargetSelected);
+
+function onWindowClick(e: MouseEvent) {
   const clickedCharacterSlot = ([...e.composedPath()] as HTMLElement[]).find(
     (el) => el?.classList?.contains("lane-slot") && el.id
   );
 
   if (clickedCharacterSlot) {
-    console.log(e.composedPath());
+    // console.log(e.composedPath());
 
     const selectedCharacter = allCharacters.find(
       (c) => clickedCharacterSlot.id === c.id
@@ -59,19 +70,12 @@ window.onclick = (e) => {
       new CustomEvent("target-selected", { detail: { selectedCharacter } })
     );
   }
-};
-
-window.addEventListener("target-selected", onTargetSelected);
+}
 
 function onTargetSelected(data: any) {
   const { selectedCharacter } = data.detail;
   console.log("onTargetSelected", { ...selectedCharacter });
 }
-
-// testBtn.onclick = () => {
-//   if (!battleStarted || ongoingAttack) return;
-//   updateTurnSequence();
-// };
 
 function chooseTargetForEnemy(enemy: Character): Character {
   let possibleTargets: Character[];
