@@ -1,23 +1,27 @@
 import "./style.css";
+import {
+  allCharacters,
+  testBtn,
+  heroes,
+  battleLanesUI,
+  turnSequenceUI,
+  panes,
+  bottomSection,
+} from "./constants";
+import { calculateNextTurnTime, getTurnDuration } from "./utils";
 
-const battleLanesUI = Array.from(document.querySelectorAll(".battle-lane"));
-const turnSequenceUI = document.querySelector("#turn-sequence")!;
-const testBtn = document.querySelector("#test-btn") as HTMLButtonElement;
-const testBtn2 = document.querySelector("#test-btn-2") as HTMLButtonElement;
-const bottomSection = {
-  text: document.querySelector("#bottom-lane > #text-content")!,
-  list: document.querySelector("#bottom-lane > #list-content")!,
-};
-// const battleUI = document.querySelector("#battle-ui");
-// const slots = Array.from(document.querySelectorAll(".lane-slot"));
-// const [enemyBackSlots, enemyFrontSlots, heroFrontSlots, heroBackSlots] = [
-//   battleLanesUI[0].children,
-//   battleLanesUI[1].children,
-//   battleLanesUI[2].children,
-//   battleLanesUI[3].children,
-// ].map((HTMLels) => Array.from(HTMLels));
+export enum BattleState {
+  Dormant = "dormant",
+  Idle = "idle",
+  HeroAction = "hero-action",
+  EnemyAction = "enemy-action",
+  Paused = "paused",
+  Ended = "ended",
+}
 
-type PaneInfo =
+export type Character = (typeof allCharacters)[0];
+
+export type PaneInfo =
   | { type: "text"; content: string }
   | {
       type: "list";
@@ -25,165 +29,19 @@ type PaneInfo =
     }
   | { type: "none"; content: undefined };
 
-const enemies = [
-  {
-    id: idMaker(),
-    name: "Skeleton 01",
-    type: "enemy",
-    hp: 120,
-    speed: 70,
-    imgUrl: "/sprites/sprite-70.webp",
-    position: {
-      lane: "front",
-      col: "left",
-    },
-    actions: {
-      attack: { type: "melee", power: 40 },
-    },
-  },
-  {
-    id: idMaker(),
-    name: "Demon",
-    type: "enemy",
-    hp: 250,
-    speed: 58,
-    imgUrl: "/sprites/sprite-77.webp",
-    position: {
-      lane: "front",
-      col: "center",
-    },
-    actions: {
-      attack: { type: "melee", power: 55 },
-    },
-  },
-  {
-    id: idMaker(),
-    name: "Skeleton 02",
-    type: "enemy",
-    hp: 120,
-    speed: 70,
-    imgUrl: "/sprites/sprite-70.webp",
-    position: {
-      lane: "front",
-      col: "right",
-    },
-    actions: {
-      attack: { type: "melee", power: 40 },
-    },
-  },
-  {
-    id: idMaker(),
-    name: "Ice Sorcerer",
-    type: "enemy",
-    hp: 320,
-    speed: 50,
-    imgUrl: "/sprites/sprite-78.webp",
-    position: {
-      lane: "back",
-      col: "center",
-    },
-    actions: {
-      attack: { type: "ranged", power: 30 },
-    },
-  },
-];
-
-const heroes = [
-  {
-    id: idMaker(),
-    name: "Abigail",
-    type: "hero",
-    hp: 520,
-    speed: 54,
-    imgUrl: "/sprites/sprite-09.webp",
-    position: {
-      lane: "back",
-      col: "center",
-    },
-    actions: {
-      attack: { type: "melee", power: 40 },
-    },
-  },
-  {
-    id: idMaker(),
-    name: "Savannah",
-    type: "hero",
-    hp: 570,
-    speed: 62,
-    imgUrl: "/sprites/sprite-04.webp",
-    position: {
-      lane: "front",
-      col: "left",
-    },
-    actions: {
-      attack: { type: "melee", power: 60 },
-    },
-  },
-  {
-    id: idMaker(),
-    name: "Turok",
-    type: "hero",
-    hp: 640,
-    speed: 45,
-    imgUrl: "/sprites/sprite-27.webp",
-    position: {
-      lane: "front",
-      col: "right",
-    },
-    actions: {
-      attack: { type: "melee", power: 76 },
-    },
-  },
-];
-
-const allCharacters = [...enemies, ...heroes];
-
-type Character = (typeof allCharacters)[0];
-
 let turnSequence: any[] = [];
 let currentTurn = null;
 let turnCount = 0;
 let battleStarted = false;
 let ongoingAttack = false;
+let battleState: BattleState;
+
+window.onclick = (e) => {};
 
 testBtn.onclick = () => {
   if (!battleStarted || ongoingAttack) return;
   updateTurnSequence();
 };
-
-// let paneIdx = 0;
-// testBtn2.onclick = () => {
-//   const paneTypes = ["text", "list", "none"];
-//   const paneSampleContents = ["test...", ["A...", "B..."], undefined];
-
-//   const paneType = paneTypes[paneIdx % paneTypes.length] as
-//     | "text"
-//     | "list"
-//     | "none";
-//   const paneInfo = {
-//     type: paneType,
-//     content: paneSampleContents[paneIdx % paneTypes.length],
-//   } as PaneInfo;
-
-//   setBottomPane(paneInfo);
-//   paneIdx++;
-// };
-
-function idMaker(length = 12) {
-  const ID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-";
-  return Array(length)
-    .fill(0)
-    .map((_) => ID_CHARS.split("")[Math.round(Math.random() * ID_CHARS.length)])
-    .join("");
-}
-
-function getTurnDuration(speed: number) {
-  return 1000 / speed;
-}
-
-function calculateNextTurnTime(turn: any) {
-  return turn.nextTurnAt + turn.turnDuration;
-}
 
 function chooseTargetForEnemy(enemy: Character) {
   let possibleTargets: any[];
@@ -242,6 +100,15 @@ function drawCharacters() {
 
   // const activeCharacterSlot: string = currentTurn?.entityId ?? "";
   // console.log({ activeCharacterSlot, currentTurn });
+}
+
+function setBattleState(state: BattleState) {
+  battleState = state;
+  drawBattleState();
+}
+
+function drawBattleState() {
+  console.log(`%cBattleState ::: ${battleState}`, "color: lightgreen");
 }
 
 function updateTurnSequence() {
@@ -318,46 +185,48 @@ async function drawSelectedCharacterOutline(entity: Character) {
   });
 }
 
-// turn controller >>>
+async function aimToTarget(hero: Character) /* : Promise<Character> */ {
+  // return enemy;
+  // return hero;
+}
+
+// character turn controller >>>
 async function handleCharacterTurn(entity: Character) {
   console.log(`it's ${entity.name}'s turn`);
 
-  await drawSelectedCharacterOutline(entity);
-
   if (entity.type === "enemy") {
     const targetHero = chooseTargetForEnemy(entity);
-    console.log(
-      `${entity.name} performs a ${entity.actions.attack.type} attack against ${targetHero.name}`
+
+    setBattleState(BattleState.EnemyAction);
+    setBottomPane(
+      panes.enemyAction(
+        `${entity.name} performs a ${entity.actions.attack.type} attack against ${targetHero.name}`
+      )
     );
 
+    await drawSelectedCharacterOutline(entity);
     await handleAttack(entity, targetHero);
-
-    console.log("done!");
-  } else if (entity.type === "hero") {
-    setBottomPane({
-      type: "list",
-      content: [
-        {
-          text: "attack",
-          action: () => {
-            console.log("clicked attack");
-          },
-        },
-        {
-          text: "defend",
-          action: () => {
-            console.log("clicked defend");
-          },
-        },
-        {
-          text: "item",
-          action: () => {
-            console.log("clicked item");
-          },
-        },
-      ],
-    });
   }
+  //
+  else if (entity.type === "hero") {
+    setBattleState(BattleState.HeroAction);
+    setBottomPane(panes.heroActions());
+
+    await drawSelectedCharacterOutline(entity);
+    // await handleAttack(entity, targetHero);
+    // fake we're waiting for a user command
+    // TODO: fix that
+    console.log("...fake delay");
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      setBattleState(BattleState.Idle);
+      setBottomPane({ type: "none", content: undefined });
+      resolve(true);
+    }, 1000);
+  });
 }
 
 async function handleAttack(attacker: Character, target: Character) {
@@ -418,19 +287,21 @@ async function drawAttackEffect(attacker: Character, target: Character) {
 }
 
 function setBottomPane(paneInfo: PaneInfo) {
-  console.log("setBottomPane", { paneInfo });
   switch (paneInfo.type) {
     case "text":
+      bottomSection.text.innerHTML = "";
+
       bottomSection.list.classList.add("hidden");
       bottomSection.text.classList.remove("hidden");
 
       bottomSection.text.textContent = paneInfo.content;
       break;
     case "list":
+      bottomSection.list.innerHTML = "";
+
       bottomSection.list.classList.remove("hidden");
       bottomSection.text.classList.add("hidden");
 
-      bottomSection.list.innerHTML = "";
       paneInfo.content.forEach((item) => {
         const li = document.createElement("li");
         li.textContent = item.text;
@@ -439,6 +310,9 @@ function setBottomPane(paneInfo: PaneInfo) {
       });
       break;
     case "none":
+      bottomSection.text.innerHTML = "";
+      bottomSection.list.innerHTML = "";
+
       bottomSection.list.classList.add("hidden");
       bottomSection.text.classList.add("hidden");
       break;
@@ -467,6 +341,9 @@ function initializeTurnSequence() {
 }
 
 function main() {
+  setBattleState(BattleState.Dormant);
+  setBottomPane(panes.battleStart());
+
   drawCharacters();
 
   initializeTurnSequence();
