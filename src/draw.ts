@@ -123,7 +123,7 @@ function drawBottomPane(paneInfo: PaneInfo) {
   bottomSection.text.innerHTML = "";
   bottomSection.list.innerHTML = "";
 
-  // console.log("drawBottomPane", timeline[0]?.entity?.name, paneInfo);
+  console.log("drawBottomPane", timeline[0]?.entity?.name, paneInfo);
 
   switch (paneInfo.type) {
     case "text":
@@ -138,8 +138,11 @@ function drawBottomPane(paneInfo: PaneInfo) {
 
       paneInfo.content.forEach((item) => {
         const li = document.createElement("li");
-        li.textContent = item.text;
-        li.classList.add("list-option", item.text);
+
+        const text = item.extra ? `${item.text} ${item.extra}` : item.text;
+
+        li.textContent = text;
+        li.classList.add("list-option", item.text.replaceAll(" ", "-"));
         li.onclick = () => item.action();
         bottomSection.list.append(li);
       });

@@ -23,7 +23,13 @@ import {
   initializeTimeline,
   setCurrentTurn,
 } from "./globals";
-import { BattleState, PlayerAction, Character, PaneInfo } from "./types";
+import {
+  BattleState,
+  PlayerAction,
+  Character,
+  PaneInfo,
+  InventoryItem,
+} from "./types";
 import {
   drawTimeline,
   drawSelectedCharacterOutline,
@@ -34,51 +40,18 @@ import {
   drawBottomPane,
 } from "./draw";
 
-export const heroActionItems = (...args: any) => [
-  {
-    text: "attack",
-    action: () => {
-      console.log("clicked attack", ...args);
-
-      setBattleState(BattleState.TargetSelection);
-      drawBottomPane(panes.targetSelection());
-
-      // now hero needs to select a target to complete attack action
-    },
-  },
-  {
-    text: "defend",
-    action: () => {
-      console.log("clicked defend", ...args);
-
-      setPlayerAction(PlayerAction.Defend);
-
-      window.dispatchEvent(
-        new CustomEvent("hero-defense", {
-          detail: { hero: getCharacterById(timeline[0].entity.id) },
-        })
-      );
-    },
-  },
-  {
-    text: "item",
-    action: () => {
-      console.log("clicked item", ...args);
-
-      setPlayerAction(PlayerAction.Item);
-    },
-  },
-];
-
 // window.addEventListener("click", onWindowClick);
-window.addEventListener("target-selected", onTargetSelected);
+window.addEventListener(
+  "hero-attack-target-selected",
+  onHeroAttackTargetSelected
+);
 window.addEventListener("hero-defense", onHeroDefense);
 
 slots.forEach((slot) => {
   slot.addEventListener("click", onSlotClick);
 });
 
-function getCharacterById(id: string): Character | undefined {
+export function getCharacterById(id: string): Character | undefined {
   return allCharacters.find((c) => c.id === id);
 }
 
@@ -91,7 +64,9 @@ function onSlotClick(e: MouseEvent) {
     // @TODO: check if valid target
     setPlayerAction(PlayerAction.Attack);
     window.dispatchEvent(
-      new CustomEvent("target-selected", { detail: { selectedCharacter } })
+      new CustomEvent("hero-attack-target-selected", {
+        detail: { selectedCharacter },
+      })
     );
   }
 }
@@ -107,7 +82,7 @@ async function onHeroDefense(data: any) {
   updateTimeline();
 }
 
-async function onTargetSelected(data: any) {
+async function onHeroAttackTargetSelected(data: any) {
   const { selectedCharacter: target } = data.detail;
   const hero = getCharacterById(timeline[0].entity.id)!;
   console.log("onTargetSelected", {

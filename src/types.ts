@@ -5,6 +5,8 @@ export enum BattleState {
   Idle = "idle",
   HeroAction = "hero-action",
   TargetSelection = "target-selection",
+  ItemSelection = "item-selection",
+  ItemUse = "item-use",
   EnemyAction = "enemy-action",
   EnemyAttack = "enemy-attack",
   Paused = "paused",
@@ -30,10 +32,21 @@ export type Turn = {
   turnsPlayed: number;
 };
 
+export type InventoryItem = {
+  id: string;
+  name: string;
+  type: "equipment" | "consumable";
+  quantity: number;
+};
+
 export type PaneInfo =
   | { type: "text"; content: string }
   | {
       type: "list";
-      content: { text: string; action: (...args: any) => void }[];
+      content: {
+        text: string;
+        action: (...args: any) => void;
+        extra?: string;
+      }[];
     }
   | { type: "none"; content: undefined };

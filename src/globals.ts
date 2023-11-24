@@ -1,6 +1,12 @@
-import { drawTimeline } from "./draw";
-import { heroActionItems } from "./main";
-import { Turn, BattleState, PlayerAction, PaneInfo } from "./types";
+import { drawBottomPane, drawTimeline } from "./draw";
+import { getCharacterById } from "./main";
+import {
+  Turn,
+  BattleState,
+  PlayerAction,
+  InventoryItem,
+  PaneInfo,
+} from "./types";
 import { getTurnDuration, idMaker } from "./utils";
 
 let timeline: Turn[] = [];
@@ -9,6 +15,11 @@ let turnCount = 0;
 let battleStarted = false;
 let battleState: BattleState;
 let playerAction: PlayerAction;
+let inventory: InventoryItem[] = [
+  { id: idMaker(), name: "Potion", type: "consumable", quantity: 3 },
+  { id: idMaker(), name: "Ether", type: "consumable", quantity: 2 },
+  { id: idMaker(), name: "Short Sword", type: "equipment", quantity: 1 },
+];
 
 function setBattleState(state: BattleState) {
   battleState = state;
@@ -42,6 +53,60 @@ function initializeTimeline() {
   battleStarted = true;
 }
 
+export const heroActionItems = (...args: any) => [
+  {
+    text: "attack",
+    action: () => {
+      console.log("clicked attack", ...args);
+
+      setBattleState(BattleState.TargetSelection);
+      drawBottomPane(panes.targetSelection());
+
+      // now hero needs to select a target to complete attack action
+      // or dismiss attack action
+    },
+  },
+  {
+    text: "defend",
+    action: () => {
+      console.log("clicked defend", ...args);
+
+      setPlayerAction(PlayerAction.Defend);
+
+      window.dispatchEvent(
+        new CustomEvent("hero-defense", {
+          detail: { hero: getCharacterById(timeline[0].entity.id) },
+        })
+      );
+    },
+  },
+  {
+    text: "item",
+    action: () => {
+      console.log("clicked item", ...args);
+
+      setPlayerAction(PlayerAction.Item);
+
+      setBattleState(BattleState.ItemSelection);
+      drawBottomPane(panes.itemSelection(inventory));
+
+      // now hero needs to select an item to complete item action
+      // or dismiss item action
+    },
+  },
+];
+
+export const inventoryItems = (itemList: InventoryItem[]) =>
+  itemList
+    .filter((item) => item.type === "consumable")
+    .map((item) => ({
+      text: item.name,
+      extra: `x${item.quantity}`,
+      action: () => {
+        console.log("selected", item);
+      },
+    }));
+
 export const panes: Record<any, any> = {
   battleStart: () => ({ type: "text", content: "get ready!" }),
   enemyAction: (message: string) => ({
@@ -55,6 +120,10 @@ export const panes: Record<any, any> = {
   heroActions: (args: any) => ({
     type: "list",
     content: heroActionItems(args),
+  }),
+  itemSelection: (args: any) => ({
+    type: "list",
+    content: inventoryItems(args),
   }),
   targetSelection: () => ({
     type: "text",
