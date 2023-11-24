@@ -20,7 +20,9 @@ export const [enemyBackSlots, enemyFrontSlots, heroFrontSlots, heroBackSlots] =
     battleLanesUI[3].children,
   ].map((HTMLels) => Array.from(HTMLels));
 
-export const slots = Array.from(document.querySelectorAll(".lane-slot"));
+export const slots = Array.from(
+  document.querySelectorAll(".lane-slot")
+) as HTMLLIElement[];
 
 export const testBtn = document.querySelector("#test-btn") as HTMLButtonElement;
 export const testBtn2 = document.querySelector(

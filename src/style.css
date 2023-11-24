@@ -157,6 +157,7 @@ button:focus-visible {
   inset: 0;
   background-color: #fff;
   opacity: 0;
+  pointer-events: none;
 }
 
 /******************/

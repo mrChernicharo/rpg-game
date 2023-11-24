@@ -4,6 +4,7 @@ import {
   timelineUI,
   bottomSection,
   getSlotOverlayElementById,
+  slots,
 } from "./dom";
 import { calculateNextTurnTime, getTurnDuration, wait } from "./utils";
 import {
@@ -30,22 +31,8 @@ import {
   drawCharacters,
   drawTurnCount,
   drawDefenseEffect,
+  drawBottomPane,
 } from "./draw";
-
-// let timeline: Turn[] = [];
-// let currentTurn: Turn | null = null;
-// let turnCount = 0;
-// let battleStarted = false;
-// let ongoingAttack = false;
-// let battleState: BattleState;
-// let playerAction: PlayerAction;
-
-// testBtn.onclick = () => {
-//   if (!battleStarted || ongoingAttack) return;
-//   updateTurnSequence();
-// };
-
-// window.onclick = (e) => ;
 
 export const heroActionItems = (...args: any) => [
   {
@@ -54,9 +41,7 @@ export const heroActionItems = (...args: any) => [
       console.log("clicked attack", ...args);
 
       setBattleState(BattleState.TargetSelection);
-      updateBottomPane(panes.targetSelection());
-
-      setPlayerAction(PlayerAction.Attack);
+      drawBottomPane(panes.targetSelection());
 
       // now hero needs to select a target to complete attack action
     },
@@ -85,33 +70,29 @@ export const heroActionItems = (...args: any) => [
   },
 ];
 
-window.addEventListener("click", onWindowClick);
-
+// window.addEventListener("click", onWindowClick);
 window.addEventListener("target-selected", onTargetSelected);
 window.addEventListener("hero-defense", onHeroDefense);
+
+slots.forEach((slot) => {
+  slot.addEventListener("click", onSlotClick);
+});
 
 function getCharacterById(id: string): Character | undefined {
   return allCharacters.find((c) => c.id === id);
 }
 
-function onWindowClick(e: MouseEvent) {
-  const clickedEl = e.target as HTMLElement;
-  const clickedActionButton = clickedEl.classList.contains("list-option");
+function onSlotClick(e: MouseEvent) {
+  const slot = (e.target as HTMLElement).closest(".lane-slot") as HTMLLIElement;
 
   if (battleState === BattleState.TargetSelection) {
-    const clickedCharacterSlot = ([...e.composedPath()] as HTMLElement[]).find(
-      (el) => el?.classList?.contains("lane-slot") && el.id
+    const selectedCharacter = getCharacterById(slot.id);
+
+    // @TODO: check if valid target
+    setPlayerAction(PlayerAction.Attack);
+    window.dispatchEvent(
+      new CustomEvent("target-selected", { detail: { selectedCharacter } })
     );
-
-    if (clickedCharacterSlot) {
-      const selectedCharacter = allCharacters.find(
-        (c) => clickedCharacterSlot.id === c.id
-      ) as Character;
-
-      window.dispatchEvent(
-        new CustomEvent("target-selected", { detail: { selectedCharacter } })
-      );
-    }
   }
 }
 
@@ -137,15 +118,15 @@ async function onTargetSelected(data: any) {
 
   switch (playerAction) {
     case PlayerAction.Attack:
+      drawBottomPane(panes.heroAttack(`${hero.name} attacks ${target.name}`));
       await handleAttack(hero, target);
       setPlayerAction(PlayerAction.None);
+      updateTimeline();
       break;
     default:
   }
 
   // perform attack
-
-  updateTimeline();
 }
 
 function chooseTargetForEnemy(enemy: Character): Character {
@@ -205,7 +186,9 @@ function updateTimeline(): void {
 
 // character turn controller >>>
 async function handleCharacterTurn(entity: Character): Promise<void> {
-  console.log(`it's ${entity.name}'s turn`);
+  console.log(`==========================================`);
+  console.log(`it's ${entity.name.toUpperCase()}'s turn...`);
+
   incrementTurnCount();
   drawTurnCount(turnCount);
 
@@ -213,13 +196,13 @@ async function handleCharacterTurn(entity: Character): Promise<void> {
     const targetHero = chooseTargetForEnemy(entity);
 
     setBattleState(BattleState.EnemyAction);
-    updateBottomPane(panes.enemyAction(`${entity.name}'s turn`));
+    drawBottomPane(panes.enemyAction(`${entity.name}'s turn`));
 
     await drawSelectedCharacterOutline(entity);
     await wait(750);
 
     setBattleState(BattleState.EnemyAttack);
-    updateBottomPane(
+    drawBottomPane(
       panes.enemyAttack(
         `${entity.name} performs a ${entity.actions.attack.type} attack against ${targetHero.name}`
       )
@@ -228,9 +211,9 @@ async function handleCharacterTurn(entity: Character): Promise<void> {
 
     return new Promise(async (resolve) => {
       setBattleState(BattleState.Idle);
-      updateBottomPane({ type: "none", content: undefined });
+      drawBottomPane({ type: "none", content: undefined });
 
-      await wait(1000);
+      await wait(800);
 
       updateTimeline();
       resolve();
@@ -245,10 +228,10 @@ async function handleCharacterTurn(entity: Character): Promise<void> {
     }
 
     setBattleState(BattleState.HeroAction);
-    updateBottomPane(panes.heroActions(entity));
+    drawBottomPane(panes.heroActions(entity));
 
     await drawSelectedCharacterOutline(entity);
-    await wait(750);
+    await wait(700);
   }
 }
 
@@ -264,42 +247,10 @@ async function handleAttack(
   drawCharacters();
 }
 
-function updateBottomPane(paneInfo: PaneInfo) {
-  bottomSection.text.innerHTML = "";
-  bottomSection.list.innerHTML = "";
-
-  console.log("updateBottomPane", timeline[0]?.entity?.name, paneInfo);
-
-  switch (paneInfo.type) {
-    case "text":
-      bottomSection.list.classList.add("hidden");
-      bottomSection.text.classList.remove("hidden");
-
-      bottomSection.text.textContent = paneInfo.content;
-      break;
-    case "list":
-      bottomSection.list.classList.remove("hidden");
-      bottomSection.text.classList.add("hidden");
-
-      paneInfo.content.forEach((item) => {
-        const li = document.createElement("li");
-        li.textContent = item.text;
-        li.classList.add("list-option", item.text);
-        li.onclick = () => item.action();
-        bottomSection.list.append(li);
-      });
-      break;
-    case "none":
-      bottomSection.list.classList.add("hidden");
-      bottomSection.text.classList.add("hidden");
-      break;
-  }
-}
-
 function main() {
   setBattleState(BattleState.Dormant);
   setPlayerAction(PlayerAction.None);
-  updateBottomPane(panes.battleStart());
+  drawBottomPane(panes.battleStart());
 
   drawCharacters();
   initializeTimeline();

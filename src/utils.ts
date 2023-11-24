@@ -16,7 +16,6 @@ export function calculateNextTurnTime(turn: any) {
 
 /** wait for x milliseconds */
 export const wait = async (timeInMilliseconds: number): Promise<void> => {
-  console.log(`...wait ${timeInMilliseconds}ms`);
-  console.log(`===============================`);
+  console.log(`wait ${timeInMilliseconds}ms ................................`);
   return new Promise((resolve) => setTimeout(resolve, timeInMilliseconds));
 };

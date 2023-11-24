@@ -42,7 +42,7 @@ function initializeTimeline() {
   battleStarted = true;
 }
 
-export const panes: Record<string, (...args: any) => PaneInfo> = {
+export const panes: Record<any, any> = {
   battleStart: () => ({ type: "text", content: "get ready!" }),
   enemyAction: (message: string) => ({
     type: "text",
@@ -52,7 +52,7 @@ export const panes: Record<string, (...args: any) => PaneInfo> = {
     type: "text",
     content: message,
   }),
-  heroActions: (args) => ({
+  heroActions: (args: any) => ({
     type: "list",
     content: heroActionItems(args),
   }),
@@ -83,36 +83,52 @@ const enemies = [
   //     attack: { type: "melee", power: 40 },
   //   },
   // },
+  // {
+  //   id: idMaker(),
+  //   name: "Demon",
+  //   type: "enemy",
+  //   hp: 250,
+  //   speed: 58,
+  //   imgUrl: "/sprites/sprite-77.webp",
+  //   position: {
+  //     lane: "front",
+  //     col: "center",
+  //   },
+  //   lastAction: "none",
+  //   actions: {
+  //     attack: { type: "melee", power: 55 },
+  //   },
+  // },
+  // {
+  //   id: idMaker(),
+  //   name: "Skeleton 02",
+  //   type: "enemy",
+  //   hp: 120,
+  //   speed: 70,
+  //   imgUrl: "/sprites/sprite-70.webp",
+  //   position: {
+  //     lane: "front",
+  //     col: "right",
+  //   },
+  //   lastAction: "none",
+  //   actions: {
+  //     attack: { type: "melee", power: 40 },
+  //   },
+  // },
   {
     id: idMaker(),
-    name: "Demon",
+    name: "Ice Sorcerer",
     type: "enemy",
-    hp: 250,
-    speed: 58,
-    imgUrl: "/sprites/sprite-77.webp",
+    hp: 320,
+    speed: 50,
+    imgUrl: "/sprites/sprite-78.webp",
     position: {
-      lane: "front",
+      lane: "back",
       col: "center",
     },
     lastAction: "none",
     actions: {
-      attack: { type: "melee", power: 55 },
-    },
-  },
-  {
-    id: idMaker(),
-    name: "Skeleton 02",
-    type: "enemy",
-    hp: 120,
-    speed: 70,
-    imgUrl: "/sprites/sprite-70.webp",
-    position: {
-      lane: "front",
-      col: "right",
-    },
-    lastAction: "none",
-    actions: {
-      attack: { type: "melee", power: 40 },
+      attack: { type: "ranged", power: 30 },
     },
   },
   {
@@ -124,7 +140,7 @@ const enemies = [
     imgUrl: "/sprites/sprite-78.webp",
     position: {
       lane: "back",
-      col: "center",
+      col: "left",
     },
     lastAction: "none",
     actions: {

@@ -4,9 +4,10 @@ import {
   getSlotElementById,
   timelineUI,
   turnCountUI,
+  bottomSection,
 } from "./dom";
 import { allCharacters, timeline } from "./globals";
-import { Character } from "./types";
+import { Character, PaneInfo } from "./types";
 import { wait } from "./utils";
 
 function drawCharacter(entity: Character): void {
@@ -79,8 +80,6 @@ async function drawSelectedCharacterOutline(entity: Character): Promise<void> {
   prevSlot?.classList.remove("selected");
   slot?.classList.add("selected");
 
-  console.log(`it's ${entity.name.toUpperCase()}'s turn...`);
-
   return Promise.resolve();
 }
 
@@ -111,13 +110,45 @@ async function drawDefenseEffect(hero: Character): Promise<void> {
   slotEl?.classList.add(`defense-perform`);
   overlayEl?.classList.add(`defending`); // will be removed at the beginning of next turn
 
-  await wait(1000);
+  await wait(900);
   slotEl?.classList.remove(`defense-perform`);
 }
 
 function drawTurnCount(turn: number) {
   const outputEl = turnCountUI?.children[0] as HTMLOutputElement;
   outputEl.textContent = String(turn);
+}
+
+function drawBottomPane(paneInfo: PaneInfo) {
+  bottomSection.text.innerHTML = "";
+  bottomSection.list.innerHTML = "";
+
+  // console.log("drawBottomPane", timeline[0]?.entity?.name, paneInfo);
+
+  switch (paneInfo.type) {
+    case "text":
+      bottomSection.list.classList.add("hidden");
+      bottomSection.text.classList.remove("hidden");
+
+      bottomSection.text.textContent = paneInfo.content;
+      break;
+    case "list":
+      bottomSection.list.classList.remove("hidden");
+      bottomSection.text.classList.add("hidden");
+
+      paneInfo.content.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = item.text;
+        li.classList.add("list-option", item.text);
+        li.onclick = () => item.action();
+        bottomSection.list.append(li);
+      });
+      break;
+    case "none":
+      bottomSection.list.classList.add("hidden");
+      bottomSection.text.classList.add("hidden");
+      break;
+  }
 }
 
 export {
@@ -128,4 +159,5 @@ export {
   drawAttackEffect,
   drawTurnCount,
   drawDefenseEffect,
+  drawBottomPane,
 };
