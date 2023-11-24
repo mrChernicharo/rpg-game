@@ -17,7 +17,6 @@ import {
   cleanupSelectedItem,
   enemies,
   heroes,
-  playerAction,
   selectedItem,
   setPlayerAction,
   subtractFromInventory,
@@ -212,19 +211,18 @@ async function handleCharacterTurn(entity: Character): Promise<void> {
         `${entity.name} performs a ${entity.actions.attack.type} attack against ${targetHero.name}`
       )
     );
+
     await handleAttack(entity, targetHero);
 
-    return new Promise(async (resolve) => {
-      drawBottomPane({ type: "none", content: undefined });
+    drawBottomPane({ type: "none", content: undefined });
 
-      if (battleState === BattleState.Ended) return resolve();
+    if (battleState === BattleState.Ended) return Promise.resolve();
 
-      setBattleState(BattleState.Idle);
-      await wait(800);
+    setBattleState(BattleState.Idle);
+    await wait(800);
 
-      handleUpdateTimeline();
-      resolve();
-    });
+    handleUpdateTimeline();
+    Promise.resolve();
   }
   //
   else if (entity.type === "hero") {

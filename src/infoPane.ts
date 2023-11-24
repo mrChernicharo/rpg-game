@@ -66,7 +66,7 @@ const heroActionItems = (...args: any) => [
   },
 ];
 
-const panes = {
+const panes: { [k: string]: (...args: any) => PaneInfo } = {
   getReady: () => ({ type: "text", content: "Get Ready!" }),
   battleStart: () => ({ type: "text", content: "Battle Start!" }),
   battleWon: () => ({ type: "text", content: "Battle Won!" }),
@@ -103,6 +103,6 @@ const panes = {
     type: "text",
     content: message,
   }),
-} as { [k: string]: (...args: any) => PaneInfo };
+};
 
 export { panes };

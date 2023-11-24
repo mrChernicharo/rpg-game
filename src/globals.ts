@@ -4,7 +4,6 @@ import {
   BattleState,
   PlayerAction,
   InventoryItem,
-  PaneInfo,
   Character,
 } from "./types";
 import { getTurnDuration, idMaker } from "./utils";

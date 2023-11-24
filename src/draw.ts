@@ -135,6 +135,9 @@ async function drawItemEffect(
 }
 
 function drawTurnCount(turn: number) {
+  if (turnCountUI?.classList.contains("hidden")) {
+    turnCountUI?.classList.remove("hidden");
+  }
   const outputEl = turnCountUI?.children[0] as HTMLOutputElement;
   outputEl.textContent = String(turn);
 }
