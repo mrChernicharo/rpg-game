@@ -1,6 +1,6 @@
 import "./style.css";
 import { battleLanesUI, timelineUI, bottomSection } from "./dom";
-import { calculateNextTurnTime, getTurnDuration } from "./utils";
+import { calculateNextTurnTime, getTurnDuration, wait } from "./utils";
 import {
   battleState,
   timeline,
@@ -84,17 +84,6 @@ window.addEventListener("click", onWindowClick);
 window.addEventListener("target-selected", onTargetSelected);
 window.addEventListener("hero-defense", onHeroDefense);
 
-function onHeroDefense(data: any) {
-  const { hero } = data.detail;
-  console.log("onHeroDefense", hero);
-
-  // await defenseDrawing
-
-  setPlayerAction(PlayerAction.None);
-
-  updateTimeline();
-}
-
 function getCharacterById(id: string): Character | undefined {
   return allCharacters.find((c) => c.id === id);
 }
@@ -102,19 +91,6 @@ function getCharacterById(id: string): Character | undefined {
 function onWindowClick(e: MouseEvent) {
   const clickedEl = e.target as HTMLElement;
   const clickedActionButton = clickedEl.classList.contains("list-option");
-
-  // const clickedActionButton = ([...e.composedPath()] as HTMLElement[]).find(
-  //   (el) => el?.classList?.contains("list-option")
-  // );
-  // console.log(e.composedPath());
-
-  // if (clickedActionButton) {
-  //   window.dispatchEvent(
-  //     new CustomEvent("hero-action-selected", {
-  //       detail: { action: clickedEl.textContent },
-  //     })
-  //   );
-  // }
 
   if (battleState === BattleState.TargetSelection) {
     const clickedCharacterSlot = ([...e.composedPath()] as HTMLElement[]).find(
@@ -131,6 +107,17 @@ function onWindowClick(e: MouseEvent) {
       );
     }
   }
+}
+
+async function onHeroDefense(data: any) {
+  const { hero } = data.detail;
+  console.log("onHeroDefense", hero);
+
+  // await defenseDrawing
+
+  setPlayerAction(PlayerAction.None);
+
+  updateTimeline();
 }
 
 async function onTargetSelected(data: any) {
@@ -154,11 +141,6 @@ async function onTargetSelected(data: any) {
 
   updateTimeline();
 }
-
-// function onHeroActionSelected(data: any) {
-//   const { action } = data.detail;
-//   console.log("onHeroActionSelected", { action });
-// }
 
 function chooseTargetForEnemy(enemy: Character): Character {
   let possibleTargets: Character[];
@@ -225,23 +207,27 @@ async function handleCharacterTurn(entity: Character): Promise<void> {
     const targetHero = chooseTargetForEnemy(entity);
 
     setBattleState(BattleState.EnemyAction);
+    updateBottomPane(panes.enemyAction(`${entity.name}'s turn`));
+
+    await drawSelectedCharacterOutline(entity);
+    await wait(750);
+
+    setBattleState(BattleState.EnemyAttack);
     updateBottomPane(
-      panes.enemyAction(
+      panes.enemyAttack(
         `${entity.name} performs a ${entity.actions.attack.type} attack against ${targetHero.name}`
       )
     );
-
-    await drawSelectedCharacterOutline(entity);
     await handleAttack(entity, targetHero);
 
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       setBattleState(BattleState.Idle);
       updateBottomPane({ type: "none", content: undefined });
 
-      setTimeout(() => {
-        updateTimeline();
-        resolve();
-      }, 1000);
+      await wait(1000);
+
+      updateTimeline();
+      resolve();
     });
   }
   //
@@ -250,11 +236,7 @@ async function handleCharacterTurn(entity: Character): Promise<void> {
     updateBottomPane(panes.heroActions(entity));
 
     await drawSelectedCharacterOutline(entity);
-    // await handleAttack(entity, targetHero);
-    // fake we're waiting for a user command
-    // console.log("...fake delay");
-    // await new Promise((resolve) => setTimeout(resolve, 2000));
-    // TODO: fix that
+    await wait(750);
   }
 }
 
@@ -311,7 +293,9 @@ function main() {
   initializeTimeline();
 
   // run initial turn
-  handleCharacterTurn(allCharacters[0]);
+  const firstToPlay = getCharacterById(timeline[0].entity.id)!;
+  console.log({ firstToPlay });
+  handleCharacterTurn(firstToPlay);
 }
 
 main();

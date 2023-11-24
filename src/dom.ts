@@ -26,3 +26,17 @@ export const testBtn = document.querySelector("#test-btn") as HTMLButtonElement;
 export const testBtn2 = document.querySelector(
   "#test-btn-2"
 ) as HTMLButtonElement;
+
+export const getSlotElementById = (id: string) =>
+  document.querySelector(`#${id}`)!;
+
+export const getAvatarElementById = (id: string) =>
+  Array.from(getSlotElementById(id)?.children || []).find((el) =>
+    el.classList.contains("avatar")
+  )!;
+
+export const getAvatarImgElementById = (id: string) =>
+  Array.from(getAvatarElementById(id).children)[0];
+
+export const getAvatarOverlayElementById = (id: string) =>
+  Array.from(getAvatarElementById(id).children)[1];

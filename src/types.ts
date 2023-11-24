@@ -6,6 +6,7 @@ export enum BattleState {
   HeroAction = "hero-action",
   TargetSelection = "target-selection",
   EnemyAction = "enemy-action",
+  EnemyAttack = "enemy-attack",
   Paused = "paused",
   Ended = "ended",
 }

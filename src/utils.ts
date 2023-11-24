@@ -13,3 +13,10 @@ export function getTurnDuration(speed: number) {
 export function calculateNextTurnTime(turn: any) {
   return turn.nextTurnAt + turn.turnDuration;
 }
+
+/** wait for x milliseconds */
+export const wait = async (timeInMilliseconds: number): Promise<void> => {
+  console.log(`...wait ${timeInMilliseconds}ms`);
+  console.log(`===============================`);
+  return new Promise((resolve) => setTimeout(resolve, timeInMilliseconds));
+};

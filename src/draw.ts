@@ -1,6 +1,12 @@
-import { battleLanesUI, timelineUI, turnCountUI } from "./dom";
+import {
+  battleLanesUI,
+  getSlotElementById,
+  timelineUI,
+  turnCountUI,
+} from "./dom";
 import { allCharacters, timeline } from "./globals";
 import { Character } from "./types";
+import { wait } from "./utils";
 
 function drawCharacter(entity: Character): void {
   const battleLane = battleLanesUI.find(
@@ -72,69 +78,36 @@ async function drawSelectedCharacterOutline(entity: Character): Promise<void> {
   prevSlot?.classList.remove("selected");
   slot?.classList.add("selected");
 
-  console.log(`${entity.name}'s turn...`);
+  console.log(`it's ${entity.name.toUpperCase()}'s turn...`);
 
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, 750);
-  });
+  return Promise.resolve();
 }
 
 async function drawAttackEffect(
   attacker: Character,
   target: Character
 ): Promise<void> {
-  const targetSlot = document.querySelector(`#${target.id}`)!;
-  const attackerSlot = document.querySelector(`#${attacker.id}`)!;
-
-  // const targetAvatarEl = Array.from(targetSlot?.children || []).find((el) =>
-  //   el.classList.contains("avatar")
-  // )!;
-
-  // const attackerAvatarEl = Array.from(attackerSlot?.children || []).find((el) =>
-  //   el.classList.contains("avatar")
-  // )!;
-
-  // const [targetImg, targetOverlay] = Array.from(targetAvatarEl?.children || []);
-  // const [attackerImg, attackerOverlay] = Array.from(
-  //   attackerAvatarEl?.children || []
-  // );
+  const targetSlot = getSlotElementById(target.id);
+  const attackerSlot = getSlotElementById(attacker.id);
 
   attackerSlot.classList.add(`${attacker.actions.attack.type}-attack-perform`);
   targetSlot.classList.add(`${attacker.actions.attack.type}-attack-receive`);
 
-  // return new Promise((resolve) => setTimeout(resolve, 1000));
+  await wait(1000);
 
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      attackerSlot.classList.remove(
-        `${attacker.actions.attack.type}-attack-perform`
-      );
-      targetSlot.classList.remove(
-        `${attacker.actions.attack.type}-attack-receive`
-      );
+  attackerSlot.classList.remove(
+    `${attacker.actions.attack.type}-attack-perform`
+  );
+  targetSlot.classList.remove(`${attacker.actions.attack.type}-attack-receive`);
 
-      console.log("removed classes");
-      return resolve();
-    }, 1000);
-  });
-
-  // console.log({
-  //   attackerSlot,
-  //   targetSlot,
-  //   attackerImg,
-  //   attackerOverlay,
-  //   targetImg,
-  //   targetOverlay,
-  // });
+  return Promise.resolve();
 }
+
+async function drawDefenseEffect(hero: Character): Promise<void> {}
 
 function drawTurnCount(turn: number) {
   const outputEl = turnCountUI?.children[0] as HTMLOutputElement;
   outputEl.textContent = String(turn);
-
-  console.log({ outputEl, turnCountUI, turn });
 }
 
 export {

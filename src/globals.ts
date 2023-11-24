@@ -48,7 +48,10 @@ export const panes: Record<string, (...args: any) => PaneInfo> = {
     type: "text",
     content: message,
   }),
-
+  enemyAttack: (message: string) => ({
+    type: "text",
+    content: message,
+  }),
   heroActions: (args) => ({
     type: "list",
     content: heroActionItems(args),
@@ -57,25 +60,29 @@ export const panes: Record<string, (...args: any) => PaneInfo> = {
     type: "text",
     content: `Select Target`,
   }),
+  heroAttack: (message: string) => ({
+    type: "text",
+    content: message,
+  }),
 };
 
 const enemies = [
-  {
-    id: idMaker(),
-    name: "Skeleton 01",
-    type: "enemy",
-    hp: 120,
-    speed: 70,
-    imgUrl: "/sprites/sprite-70.webp",
-    position: {
-      lane: "front",
-      col: "left",
-    },
-    lastAction: "none",
-    actions: {
-      attack: { type: "melee", power: 40 },
-    },
-  },
+  // {
+  //   id: idMaker(),
+  //   name: "Skeleton 01",
+  //   type: "enemy",
+  //   hp: 120,
+  //   speed: 70,
+  //   imgUrl: "/sprites/sprite-70.webp",
+  //   position: {
+  //     lane: "front",
+  //     col: "left",
+  //   },
+  //   lastAction: "none",
+  //   actions: {
+  //     attack: { type: "melee", power: 40 },
+  //   },
+  // },
   {
     id: idMaker(),
     name: "Demon",
