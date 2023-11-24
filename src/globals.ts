@@ -48,6 +48,7 @@ export const panes: Record<string, (...args: any) => PaneInfo> = {
     type: "text",
     content: message,
   }),
+
   heroActions: (args) => ({
     type: "list",
     content: heroActionItems(args),
@@ -70,6 +71,7 @@ const enemies = [
       lane: "front",
       col: "left",
     },
+    lastAction: "none",
     actions: {
       attack: { type: "melee", power: 40 },
     },
@@ -85,6 +87,7 @@ const enemies = [
       lane: "front",
       col: "center",
     },
+    lastAction: "none",
     actions: {
       attack: { type: "melee", power: 55 },
     },
@@ -100,6 +103,7 @@ const enemies = [
       lane: "front",
       col: "right",
     },
+    lastAction: "none",
     actions: {
       attack: { type: "melee", power: 40 },
     },
@@ -115,6 +119,7 @@ const enemies = [
       lane: "back",
       col: "center",
     },
+    lastAction: "none",
     actions: {
       attack: { type: "ranged", power: 30 },
     },
@@ -133,6 +138,7 @@ const heroes = [
       lane: "back",
       col: "center",
     },
+    lastAction: "none",
     actions: {
       attack: { type: "melee", power: 40 },
     },
@@ -148,6 +154,7 @@ const heroes = [
       lane: "front",
       col: "left",
     },
+    lastAction: "none",
     actions: {
       attack: { type: "melee", power: 60 },
     },
@@ -163,6 +170,7 @@ const heroes = [
       lane: "front",
       col: "right",
     },
+    lastAction: "none",
     actions: {
       attack: { type: "melee", power: 76 },
     },

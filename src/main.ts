@@ -41,11 +41,6 @@ import {
 
 // window.onclick = (e) => ;
 
-window.addEventListener("click", onWindowClick);
-
-window.addEventListener("target-selected", onTargetSelected);
-// window.addEventListener("hero-action-selected", onHeroActionSelected);
-
 export const heroActionItems = (...args: any) => [
   {
     text: "attack",
@@ -66,6 +61,12 @@ export const heroActionItems = (...args: any) => [
       console.log("clicked defend", ...args);
 
       setPlayerAction(PlayerAction.Defend);
+
+      window.dispatchEvent(
+        new CustomEvent("hero-defense", {
+          detail: { hero: getCharacterById(timeline[0].entity.id) },
+        })
+      );
     },
   },
   {
@@ -77,6 +78,22 @@ export const heroActionItems = (...args: any) => [
     },
   },
 ];
+
+window.addEventListener("click", onWindowClick);
+
+window.addEventListener("target-selected", onTargetSelected);
+window.addEventListener("hero-defense", onHeroDefense);
+
+function onHeroDefense(data: any) {
+  const { hero } = data.detail;
+  console.log("onHeroDefense", hero);
+
+  // await defenseDrawing
+
+  setPlayerAction(PlayerAction.None);
+
+  updateTimeline();
+}
 
 function getCharacterById(id: string): Character | undefined {
   return allCharacters.find((c) => c.id === id);
@@ -196,11 +213,6 @@ function updateTimeline(): void {
 
   handleCharacterTurn(character);
   drawTimeline();
-}
-
-async function aimToTarget(hero: Character) /* : Promise<Character> */ {
-  // return enemy;
-  // return hero;
 }
 
 // character turn controller >>>
