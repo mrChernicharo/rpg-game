@@ -2,40 +2,35 @@ import { battleLanesUI, timelineUI, turnCountUI } from "./dom";
 import { allCharacters, timeline } from "./globals";
 import { Character } from "./types";
 
-function drawCharacter(entity: Character): void {
-  const battleLane = battleLanesUI.find(
-    (el) =>
-      el.classList.contains(`${entity.type}-lane`) &&
-      el.classList.contains(`${entity.position.lane}-row`)
-  )!;
-
-  const slotIndices = {
-    left: 0,
-    center: 1,
-    right: 2,
-  } as const;
-
-  const slotIdx =
-    slotIndices[entity.position.col as "left" | "center" | "right"];
-
-  const slot = Array.from(battleLane.children)[slotIdx];
-  const [topSection, avatar, bottomSection] = Array.from(slot.children);
-  const img = avatar.children[0] as HTMLImageElement;
-  // const img = Array.from(avatar.children).find(
-  //   (el) => el.tagName === "IMG"
-  // ) as HTMLImageElement;
-
-  slot.id = `${entity.id}`;
-  topSection.textContent = entity.name;
-  bottomSection.textContent = `HP ${entity.hp}`;
-  img.src = entity.imgUrl;
-}
-
 function drawCharacters(): void {
-  allCharacters.forEach(drawCharacter);
+  allCharacters.forEach((entity) => {
+    const battleLane = battleLanesUI.find(
+      (el) =>
+        el.classList.contains(`${entity.type}-lane`) &&
+        el.classList.contains(`${entity.position.lane}-row`)
+    )!;
 
-  // const activeCharacterSlot: string = currentTurn?.entityId ?? "";
-  // console.log({ activeCharacterSlot, currentTurn });
+    const slotIndices = {
+      left: 0,
+      center: 1,
+      right: 2,
+    } as const;
+
+    const slotIdx =
+      slotIndices[entity.position.col as "left" | "center" | "right"];
+
+    const slot = Array.from(battleLane.children)[slotIdx];
+    const [topSection, avatar, bottomSection] = Array.from(slot.children);
+    const img = avatar.children[0] as HTMLImageElement;
+    // const img = Array.from(avatar.children).find(
+    //   (el) => el.tagName === "IMG"
+    // ) as HTMLImageElement;
+
+    slot.id = `${entity.id}`;
+    topSection.textContent = entity.name;
+    bottomSection.textContent = `HP ${entity.hp}`;
+    img.src = entity.imgUrl;
+  });
 }
 
 function drawTimeline(): void {
@@ -115,8 +110,7 @@ async function drawAttackEffect(
         `${attacker.actions.attack.type}-attack-receive`
       );
 
-      console.log("removed classes");
-      return resolve();
+      resolve();
     }, 1000);
   });
 
@@ -130,6 +124,16 @@ async function drawAttackEffect(
   // });
 }
 
+async function drawDefendEffect(hero: Character): Promise<void> {
+  console.log("drawDefendEffect...", hero.name);
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, 600);
+  });
+}
+
 function drawTurnCount(turn: number) {
   const outputEl = turnCountUI?.children[0] as HTMLOutputElement;
   outputEl.textContent = String(turn);
@@ -138,10 +142,10 @@ function drawTurnCount(turn: number) {
 }
 
 export {
-  drawTimeline,
   drawCharacters,
-  drawCharacter,
+  drawTurnCount,
+  drawTimeline,
   drawSelectedCharacterOutline,
   drawAttackEffect,
-  drawTurnCount,
+  drawDefendEffect,
 };

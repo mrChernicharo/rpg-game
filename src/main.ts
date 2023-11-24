@@ -1,13 +1,12 @@
 import "./style.css";
-import { battleLanesUI, timelineUI, bottomSection } from "./dom";
-import { calculateNextTurnTime, getTurnDuration } from "./utils";
+import { bottomSection } from "./dom";
+import { calculateNextTurnTime } from "./utils";
+import { BattleState, PlayerAction, Character, PaneInfo } from "./types";
 import {
   battleState,
   timeline,
   playerAction,
-  currentTurn,
   turnCount,
-  battleStarted,
   allCharacters,
   heroes,
   panes,
@@ -17,22 +16,14 @@ import {
   initializeTimeline,
   setCurrentTurn,
 } from "./globals";
-import { BattleState, PlayerAction, Character, PaneInfo } from "./types";
 import {
   drawTimeline,
   drawSelectedCharacterOutline,
   drawAttackEffect,
   drawCharacters,
   drawTurnCount,
+  drawDefendEffect,
 } from "./draw";
-
-// let timeline: Turn[] = [];
-// let currentTurn: Turn | null = null;
-// let turnCount = 0;
-// let battleStarted = false;
-// let ongoingAttack = false;
-// let battleState: BattleState;
-// let playerAction: PlayerAction;
 
 // testBtn.onclick = () => {
 //   if (!battleStarted || ongoingAttack) return;
@@ -43,13 +34,15 @@ import {
 
 window.addEventListener("click", onWindowClick);
 
-window.addEventListener("target-selected", onTargetSelected);
+window.addEventListener("target-selected", async (e) => {
+  await onTargetSelected(e);
+});
 // window.addEventListener("hero-action-selected", onHeroActionSelected);
 
 export const heroActionItems = (...args: any) => [
   {
     text: "attack",
-    action: () => {
+    action: async () => {
       console.log("clicked attack", ...args);
 
       setBattleState(BattleState.TargetSelection);
@@ -62,15 +55,17 @@ export const heroActionItems = (...args: any) => [
   },
   {
     text: "defend",
-    action: () => {
+    action: async () => {
       console.log("clicked defend", ...args);
 
       setPlayerAction(PlayerAction.Defend);
+
+      await handleDefend();
     },
   },
   {
     text: "item",
-    action: () => {
+    action: async () => {
       console.log("clicked item", ...args);
 
       setPlayerAction(PlayerAction.Item);
@@ -85,19 +80,6 @@ function getCharacterById(id: string): Character | undefined {
 function onWindowClick(e: MouseEvent) {
   const clickedEl = e.target as HTMLElement;
   const clickedActionButton = clickedEl.classList.contains("list-option");
-
-  // const clickedActionButton = ([...e.composedPath()] as HTMLElement[]).find(
-  //   (el) => el?.classList?.contains("list-option")
-  // );
-  // console.log(e.composedPath());
-
-  // if (clickedActionButton) {
-  //   window.dispatchEvent(
-  //     new CustomEvent("hero-action-selected", {
-  //       detail: { action: clickedEl.textContent },
-  //     })
-  //   );
-  // }
 
   if (battleState === BattleState.TargetSelection) {
     const clickedCharacterSlot = ([...e.composedPath()] as HTMLElement[]).find(
@@ -119,23 +101,20 @@ function onWindowClick(e: MouseEvent) {
 async function onTargetSelected(data: any) {
   const { selectedCharacter: target } = data.detail;
   const hero = getCharacterById(timeline[0].entity.id)!;
-  console.log("onTargetSelected", {
-    target,
-    hero,
-    playerAction,
-  });
+  // console.log("onTargetSelected", {
+  //   target,
+  //   hero,
+  //   playerAction,
+  // });
 
   switch (playerAction) {
     case PlayerAction.Attack:
+      // perform attack
       await handleAttack(hero, target);
       setPlayerAction(PlayerAction.None);
-      break;
+      return Promise.resolve();
     default:
   }
-
-  // perform attack
-
-  updateTimeline();
 }
 
 // function onHeroActionSelected(data: any) {
@@ -166,7 +145,10 @@ function chooseTargetForEnemy(enemy: Character): Character {
   return possibleTargets[idx];
 }
 
-function updateTimeline(): void {
+async function updateTimeline() {
+  const character = getCharacterById(timeline[0].entity.id)!;
+  await handleCharacterTurn(character);
+
   const prevTimeline = timeline.slice();
   const currentTurn = timeline.shift()!;
   setCurrentTurn(currentTurn);
@@ -190,22 +172,16 @@ function updateTimeline(): void {
 
   timeline.splice(insertionIdx, 0, nextTurn);
 
-  const character = getCharacterById(timeline[0].entity.id)!;
-
   console.log("timeline", { prev: prevTimeline, next: timeline.slice() });
-
-  handleCharacterTurn(character);
   drawTimeline();
-}
 
-async function aimToTarget(hero: Character) /* : Promise<Character> */ {
-  // return enemy;
-  // return hero;
+  return Promise.resolve();
 }
 
 // character turn controller >>>
 async function handleCharacterTurn(entity: Character): Promise<void> {
-  console.log(`it's ${entity.name}'s turn`);
+  console.log(`it's ${entity.name.toUpperCase()}'s turn`);
+
   incrementTurnCount();
   drawTurnCount(turnCount);
 
@@ -221,16 +197,6 @@ async function handleCharacterTurn(entity: Character): Promise<void> {
 
     await drawSelectedCharacterOutline(entity);
     await handleAttack(entity, targetHero);
-
-    return new Promise((resolve) => {
-      setBattleState(BattleState.Idle);
-      updateBottomPane({ type: "none", content: undefined });
-
-      setTimeout(() => {
-        updateTimeline();
-        resolve();
-      }, 1000);
-    });
   }
   //
   else if (entity.type === "hero") {
@@ -238,11 +204,6 @@ async function handleCharacterTurn(entity: Character): Promise<void> {
     updateBottomPane(panes.heroActions(entity));
 
     await drawSelectedCharacterOutline(entity);
-    // await handleAttack(entity, targetHero);
-    // fake we're waiting for a user command
-    // console.log("...fake delay");
-    // await new Promise((resolve) => setTimeout(resolve, 2000));
-    // TODO: fix that
   }
 }
 
@@ -255,14 +216,41 @@ async function handleAttack(
   await drawAttackEffect(attacker, target);
 
   target.hp -= attackPower;
+
+  return new Promise((resolve) => {
+    setBattleState(BattleState.Idle);
+    updateBottomPane({ type: "none", content: undefined });
+
+    setTimeout(() => {
+      updateTimeline();
+      drawCharacters();
+      resolve();
+    }, 500);
+  });
+}
+
+async function handleDefend(): Promise<void> {
+  const hero = getCharacterById(timeline[0].entity.id)!;
+
+  await drawDefendEffect(hero);
+  setBattleState(BattleState.Idle);
+  updateBottomPane({ type: "none", content: undefined });
+  await updateTimeline();
   drawCharacters();
+  Promise.resolve();
+
+  // return new Promise((resolve) => {
+  //   // @TODO: handle defense stats improvement until next turn
+
+  //   resolve();
+  // });
 }
 
 function updateBottomPane(paneInfo: PaneInfo) {
   bottomSection.text.innerHTML = "";
   bottomSection.list.innerHTML = "";
 
-  console.log("updateBottomPane", timeline[0]?.entity?.name, paneInfo);
+  // console.log("updateBottomPane", timeline[0]?.entity?.name, paneInfo);
 
   switch (paneInfo.type) {
     case "text":
@@ -299,7 +287,7 @@ function main() {
   initializeTimeline();
 
   // run initial turn
-  handleCharacterTurn(allCharacters[0]);
+  updateTimeline();
 }
 
 main();

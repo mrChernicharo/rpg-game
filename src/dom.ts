@@ -1,28 +1,56 @@
-export const battleUI = document.querySelector("#battle-ui");
+const battleUI = document.querySelector("#battle-ui");
 
-export const battleLanesUI = Array.from(
-  document.querySelectorAll(".battle-lane")
-);
-export const timelineUI = document.querySelector("#timeline")!;
+const battleLanesUI = Array.from(document.querySelectorAll(".battle-lane"));
+const timelineUI = document.querySelector("#timeline")!;
 
-export const turnCountUI = document.querySelector("#turn-count");
+const turnCountUI = document.querySelector("#turn-count");
 
-export const bottomSection = {
+const bottomSection = {
   text: document.querySelector("#bottom-pane > #text-content")!,
   list: document.querySelector("#bottom-pane > #list-content")!,
 };
 
-export const [enemyBackSlots, enemyFrontSlots, heroFrontSlots, heroBackSlots] =
-  [
-    battleLanesUI[0].children,
-    battleLanesUI[1].children,
-    battleLanesUI[2].children,
-    battleLanesUI[3].children,
-  ].map((HTMLels) => Array.from(HTMLels));
+// const [enemyBackSlots, enemyFrontSlots, heroFrontSlots, heroBackSlots] = [
+//   battleLanesUI[0].children,
+//   battleLanesUI[1].children,
+//   battleLanesUI[2].children,
+//   battleLanesUI[3].children,
+// ].map((HTMLels) => Array.from(HTMLels));
 
-export const slots = Array.from(document.querySelectorAll(".lane-slot"));
+const slots = Array.from(document.querySelectorAll(".lane-slot"));
 
-export const testBtn = document.querySelector("#test-btn") as HTMLButtonElement;
-export const testBtn2 = document.querySelector(
-  "#test-btn-2"
-) as HTMLButtonElement;
+const getSlotElementById = (id: string) => document.querySelector(`#${id}`)!;
+
+const getAvatarElementById = (id: string) =>
+  Array.from(getSlotElementById(id)?.children || []).find((el) =>
+    el.classList.contains("avatar")
+  )!;
+
+const getAvatarImgElementById = (id: string) =>
+  Array.from(getAvatarElementById(id).children)[0];
+
+const getAvatarOverlayElementById = (id: string) =>
+  Array.from(getAvatarElementById(id).children)[1];
+// const [targetImg, targetOverlay] = Array.from(targetAvatarEl?.children || []);
+
+const testBtn = document.querySelector("#test-btn") as HTMLButtonElement;
+const testBtn2 = document.querySelector("#test-btn-2") as HTMLButtonElement;
+
+export {
+  battleUI,
+  battleLanesUI,
+  timelineUI,
+  turnCountUI,
+  bottomSection,
+  slots,
+  testBtn,
+  testBtn2,
+  getSlotElementById,
+  getAvatarElementById,
+  getAvatarImgElementById,
+  getAvatarOverlayElementById,
+  // enemyBackSlots,
+  // enemyFrontSlots,
+  // heroFrontSlots,
+  // heroBackSlots,
+};
