@@ -1,11 +1,11 @@
-import { drawBottomPane, drawTimeline } from "./draw";
-import { getCharacterById } from "./main";
+import { drawTimeline } from "./draw";
 import {
   Turn,
   BattleState,
   PlayerAction,
   InventoryItem,
   PaneInfo,
+  Character,
 } from "./types";
 import { getTurnDuration, idMaker } from "./utils";
 
@@ -21,45 +21,6 @@ let inventory: InventoryItem[] = [
   { id: idMaker(), name: "Short Sword", type: "equipment", quantity: 1 },
 ];
 
-export const panes = {
-  getReady: () => ({ type: "text", content: "Get Ready!" }),
-  battleStart: () => ({ type: "text", content: "Battle Start!" }),
-  battleWon: () => ({ type: "text", content: "Battle Won!" }),
-  battleLost: () => ({ type: "text", content: "Battle Lost!" }),
-  enemyAction: (message: string) => ({
-    type: "text",
-    content: message,
-  }),
-  enemyAttack: (message: string) => ({
-    type: "text",
-    content: message,
-  }),
-  heroActions: (args: any) => ({
-    type: "list",
-    content: heroActionItems(args),
-  }),
-  itemSelection: (args: any) => ({
-    type: "list",
-    content: inventoryItems(args),
-  }),
-  itemTargetSelection: (itemName: string) => ({
-    type: "text",
-    content: `who is getting the ${itemName}?`,
-  }),
-  itemUse: (message: string) => ({
-    type: "text",
-    content: message,
-  }),
-  targetSelection: () => ({
-    type: "text",
-    content: `Select Target`,
-  }),
-  heroAttack: (message: string) => ({
-    type: "text",
-    content: message,
-  }),
-} as { [k: string]: (...args: any) => PaneInfo };
-
 function setBattleState(state: BattleState) {
   battleState = state;
   console.log(`%cBattleState ::: ${battleState}`, "color: lightgreen");
@@ -68,14 +29,46 @@ function setBattleState(state: BattleState) {
 function setPlayerAction(action: PlayerAction) {
   playerAction = action;
   console.log(`%cPlayerAction ::: ${playerAction}`, "color: lightblue");
+  console.trace("setPlayerAction");
 }
 
 function setCurrentTurn(turn: Turn) {
   currentTurn = turn;
 }
 
+function setSelectedItem(item: InventoryItem) {
+  selectedItem = item;
+}
+
 function incrementTurnCount() {
   turnCount++;
+}
+
+function getCharacterById(id: string): Character | undefined {
+  return allCharacters.find((c) => c.id === id);
+}
+
+function chooseTargetForEnemy(enemy: Character): Character {
+  let possibleTargets: Character[];
+
+  if (enemy.actions.attack.type === "ranged") {
+    possibleTargets = [...heroes].filter((h) => h.hp > 0);
+  } else if (enemy.actions.attack.type === "melee") {
+    const [heroesInTheFront, heroesInTheBack] = [
+      heroes.filter((h) => h.position.lane === "front" && h.hp > 0),
+      heroes.filter((h) => h.position.lane === "back" && h.hp > 0),
+    ];
+    if (heroesInTheFront.length > 0) {
+      possibleTargets = [...heroesInTheFront];
+    } else {
+      possibleTargets = [...heroesInTheBack];
+    }
+  } else {
+    possibleTargets = [...heroes].filter((h) => h.hp > 0);
+  }
+
+  const idx = Math.floor(Math.random() * possibleTargets.length);
+  return possibleTargets[idx];
 }
 
 function cleanupSelectedItem() {
@@ -109,63 +102,6 @@ function initializeTimeline() {
 
   drawTimeline();
 }
-
-export const inventoryItems = (itemList: InventoryItem[]) =>
-  itemList
-    .filter((item) => item.type === "consumable")
-    .map((item) => ({
-      text: `${item.name} x${item.quantity}`,
-      action: () => {
-        console.log("item selected", item);
-        selectedItem = item;
-
-        setBattleState(BattleState.ItemTargetSelect);
-        drawBottomPane(panes.itemTargetSelection(item.name), true);
-      },
-    }));
-
-export const heroActionItems = (...args: any) => [
-  {
-    text: "attack",
-    action: () => {
-      console.log("clicked attack", ...args);
-
-      setBattleState(BattleState.TargetSelection);
-      drawBottomPane(panes.targetSelection(), true);
-
-      // now hero needs to select a target to complete attack action
-      // or dismiss attack action
-    },
-  },
-  {
-    text: "defend",
-    action: () => {
-      console.log("clicked defend", ...args);
-
-      setPlayerAction(PlayerAction.Defend);
-
-      window.dispatchEvent(
-        new CustomEvent("hero-defense", {
-          detail: { hero: getCharacterById(timeline[0].entity.id) },
-        })
-      );
-    },
-  },
-  {
-    text: "item",
-    action: () => {
-      console.log("clicked item", ...args);
-
-      setPlayerAction(PlayerAction.Item);
-
-      setBattleState(BattleState.ItemSelection);
-      drawBottomPane(panes.itemSelection(inventory), true);
-
-      // now hero needs to select an item to complete item action
-      // or dismiss item action
-    },
-  },
-];
 
 const enemies = [
   {
@@ -315,9 +251,11 @@ export {
   battleState,
   playerAction,
   selectedItem,
+  inventory,
   enemies,
   heroes,
   allCharacters,
+  getCharacterById,
   initializeTimeline,
   setCurrentTurn,
   setBattleState,
@@ -325,4 +263,6 @@ export {
   incrementTurnCount,
   cleanupSelectedItem,
   subtractFromInventory,
+  chooseTargetForEnemy,
+  setSelectedItem,
 };

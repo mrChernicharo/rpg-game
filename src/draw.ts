@@ -143,7 +143,7 @@ function drawBottomPane(paneInfo: PaneInfo, showDismissBtn = false) {
   bottomSection.text.innerHTML = "";
   bottomSection.list.innerHTML = "";
 
-  console.log("drawBottomPane", timeline[0]?.entity?.name, paneInfo);
+  // console.log("drawBottomPane", timeline[0]?.entity?.name, paneInfo);
 
   switch (paneInfo.type) {
     case "text":
