@@ -1,55 +1,46 @@
-import { PaneInfo } from "./main";
-import { idMaker } from "./utils";
+import { drawTimeline } from "./draw";
+import { heroActionItems } from "./main";
+import { Turn, BattleState, PlayerAction, PaneInfo } from "./types";
+import { getTurnDuration, idMaker } from "./utils";
 
-export const battleUI = document.querySelector("#battle-ui");
+let timeline: Turn[] = [];
+let currentTurn: Turn | null = null;
+let turnCount = 0;
+let battleStarted = false;
+let battleState: BattleState;
+let playerAction: PlayerAction;
 
-export const battleLanesUI = Array.from(
-  document.querySelectorAll(".battle-lane")
-);
-export const turnSequenceUI = document.querySelector("#turn-sequence")!;
+function setBattleState(state: BattleState) {
+  battleState = state;
+  console.log(`%cBattleState ::: ${battleState}`, "color: lightgreen");
+}
 
-export const bottomSection = {
-  text: document.querySelector("#bottom-lane > #text-content")!,
-  list: document.querySelector("#bottom-lane > #list-content")!,
-};
-export const testBtn = document.querySelector("#test-btn") as HTMLButtonElement;
-export const testBtn2 = document.querySelector(
-  "#test-btn-2"
-) as HTMLButtonElement;
+function setPlayerAction(action: PlayerAction) {
+  playerAction = action;
+  console.log(`%cPlayerAction ::: ${playerAction}`, "color: lightblue");
+}
 
-export const slots = Array.from(document.querySelectorAll(".lane-slot"));
+function setCurrentTurn(turn: Turn) {
+  currentTurn = turn;
+}
 
-export const [enemyBackSlots, enemyFrontSlots, heroFrontSlots, heroBackSlots] =
-  [
-    battleLanesUI[0].children,
-    battleLanesUI[1].children,
-    battleLanesUI[2].children,
-    battleLanesUI[3].children,
-  ].map((HTMLels) => Array.from(HTMLels));
+function incrementTurnCount() {
+  turnCount++;
+}
 
-const heroActionItems = (...args: any) => [
-  {
-    text: "attack",
-    action: () => {
-      console.log("clicked attack", ...args);
+function initializeTimeline() {
+  timeline = allCharacters
+    .map((c) => ({
+      entity: { id: c.id, name: c.name },
+      turnDuration: getTurnDuration(c.speed),
+      nextTurnAt: getTurnDuration(c.speed),
+      turnsPlayed: 0,
+    }))
+    .sort((a, b) => a.nextTurnAt - b.nextTurnAt);
 
-      // @TODO
-      // export const targetEnemy = await aimToTarget(entity);
-    },
-  },
-  {
-    text: "defend",
-    action: () => {
-      console.log("clicked defend", ...args);
-    },
-  },
-  {
-    text: "item",
-    action: () => {
-      console.log("clicked item", ...args);
-    },
-  },
-];
+  drawTimeline();
+  battleStarted = true;
+}
 
 export const panes: Record<string, (...args: any) => PaneInfo> = {
   battleStart: () => ({ type: "text", content: "get ready!" }),
@@ -61,9 +52,13 @@ export const panes: Record<string, (...args: any) => PaneInfo> = {
     type: "list",
     content: heroActionItems(args),
   }),
+  targetSelection: () => ({
+    type: "text",
+    content: `Select Target`,
+  }),
 };
 
-export const enemies = [
+const enemies = [
   {
     id: idMaker(),
     name: "Skeleton 01",
@@ -126,7 +121,7 @@ export const enemies = [
   },
 ];
 
-export const heroes = [
+const heroes = [
   {
     id: idMaker(),
     name: "Abigail",
@@ -174,4 +169,21 @@ export const heroes = [
   },
 ];
 
-export const allCharacters = [...enemies, ...heroes];
+const allCharacters = [...enemies, ...heroes];
+
+export {
+  timeline,
+  currentTurn,
+  turnCount,
+  battleStarted,
+  battleState,
+  playerAction,
+  enemies,
+  heroes,
+  allCharacters,
+  initializeTimeline,
+  setCurrentTurn,
+  setBattleState,
+  setPlayerAction,
+  incrementTurnCount,
+};

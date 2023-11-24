@@ -161,35 +161,36 @@ button:focus-visible {
 
 /******************/
 
-#middle-lane {
+#middle-pane {
   height: 40px;
   /* border: 1px solid green; */
 }
 
-#bottom-lane {
+#bottom-pane {
+  width: 358px; /* battle-ui max-width */
   height: 240px;
   border: 1px solid green;
 }
 
-#bottom-lane > #list-content {
+#bottom-pane > #list-content {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
 }
 
-#bottom-lane > #list-content > li:hover {
+#bottom-pane > #list-content > li:hover {
   border: 1px solid #646cff;
 }
 
 /*****************/
 
-#turn-sequence {
+#timeline {
   text-align: left;
 }
 
-/* #turn-sequence > .character-name {
+/* #timeline > .character-name {
 } */
 
-#turn-sequence > .turn-item > .time-to-next-turn {
+#timeline > .turn-item > .time-to-next-turn {
   font-weight: bold;
   color: goldenrod;
 }
