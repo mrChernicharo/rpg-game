@@ -201,6 +201,10 @@ button:focus-visible {
   display: none;
 }
 
+.img-efx-overlay.defending {
+  opacity: 0.3;
+}
+
 /******************/
 
 .ranged-attack-perform,
@@ -221,6 +225,13 @@ button:focus-visible {
 
   .img-efx-overlay {
     animation: slash-tb 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transition: clip-path opacity;
+  }
+}
+
+.defense-perform {
+  .img-efx-overlay {
+    animation: shield 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
     transition: clip-path opacity;
   }
 }
@@ -314,5 +325,20 @@ button:focus-visible {
       59% 48%,
       72% 48%
     );
+  }
+}
+
+@keyframes shield {
+  0% {
+    opacity: 0.6;
+    clip-path: polygon(31% 26%, 66% 25%, 93% 49%, 68% 72%, 31% 71%, 10% 49%);
+  }
+  94% {
+    opacity: 0.9;
+    clip-path: polygon(20% 0, 80% 0, 100% 5%, 90% 66%, 50% 100%, 10% 65%, 0 5%);
+  }
+  100% {
+    opacity: 0;
+    clip-path: polygon(41% 61%, 57% 61%, 72% 70%, 53% 94%, 29% 71%);
   }
 }

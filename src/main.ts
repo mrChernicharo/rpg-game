@@ -1,5 +1,10 @@
 import "./style.css";
-import { battleLanesUI, timelineUI, bottomSection } from "./dom";
+import {
+  battleLanesUI,
+  timelineUI,
+  bottomSection,
+  getSlotOverlayElementById,
+} from "./dom";
 import { calculateNextTurnTime, getTurnDuration, wait } from "./utils";
 import {
   battleState,
@@ -24,6 +29,7 @@ import {
   drawAttackEffect,
   drawCharacters,
   drawTurnCount,
+  drawDefenseEffect,
 } from "./draw";
 
 // let timeline: Turn[] = [];
@@ -113,7 +119,7 @@ async function onHeroDefense(data: any) {
   const { hero } = data.detail;
   console.log("onHeroDefense", hero);
 
-  // await defenseDrawing
+  await drawDefenseEffect(hero);
 
   setPlayerAction(PlayerAction.None);
 
@@ -232,6 +238,12 @@ async function handleCharacterTurn(entity: Character): Promise<void> {
   }
   //
   else if (entity.type === "hero") {
+    // if was defending, cleanup defending UI
+    const slotOverlay = getSlotOverlayElementById(entity.id)!;
+    if (slotOverlay.classList.contains("defending")) {
+      slotOverlay.classList.remove("defending");
+    }
+
     setBattleState(BattleState.HeroAction);
     updateBottomPane(panes.heroActions(entity));
 

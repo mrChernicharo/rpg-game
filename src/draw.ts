@@ -1,5 +1,6 @@
 import {
   battleLanesUI,
+  getSlotOverlayElementById,
   getSlotElementById,
   timelineUI,
   turnCountUI,
@@ -103,7 +104,16 @@ async function drawAttackEffect(
   return Promise.resolve();
 }
 
-async function drawDefenseEffect(hero: Character): Promise<void> {}
+async function drawDefenseEffect(hero: Character): Promise<void> {
+  const slotEl = getSlotElementById(hero.id);
+  const overlayEl = getSlotOverlayElementById(hero.id);
+
+  slotEl?.classList.add(`defense-perform`);
+  overlayEl?.classList.add(`defending`); // will be removed at the beginning of next turn
+
+  await wait(1000);
+  slotEl?.classList.remove(`defense-perform`);
+}
 
 function drawTurnCount(turn: number) {
   const outputEl = turnCountUI?.children[0] as HTMLOutputElement;
@@ -117,4 +127,5 @@ export {
   drawSelectedCharacterOutline,
   drawAttackEffect,
   drawTurnCount,
+  drawDefenseEffect,
 };
