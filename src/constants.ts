@@ -1,24 +1,55 @@
 import { PaneInfo } from "./main";
 import { idMaker } from "./utils";
 
+export const battleUI = document.querySelector("#battle-ui");
+
 export const battleLanesUI = Array.from(
   document.querySelectorAll(".battle-lane")
 );
 export const turnSequenceUI = document.querySelector("#turn-sequence")!;
-export const testBtn = document.querySelector("#test-btn") as HTMLButtonElement;
+
 export const bottomSection = {
   text: document.querySelector("#bottom-lane > #text-content")!,
   list: document.querySelector("#bottom-lane > #list-content")!,
 };
-// export const testBtn2 = document.querySelector("#test-btn-2") as HTMLButtonElement;
-// export const battleUI = document.querySelector("#battle-ui");
-// export const slots = Array.from(document.querySelectorAll(".lane-slot"));
-// export const [enemyBackSlots, enemyFrontSlots, heroFrontSlots, heroBackSlots] = [
-//   battleLanesUI[0].children,
-//   battleLanesUI[1].children,
-//   battleLanesUI[2].children,
-//   battleLanesUI[3].children,
-// ].map((HTMLels) => Array.from(HTMLels));
+export const testBtn = document.querySelector("#test-btn") as HTMLButtonElement;
+export const testBtn2 = document.querySelector(
+  "#test-btn-2"
+) as HTMLButtonElement;
+
+export const slots = Array.from(document.querySelectorAll(".lane-slot"));
+
+export const [enemyBackSlots, enemyFrontSlots, heroFrontSlots, heroBackSlots] =
+  [
+    battleLanesUI[0].children,
+    battleLanesUI[1].children,
+    battleLanesUI[2].children,
+    battleLanesUI[3].children,
+  ].map((HTMLels) => Array.from(HTMLels));
+
+const heroActionItems = (...args: any) => [
+  {
+    text: "attack",
+    action: () => {
+      console.log("clicked attack", ...args);
+
+      // @TODO
+      // export const targetEnemy = await aimToTarget(entity);
+    },
+  },
+  {
+    text: "defend",
+    action: () => {
+      console.log("clicked defend", ...args);
+    },
+  },
+  {
+    text: "item",
+    action: () => {
+      console.log("clicked item", ...args);
+    },
+  },
+];
 
 export const panes: Record<string, (...args: any) => PaneInfo> = {
   battleStart: () => ({ type: "text", content: "get ready!" }),
@@ -26,31 +57,9 @@ export const panes: Record<string, (...args: any) => PaneInfo> = {
     type: "text",
     content: message,
   }),
-  heroActions: () => ({
+  heroActions: (args) => ({
     type: "list",
-    content: [
-      {
-        text: "attack",
-        action: () => {
-          console.log("clicked attack");
-
-          // @TODO
-          // export const targetEnemy = await aimToTarget(entity);
-        },
-      },
-      {
-        text: "defend",
-        action: () => {
-          console.log("clicked defend");
-        },
-      },
-      {
-        text: "item",
-        action: () => {
-          console.log("clicked item");
-        },
-      },
-    ],
+    content: heroActionItems(args),
   }),
 };
 
