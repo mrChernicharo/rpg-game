@@ -134,7 +134,7 @@ button:focus-visible {
 }
 
 .lane-slot.selected {
-  background:  goldenrod;
+  background: darkgoldenrod;
   /* border: 10px solid goldenrod; */
 }
 
@@ -159,9 +159,28 @@ button:focus-visible {
 /******************/
 
 #middle-lane {
+  height: 40px;
+  /* border: 1px solid green; */
+}
+
+#bottom-lane {
   height: 240px;
   border: 1px solid green;
 }
+
+#bottom-lane > #list-content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  
+}
+
+#bottom-lane > #list-content > li:hover {
+  border: 1px solid #646cff;
+}
+
+/* #bottom-lane > .text-content,
+#bottom-lane > .text-list {
+} */
 
 /*****************/
 
@@ -178,6 +197,12 @@ button:focus-visible {
 }
 
 /************/
+
+.hidden {
+  display: none;
+}
+
+/******************/
 
 .melee-attack-perform {
   /* transform: translate3d(0, 0, 0);
@@ -263,5 +288,28 @@ button:focus-visible {
     opacity: 0;
     -webkit-clip-path: polygon(83% 76%, 98% 81%, 100% 100%, 81% 98%, 76% 85%);
     clip-path: polygon(83% 76%, 98% 81%, 100% 100%, 81% 98%, 76% 85%);
+  }
+}
+
+@keyframes claws {
+  50% {
+    clip-path: polygon(
+      58% 1%,
+      86% 48%,
+      94% 100%,
+      72% 48%,
+      61% 48%,
+      71% 100%,
+      45% 49%,
+      32% 48%,
+      45% 100%,
+      19% 49%,
+      9% 0%,
+      32% 48%,
+      44% 49%,
+      34% 0%,
+      59% 48%,
+      72% 48%
+    );
   }
 }

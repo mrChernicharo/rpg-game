@@ -3,6 +3,11 @@ import "./style.css";
 const battleLanesUI = Array.from(document.querySelectorAll(".battle-lane"));
 const turnSequenceUI = document.querySelector("#turn-sequence")!;
 const testBtn = document.querySelector("#test-btn") as HTMLButtonElement;
+const testBtn2 = document.querySelector("#test-btn-2") as HTMLButtonElement;
+const bottomSection = {
+  text: document.querySelector("#bottom-lane > #text-content")!,
+  list: document.querySelector("#bottom-lane > #list-content")!,
+};
 // const battleUI = document.querySelector("#battle-ui");
 // const slots = Array.from(document.querySelectorAll(".lane-slot"));
 // const [enemyBackSlots, enemyFrontSlots, heroFrontSlots, heroBackSlots] = [
@@ -12,16 +17,13 @@ const testBtn = document.querySelector("#test-btn") as HTMLButtonElement;
 //   battleLanesUI[3].children,
 // ].map((HTMLels) => Array.from(HTMLels));
 
-let turnSequence: any[] = [];
-let currentTurn = null;
-let turnCount = 0;
-let battleStarted = false;
-let ongoingAttack = false;
-
-testBtn.onclick = () => {
-  if (!battleStarted || ongoingAttack) return;
-  updateTurnSequence();
-};
+type PaneInfo =
+  | { type: "text"; content: string }
+  | {
+      type: "list";
+      content: { text: string; action: (...args: any) => void }[];
+    }
+  | { type: "none"; content: undefined };
 
 const enemies = [
   {
@@ -138,6 +140,35 @@ const allCharacters = [...enemies, ...heroes];
 
 type Character = (typeof allCharacters)[0];
 
+let turnSequence: any[] = [];
+let currentTurn = null;
+let turnCount = 0;
+let battleStarted = false;
+let ongoingAttack = false;
+
+testBtn.onclick = () => {
+  if (!battleStarted || ongoingAttack) return;
+  updateTurnSequence();
+};
+
+// let paneIdx = 0;
+// testBtn2.onclick = () => {
+//   const paneTypes = ["text", "list", "none"];
+//   const paneSampleContents = ["test...", ["A...", "B..."], undefined];
+
+//   const paneType = paneTypes[paneIdx % paneTypes.length] as
+//     | "text"
+//     | "list"
+//     | "none";
+//   const paneInfo = {
+//     type: paneType,
+//     content: paneSampleContents[paneIdx % paneTypes.length],
+//   } as PaneInfo;
+
+//   setBottomPane(paneInfo);
+//   paneIdx++;
+// };
+
 function idMaker(length = 12) {
   const ID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-";
   return Array(length)
@@ -211,27 +242,6 @@ function drawCharacters() {
 
   // const activeCharacterSlot: string = currentTurn?.entityId ?? "";
   // console.log({ activeCharacterSlot, currentTurn });
-}
-
-function initializeTurnSequence() {
-  turnSequence = allCharacters
-    .map((c) => ({
-      entityId: c.id,
-      name: c.name,
-      turnDuration: getTurnDuration(c.speed),
-      nextTurnAt: getTurnDuration(c.speed),
-      turnsPlayed: 0,
-    }))
-    .sort((a, b) => a.nextTurnAt - b.nextTurnAt);
-
-  drawTurnSequence();
-
-  // run initial turn
-  setTimeout(() => {
-    turnCount++;
-    battleStarted = true;
-    handleCharacterTurn(allCharacters[0]);
-  }, 2000);
 }
 
 function updateTurnSequence() {
@@ -308,6 +318,7 @@ async function drawSelectedCharacterOutline(entity: Character) {
   });
 }
 
+// turn controller >>>
 async function handleCharacterTurn(entity: Character) {
   console.log(`it's ${entity.name}'s turn`);
 
@@ -323,7 +334,29 @@ async function handleCharacterTurn(entity: Character) {
 
     console.log("done!");
   } else if (entity.type === "hero") {
-    // chooseRandomEntity(enemies);
+    setBottomPane({
+      type: "list",
+      content: [
+        {
+          text: "attack",
+          action: () => {
+            console.log("clicked attack");
+          },
+        },
+        {
+          text: "defend",
+          action: () => {
+            console.log("clicked defend");
+          },
+        },
+        {
+          text: "item",
+          action: () => {
+            console.log("clicked item");
+          },
+        },
+      ],
+    });
   }
 }
 
@@ -382,6 +415,55 @@ async function drawAttackEffect(attacker: Character, target: Character) {
   //   targetImg,
   //   targetOverlay,
   // });
+}
+
+function setBottomPane(paneInfo: PaneInfo) {
+  console.log("setBottomPane", { paneInfo });
+  switch (paneInfo.type) {
+    case "text":
+      bottomSection.list.classList.add("hidden");
+      bottomSection.text.classList.remove("hidden");
+
+      bottomSection.text.textContent = paneInfo.content;
+      break;
+    case "list":
+      bottomSection.list.classList.remove("hidden");
+      bottomSection.text.classList.add("hidden");
+
+      bottomSection.list.innerHTML = "";
+      paneInfo.content.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = item.text;
+        li.onclick = () => item.action();
+        bottomSection.list.append(li);
+      });
+      break;
+    case "none":
+      bottomSection.list.classList.add("hidden");
+      bottomSection.text.classList.add("hidden");
+      break;
+  }
+}
+
+function initializeTurnSequence() {
+  turnSequence = allCharacters
+    .map((c) => ({
+      entityId: c.id,
+      name: c.name,
+      turnDuration: getTurnDuration(c.speed),
+      nextTurnAt: getTurnDuration(c.speed),
+      turnsPlayed: 0,
+    }))
+    .sort((a, b) => a.nextTurnAt - b.nextTurnAt);
+
+  drawTurnSequence();
+
+  // run initial turn
+  setTimeout(() => {
+    turnCount++;
+    battleStarted = true;
+    handleCharacterTurn(allCharacters[0]);
+  }, 2000);
 }
 
 function main() {
