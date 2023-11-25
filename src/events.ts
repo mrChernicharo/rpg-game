@@ -1,7 +1,7 @@
 import {
   slots,
   dismissBtn,
-  getSlotOverlayElementById,
+  getSlotEfxOverlayById,
   getSlotElementById,
 } from "./dom";
 import {
@@ -75,9 +75,7 @@ async function onStatusActed(status: Status, character: Character) {
 
       setBattleState(BattleState.StatusExpired);
       drawBottomPane(
-        panes.statusExpired(
-          `${status.name} effect on ${character.name} has expired`
-        )
+        panes.text(`${status.name} effect on ${character.name} has expired`)
       );
 
       await wait(1240);
@@ -112,7 +110,7 @@ async function onHeroAttack(data: any) {
 
   setPlayerAction(PlayerAction.Attack);
   setBattleState(BattleState.HeroAttack);
-  drawBottomPane(panes.heroAttack(`${hero.name} attacks ${target.name}`));
+  drawBottomPane(panes.text(`${hero.name} attacks ${target.name}`));
 
   await handleAttack(hero, target);
 
@@ -132,7 +130,7 @@ async function onItemTargetSelected(data: any) {
 
   setPlayerAction(PlayerAction.Item);
   setBattleState(BattleState.ItemUse);
-  drawBottomPane(panes.itemUse(message));
+  drawBottomPane(panes.text(message));
 
   const item = cleanupSelectedItem();
   subtractFromInventory(item);
@@ -184,7 +182,7 @@ async function handleAttack(
 
   target.hp -= attackPower;
   drawBottomPane(
-    panes.characterDamaged(`${target.name} suffered ${attackPower} of damage`)
+    panes.text(`${target.name} suffered ${attackPower} of damage`)
   );
   await wait(1020);
 
@@ -198,9 +196,7 @@ async function handleAttack(
     drawTimeline();
 
     setBattleState(BattleState.CharacterKilled);
-    drawBottomPane(
-      panes.characterKilled(`${attacker.name} has slain ${target.name}`)
-    );
+    drawBottomPane(panes.text(`${attacker.name} has slain ${target.name}`));
     await wait(1220);
   }
 
@@ -209,13 +205,13 @@ async function handleAttack(
   // handle battle over
   if (enemies.every((e) => e.hp <= 0)) {
     setBattleState(BattleState.Ended);
-    drawBottomPane(panes.battleWon());
+    drawBottomPane(panes.text("Battle Won!"));
     await wait(3000);
   }
 
   if (heroes.every((h) => h.hp <= 0)) {
     setBattleState(BattleState.Ended);
-    drawBottomPane(panes.battleLost());
+    drawBottomPane(panes.text("Battle Lost!"));
     await wait(3000);
   }
 }
@@ -278,9 +274,7 @@ async function handleStatusTurn(status: Status, character: Character) {
 
   setBattleState(BattleState.StatusAction);
   drawBottomPane(
-    panes.statusTurn(
-      `${character.name} received ${status.power} damage from poison`
-    )
+    panes.text(`${character.name} received ${status.power} damage from poison`)
   );
 
   switch (status.name) {
@@ -310,15 +304,13 @@ async function handleCharacterTurn(entity: Character): Promise<void> {
     const targetHero = chooseTargetForEnemy(entity);
 
     setBattleState(BattleState.EnemyAction);
-    drawBottomPane(panes.enemyAction(`${entity.name}'s turn`));
+    drawBottomPane(panes.text(`${entity.name}'s turn`));
 
     await drawSelectedCharacterOutline(entity);
     await wait(750);
 
     setBattleState(BattleState.EnemyAttack);
-    drawBottomPane(
-      panes.enemyAttack(`${entity.name} attacked ${targetHero.name}`)
-    );
+    drawBottomPane(panes.text(`${entity.name} attacked ${targetHero.name}`));
 
     await handleAttack(entity, targetHero);
 
@@ -332,7 +324,7 @@ async function handleCharacterTurn(entity: Character): Promise<void> {
   //
   else if (entity.type === "hero") {
     // if was defending, cleanup defending UI
-    const slotOverlay = getSlotOverlayElementById(entity.id)!;
+    const slotOverlay = getSlotEfxOverlayById(entity.id)!;
     if (slotOverlay.classList.contains("defending")) {
       slotOverlay.classList.remove("defending");
     }

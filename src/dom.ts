@@ -1,3 +1,5 @@
+import { timeline } from "./globals";
+
 const battleUI = document.querySelector("#battle-ui");
 
 const battleLanesUI = Array.from(document.querySelectorAll(".battle-lane"));
@@ -36,11 +38,30 @@ const getAvatarElementById = (characterId: string) =>
 const getAvatarImgElementById = (characterId: string) =>
   Array.from(getAvatarElementById(characterId).children)[0];
 
-const getSlotOverlayElementById = (characterId: string) =>
+const getSlotEfxOverlayById = (characterId: string) =>
   Array.from(getSlotElementById(characterId).children).find((child) =>
-    child.classList.contains("img-efx-overlay")
+    child.classList.contains("efx-overlay")
   );
-console.log({ dismissBtn });
+
+const getSlotDefenseOverlayById = (characterId: string) =>
+  Array.from(getSlotElementById(characterId).children).find((child) =>
+    child.classList.contains("defense-overlay")
+  );
+
+const getSlotStatusOverlayById = (characterId: string) =>
+  Array.from(getSlotElementById(characterId).children).find((child) =>
+    child.classList.contains("status-overlay")
+  );
+
+setTimeout(() => {
+  const nextUpCharacterId = timeline.filter((o) => o.type === "character")[0]
+    .entity.id;
+  const efx = getSlotEfxOverlayById(nextUpCharacterId);
+  const defense = getSlotDefenseOverlayById(nextUpCharacterId);
+  const status = getSlotStatusOverlayById(nextUpCharacterId);
+
+  console.log({ nextUpCharacterId, efx, defense, status });
+}, 2500);
 
 export {
   slots,
@@ -55,5 +76,7 @@ export {
   getSlotElementById,
   getAvatarElementById,
   getAvatarImgElementById,
-  getSlotOverlayElementById,
+  getSlotEfxOverlayById,
+  getSlotDefenseOverlayById,
+  getSlotStatusOverlayById,
 };

@@ -1,11 +1,12 @@
 import {
   battleLanesUI,
-  getSlotOverlayElementById,
+  getSlotEfxOverlayById,
   getSlotElementById,
   timelineUI,
   turnCountUI,
   bottomSection,
   dismissBtn,
+  getSlotDefenseOverlayById,
 } from "./dom";
 import { StatusEffectName } from "./enums";
 import { allCharacters, getCharacterById, timeline } from "./globals";
@@ -33,7 +34,7 @@ function drawCharacters(): void {
     const [topSection, avatar, bottomSection] = Array.from(slot.children);
     const img = avatar.children[0] as HTMLImageElement;
     // const overlayEl = Array.from(slot.children).find((el) =>
-    //   el.classList.contains("img-efx-overlay")
+    //   el.classList.contains("efx-overlay")
     // );
 
     // console.log({ slot, overlayEl });
@@ -125,7 +126,7 @@ async function drawAttackEffect(
 
 async function drawDefenseEffect(hero: Character): Promise<void> {
   const slotEl = getSlotElementById(hero.id);
-  const overlayEl = getSlotOverlayElementById(hero.id);
+  const overlayEl = getSlotDefenseOverlayById(hero.id);
 
   slotEl?.classList.add(`defense-perform`);
   overlayEl?.classList.add(`defending`); // will be removed at the beginning of next turn

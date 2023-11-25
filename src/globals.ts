@@ -177,9 +177,9 @@ async function startBattle() {
   initializeCharacters();
 
   drawCharacters();
-  drawBottomPane(panes.battleStart());
+  drawBottomPane(panes.text("Battle Start!"));
   await wait(1000);
-  drawBottomPane(panes.getReady());
+  drawBottomPane(panes.text("Get ready"));
   await wait(1000);
 
   initializeTimeline();

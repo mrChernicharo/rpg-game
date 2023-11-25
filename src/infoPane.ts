@@ -19,9 +19,7 @@ const inventoryItems = (itemList: InventoryItem[]) =>
 
         setSelectedItem(item);
         setBattleState(BattleState.ItemTargetSelect);
-
-        const message = `who is getting the ${item.name}?`;
-        drawBottomPane(panes.itemTargetSelection(message), true);
+        drawBottomPane(panes.text(`who is getting the ${item.name}?`), true);
       },
     }));
 
@@ -32,7 +30,7 @@ const heroActionItems = () => [
       console.log("clicked attack");
 
       setBattleState(BattleState.AttackTargetSelection);
-      drawBottomPane(panes.attackTargetSelection(), true);
+      drawBottomPane(panes.text(`Select Target`), true);
 
       // now hero needs to select a target to complete attack action
       // or dismiss attack action
@@ -45,7 +43,7 @@ const heroActionItems = () => [
 
       const hero = getCurrentCharacter();
       setPlayerAction(PlayerAction.Defend);
-      drawBottomPane(panes.defenseStart(`${hero.name} raised its defenses`));
+      drawBottomPane(panes.text(`${hero.name} raised its defenses`));
 
       window.dispatchEvent(
         new CustomEvent("hero-defense", {
@@ -71,44 +69,16 @@ const heroActionItems = () => [
 ];
 
 export type Panes = {
-  getReady: () => PaneInfo;
-  battleStart: () => PaneInfo;
-  enemyAction: (message: string) => PaneInfo;
-  enemyAttack: (message: string) => PaneInfo;
   heroActions: (hero: Character) => PaneInfo;
-  heroAttack: (message: string) => PaneInfo;
-  attackTargetSelection: () => PaneInfo;
-  characterKilled: (message: string) => PaneInfo;
   itemSelection: (args: any) => PaneInfo;
-  itemTargetSelection: (message: string) => PaneInfo;
-  itemUse: (message: string) => PaneInfo;
-  statusTurn: (message: string) => PaneInfo;
-  statusExpired: (message: string) => PaneInfo;
-  battleWon: () => PaneInfo;
-  battleLost: () => PaneInfo;
-  characterDamaged: (message: string) => PaneInfo;
-  defenseStart: (message: string) => PaneInfo;
+  text: (message: string) => PaneInfo;
 };
 
 // prettier-ignore
 const panes: Panes = {
-  getReady: () => ({ type: "text", content: "Get Ready!" }),
-  battleStart: () => ({ type: "text", content: "Battle Start!" }),
-  enemyAction: (message: string) => ({ type: "text", content: message }),
-  enemyAttack: (message: string) => ({ type: "text", content: message }),
+  text: (message: string) => ({ type: 'text', content: message}),
   heroActions: () => ({ type: "list", content: heroActionItems() }),
-  heroAttack: (message: string) => ({ type: "text", content: message }),
-  attackTargetSelection: () => ({ type: "text", content: `Select Target` }),
-  characterKilled: (message: string) => ({ type: "text", content: message }),
   itemSelection: (args: any) => ({ type: "list", content: inventoryItems(args) }),
-  itemTargetSelection: (message: string) => ({ type: "text", content: message }),
-  itemUse: (message: string) => ({ type: "text", content: message }),
-  statusTurn: (message: string) => ({ type: "text", content: message }),
-  statusExpired: (message: string) => ({ type: "text", content: message }),
-  battleWon: () => ({ type: "text", content: "Battle Won!" }),
-  battleLost: () => ({ type: "text", content: "Battle Lost!" }),
-  characterDamaged: (message: string) => ({ type: "text", content: message }),
-  defenseStart: (message: string) => ({ type: "text", content: message }),
 };
 
 export { panes };
