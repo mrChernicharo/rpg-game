@@ -8,15 +8,15 @@ export type Position = {
 export type Character = {
   id: string;
   name: string;
-  type: string;
+  type: "hero" | "enemy" | "npc";
   hp: number;
   speed: number;
   imgUrl: string;
   position: Position;
-  lastAction: string;
   actions: {
     attack: { type: string; power: number };
   };
+  statuses: string[];
 };
 
 export type Status = {

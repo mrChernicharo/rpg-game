@@ -42,8 +42,6 @@ const heroActionItems = () => [
       console.log("clicked defend");
 
       const hero = getCurrentCharacter();
-      setPlayerAction(PlayerAction.Defend);
-      drawBottomPane(panes.text(`${hero.name} raised its defenses`));
 
       window.dispatchEvent(
         new CustomEvent("hero-defense", {

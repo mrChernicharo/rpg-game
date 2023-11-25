@@ -53,15 +53,15 @@ const getSlotStatusOverlayById = (characterId: string) =>
     child.classList.contains("status-overlay")
   );
 
-setTimeout(() => {
-  const nextUpCharacterId = timeline.filter((o) => o.type === "character")[0]
-    .entity.id;
-  const efx = getSlotEfxOverlayById(nextUpCharacterId);
-  const defense = getSlotDefenseOverlayById(nextUpCharacterId);
-  const status = getSlotStatusOverlayById(nextUpCharacterId);
+// setTimeout(() => {
+//   const nextUpCharacterId = timeline.filter((o) => o.type === "character")[0]
+//     .entity.id;
+//   const efx = getSlotEfxOverlayById(nextUpCharacterId);
+//   const defense = getSlotDefenseOverlayById(nextUpCharacterId);
+//   const status = getSlotStatusOverlayById(nextUpCharacterId);
 
-  console.log({ nextUpCharacterId, efx, defense, status });
-}, 2500);
+//   console.log({ nextUpCharacterId, efx, defense, status });
+// }, 2500);
 
 export {
   slots,
