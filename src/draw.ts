@@ -31,9 +31,10 @@ function drawCharacters(): void {
     const slot = Array.from(battleLane.children)[slotIdx];
     const [topSection, avatar, bottomSection] = Array.from(slot.children);
     const img = avatar.children[0] as HTMLImageElement;
-    const overlayEl = Array.from(slot.children).find((el) =>
-      el.classList.contains("img-efx-overlay")
-    );
+    // const overlayEl = Array.from(slot.children).find((el) =>
+    //   el.classList.contains("img-efx-overlay")
+    // );
+
     // console.log({ slot, overlayEl });
 
     slot.id = `${entity.id}`;

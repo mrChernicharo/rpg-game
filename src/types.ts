@@ -19,7 +19,16 @@ export type Character = {
   };
 };
 
-export type Turn = {
+export type Status = {
+  id: string;
+  name: string;
+  characterId: string;
+  turnsPlayed: number;
+  turnCount: number;
+  speed: number;
+};
+
+export type TurnBase = {
   entity: {
     id: string;
     name: string;
@@ -28,6 +37,21 @@ export type Turn = {
   nextTurnAt: number;
   turnsPlayed: number;
 };
+
+export type CharacterTurnBase = {
+  type: "character";
+};
+
+export type StatusTurnBase = {
+  type: "status";
+  turnCount: number;
+  characterId: string;
+};
+
+export type CharacterTurn = CharacterTurnBase & TurnBase;
+export type StatusTurn = StatusTurnBase & TurnBase;
+
+export type Turn = CharacterTurn | StatusTurn;
 
 export type InventoryItem = {
   id: string;

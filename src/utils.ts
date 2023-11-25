@@ -19,7 +19,7 @@ speed: 25 -> 40 ticks ->
 |----------|----------|----------|----------| 10s
 
 */
-export function getTurnDuration(speed: number) {
+export function calcTurnDuration(speed: number) {
   return 1000 / speed;
 }
 

@@ -1,3 +1,4 @@
+import { Status, StatusTurn } from "./types";
 import { idMaker } from "./utils";
 
 const ENEMY_LIST = [
@@ -74,8 +75,8 @@ const HERO_LIST = [
     id: idMaker(),
     name: "Abigail",
     type: "hero",
-    hp: 20,
-    // hp: 520,
+    // hp: 20,
+    hp: 520,
     speed: 54,
     imgUrl: "/sprites/sprite-09.webp",
     position: {
@@ -123,4 +124,16 @@ const HERO_LIST = [
   },
 ];
 
-export { ENEMY_LIST, HERO_LIST };
+const STATUS_LIST: Status[] = [
+  {
+    id: idMaker(),
+    characterId: HERO_LIST[0].id,
+    name: "poison",
+    speed: 60,
+    // speed: 90,
+    turnsPlayed: 0,
+    turnCount: 7,
+  },
+];
+
+export { ENEMY_LIST, HERO_LIST, STATUS_LIST };

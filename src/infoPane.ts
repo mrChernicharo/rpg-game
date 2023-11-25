@@ -3,10 +3,9 @@ import { BattleState, PlayerAction } from "./enums";
 import {
   setBattleState,
   setPlayerAction,
-  getCharacterById,
-  timeline,
   setSelectedItem,
   inventory,
+  getCurrentCharacter,
 } from "./globals";
 import { Character, InventoryItem, PaneInfo } from "./types";
 
@@ -48,7 +47,7 @@ const heroActionItems = () => [
 
       window.dispatchEvent(
         new CustomEvent("hero-defense", {
-          detail: { hero: getCharacterById(timeline[0].entity.id) },
+          detail: { hero: getCurrentCharacter() },
         })
       );
     },

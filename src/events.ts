@@ -26,9 +26,11 @@ import {
   setCurrentTurn,
   turnCount,
   currentTurn,
+  getCurrentCharacter,
+  allCharacters,
 } from "./globals";
 import { panes } from "./infoPane";
-import { Character, InventoryItem } from "./types";
+import { Character, InventoryItem, Turn } from "./types";
 import { calculateNextTurnTime, wait } from "./utils";
 
 window.addEventListener("hero-defense", onHeroDefense);
@@ -53,7 +55,7 @@ async function onHeroDefense(data: any) {
 
 async function onHeroAttack(data: any) {
   const { selectedCharacter: target } = data.detail;
-  const hero = getCharacterById(timeline[0].entity.id)!;
+  const hero = getCurrentCharacter()!;
   // console.log("onHeroAttack", {
   //   target,
   //   hero,
@@ -72,7 +74,7 @@ async function onHeroAttack(data: any) {
 
 async function onItemTargetSelected(data: any) {
   const { selectedCharacter: target } = data.detail;
-  const hero = getCharacterById(timeline[0].entity.id)!;
+  const hero = getCurrentCharacter()!;
   const message = `${target.name} received ${selectedItem?.name}`;
   // console.log("onItemTargetSelected", {
   //   target,
@@ -97,7 +99,7 @@ async function onItemTargetSelected(data: any) {
 
 function onDismiss() {
   setBattleState(BattleState.HeroAction);
-  const hero = getCharacterById(timeline[0].entity.id)!;
+  const hero = getCurrentCharacter()!;
   drawBottomPane(panes.heroActions(hero));
 }
 
@@ -163,13 +165,14 @@ function handleUpdateTimeline(): void {
 
   const prevTimeline = timeline.slice();
   const currentTurn = timeline.shift()!;
+
   setCurrentTurn(currentTurn);
 
   const nextTurn = {
     ...currentTurn,
     nextTurnAt: calculateNextTurnTime(currentTurn),
     turnsPlayed: currentTurn.turnsPlayed + 1,
-  };
+  } as Turn;
 
   let insertionIdx = timeline.length;
   let smallestPositiveTimeDiff = Infinity;
@@ -184,22 +187,35 @@ function handleUpdateTimeline(): void {
 
   timeline.splice(insertionIdx, 0, nextTurn);
 
-  const character = getCharacterById(timeline[0].entity.id)!;
+  console.log("timeline", {
+    prev: prevTimeline,
+    next: timeline.slice(),
+    nextTurn,
+    currentTurn,
+  });
 
-  console.log("timeline", { prev: prevTimeline, next: timeline.slice() });
+  if (nextTurn.type === "status") {
+    console.log("STATUUUUUSSS TURN!!", nextTurn);
+    const character = allCharacters.find((c) => c.id === nextTurn.characterId);
 
-  handleCharacterTurn(character);
+    // handleStatusTurn(status, character);
+  } else if (nextTurn.type === "character") {
+    const character = getCurrentCharacter()!;
+    handleCharacterTurn(character);
+  }
   drawTimeline();
 }
 
 async function handleCharacterTurn(entity: Character): Promise<void> {
-  console.log(currentTurn);
+  console.log({ currentTurn });
   console.log(`==========================================`);
   console.log(`It's ${entity.name.toUpperCase()}'s turn...`);
   console.log(`==========================================`);
 
   incrementTurnCount();
   drawTurnCount(turnCount);
+
+  console.log(entity.type);
 
   if (entity.type === "enemy") {
     const targetHero = chooseTargetForEnemy(entity);
