@@ -8,7 +8,7 @@ import {
   setSelectedItem,
   inventory,
 } from "./globals";
-import { InventoryItem, PaneInfo } from "./types";
+import { Character, InventoryItem, PaneInfo } from "./types";
 
 const inventoryItems = (itemList: InventoryItem[]) =>
   itemList
@@ -17,18 +17,20 @@ const inventoryItems = (itemList: InventoryItem[]) =>
       text: `${item.name} x${item.quantity}`,
       action: () => {
         console.log("item selected", item);
-        setSelectedItem(item);
 
+        setSelectedItem(item);
         setBattleState(BattleState.ItemTargetSelect);
-        drawBottomPane(panes.itemTargetSelection(item.name), true);
+
+        const message = `who is getting the ${item.name}?`;
+        drawBottomPane(panes.itemTargetSelection(message), true);
       },
     }));
 
-const heroActionItems = (...args: any) => [
+const heroActionItems = () => [
   {
     text: "attack",
     action: () => {
-      console.log("clicked attack", ...args);
+      console.log("clicked attack");
 
       setBattleState(BattleState.AttackTargetSelection);
       drawBottomPane(panes.attackTargetSelection(), true);
@@ -40,7 +42,7 @@ const heroActionItems = (...args: any) => [
   {
     text: "defend",
     action: () => {
-      console.log("clicked defend", ...args);
+      console.log("clicked defend");
 
       setPlayerAction(PlayerAction.Defend);
 
@@ -54,7 +56,7 @@ const heroActionItems = (...args: any) => [
   {
     text: "item",
     action: () => {
-      console.log("clicked item", ...args);
+      console.log("clicked item");
 
       setPlayerAction(PlayerAction.Item);
 
@@ -67,43 +69,40 @@ const heroActionItems = (...args: any) => [
   },
 ];
 
-const panes: { [k: string]: (...args: any) => PaneInfo } = {
+export type Panes = {
+  getReady: () => PaneInfo;
+  battleStart: () => PaneInfo;
+  enemyAction: (message: string) => PaneInfo;
+  enemyAttack: (message: string) => PaneInfo;
+  heroActions: (hero: Character) => PaneInfo;
+  heroAttack: (message: string) => PaneInfo;
+  attackTargetSelection: () => PaneInfo;
+  itemSelection: (args: any) => PaneInfo;
+  itemTargetSelection: (message: string) => PaneInfo;
+  itemUse: (message: string) => PaneInfo;
+  battleWon: () => PaneInfo;
+  battleLost: () => PaneInfo;
+};
+
+const panes: Panes = {
   getReady: () => ({ type: "text", content: "Get Ready!" }),
   battleStart: () => ({ type: "text", content: "Battle Start!" }),
   battleWon: () => ({ type: "text", content: "Battle Won!" }),
   battleLost: () => ({ type: "text", content: "Battle Lost!" }),
-  enemyAction: (message: string) => ({
-    type: "text",
-    content: message,
-  }),
-  enemyAttack: (message: string) => ({
-    type: "text",
-    content: message,
-  }),
-  heroActions: (args: any) => ({
-    type: "list",
-    content: heroActionItems(args),
-  }),
+  enemyAction: (message: string) => ({ type: "text", content: message }),
+  enemyAttack: (message: string) => ({ type: "text", content: message }),
+  heroActions: () => ({ type: "list", content: heroActionItems() }),
   itemSelection: (args: any) => ({
     type: "list",
     content: inventoryItems(args),
   }),
-  itemTargetSelection: (itemName: string) => ({
-    type: "text",
-    content: `who is getting the ${itemName}?`,
-  }),
-  itemUse: (message: string) => ({
+  itemTargetSelection: (message: string) => ({
     type: "text",
     content: message,
   }),
-  attackTargetSelection: () => ({
-    type: "text",
-    content: `Select Target`,
-  }),
-  heroAttack: (message: string) => ({
-    type: "text",
-    content: message,
-  }),
+  itemUse: (message: string) => ({ type: "text", content: message }),
+  attackTargetSelection: () => ({ type: "text", content: `Select Target` }),
+  heroAttack: (message: string) => ({ type: "text", content: message }),
 };
 
 export { panes };

@@ -31,7 +31,6 @@ import { panes } from "./infoPane";
 import { Character, InventoryItem } from "./types";
 import { calculateNextTurnTime, wait } from "./utils";
 
-// prettier-ignore
 window.addEventListener("hero-defense", onHeroDefense);
 window.addEventListener("hero-attack-target-selected", onHeroAttack);
 window.addEventListener("item-target-selected", onItemTargetSelected);
@@ -98,7 +97,7 @@ async function onItemTargetSelected(data: any) {
 
 function onDismiss() {
   setBattleState(BattleState.HeroAction);
-  const hero = getCharacterById(timeline[0].entity.id);
+  const hero = getCharacterById(timeline[0].entity.id)!;
   drawBottomPane(panes.heroActions(hero));
 }
 
