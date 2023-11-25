@@ -12,6 +12,9 @@ export enum BattleState {
   EnemyAttack = "enemy-attack",
 
   StatusAction = "status-action",
+  StatusExpired = "status-expired",
+
+  CharacterKilled = "character-killed",
 
   ItemSelection = "item-selection",
   ItemTargetSelect = "item-target-selection",

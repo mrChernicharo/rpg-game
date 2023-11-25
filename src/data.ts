@@ -145,6 +145,16 @@ const STATUS_LIST: Status[] = [
     turnsPlayed: 0,
     turnCount: 2,
   },
+  {
+    id: idMaker(),
+    characterId: HERO_LIST[2].id,
+    name: "Poison",
+    // speed: 60,
+    speed: 70,
+    power: 16,
+    turnsPlayed: 0,
+    turnCount: 1,
+  },
 ];
 
 export { ENEMY_LIST, HERO_LIST, STATUS_LIST };

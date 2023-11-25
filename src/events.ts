@@ -50,6 +50,42 @@ for (const slot of slots) {
 
 async function onStatusActed(status: Status, character: Character) {
   await drawStatusEffect(status, character.id);
+
+  const slot = getSlotElementById(character.id);
+
+  if (status.name === StatusEffectName.Poison) {
+    const poisonExpired = status.turnsPlayed >= status.turnCount;
+
+    if (poisonExpired) {
+      const statusIdx = allStatuses.findIndex((s) => s.id === status.id);
+      const timelineIdx = timeline.findIndex((s) => s.entity.id === status.id);
+
+      allStatuses.splice(statusIdx, 1);
+      timeline.splice(timelineIdx, 1);
+      drawTimeline();
+
+      console.log("DELETED POISON RECORD", {
+        timeline: timeline.slice(),
+        allStatuses: allStatuses.slice(),
+      });
+
+      if (slot.classList.contains("poisoned")) {
+        slot.classList.remove("poisoned");
+      }
+
+      setBattleState(BattleState.StatusExpired);
+      drawBottomPane(
+        panes.statusExpired(
+          `${status.name} effect on ${character.name} has expired`
+        )
+      );
+
+      await wait(1240);
+    } else if (!poisonExpired && !slot.classList.contains("poisoned")) {
+      slot.classList.add("poisoned");
+    }
+  }
+
   setPlayerAction(PlayerAction.None);
   handleUpdateTimeline();
 }
@@ -146,13 +182,25 @@ async function handleAttack(
   await drawAttackEffect(attacker, target);
 
   target.hp -= attackPower;
+  drawBottomPane(
+    panes.characterDamaged(`${target.name} suffered ${attackPower} of damage`)
+  );
+  await wait(1020);
 
   // handle character kill
   if (target.hp <= 0) {
     target.hp = 0;
     console.log(target.name, "died!");
     const timelineIdx = timeline.findIndex((o) => o.entity.id === target.id);
+    console.log("DELETED character entry from timeline", timeline.slice());
     timeline.splice(timelineIdx, 1);
+    drawTimeline();
+
+    setBattleState(BattleState.CharacterKilled);
+    drawBottomPane(
+      panes.characterKilled(`${attacker.name} has slain ${target.name}`)
+    );
+    await wait(1220);
   }
 
   drawCharacters();
@@ -183,7 +231,7 @@ function handleUpdateTimeline(): void {
   const nextTurn = {
     ...currentTurn,
     nextTurnAt: calculateNextTurnTime(currentTurn),
-    turnsPlayed: currentTurn!.turnsPlayed + 1,
+    // turnsPlayed: currentTurn!.turnsPlayed + 1,
   } as Turn;
 
   let insertionIdx = timeline.length;
@@ -198,6 +246,7 @@ function handleUpdateTimeline(): void {
   }
 
   timeline.splice(insertionIdx, 0, nextTurn);
+  drawTimeline();
 
   console.log("timeline", {
     prev: prevTimeline,
@@ -206,8 +255,6 @@ function handleUpdateTimeline(): void {
     // currentTurn,
     curr: timeline[0],
   });
-
-  drawTimeline();
 
   if (timeline[0].type === "status") {
     const status = allStatuses.find(
@@ -269,9 +316,7 @@ async function handleCharacterTurn(entity: Character): Promise<void> {
 
     setBattleState(BattleState.EnemyAttack);
     drawBottomPane(
-      panes.enemyAttack(
-        `${entity.name} performs a ${entity.actions.attack.type} attack against ${targetHero.name}`
-      )
+      panes.enemyAttack(`${entity.name} attacked ${targetHero.name}`)
     );
 
     await handleAttack(entity, targetHero);
@@ -279,8 +324,6 @@ async function handleCharacterTurn(entity: Character): Promise<void> {
     drawBottomPane({ type: "none", content: undefined });
 
     if (battleState === BattleState.Ended) return Promise.resolve();
-
-    await wait(800);
 
     handleUpdateTimeline();
     Promise.resolve();

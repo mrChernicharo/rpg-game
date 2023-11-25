@@ -76,34 +76,35 @@ export type Panes = {
   heroActions: (hero: Character) => PaneInfo;
   heroAttack: (message: string) => PaneInfo;
   attackTargetSelection: () => PaneInfo;
+  characterKilled: (message: string) => PaneInfo;
   itemSelection: (args: any) => PaneInfo;
   itemTargetSelection: (message: string) => PaneInfo;
   itemUse: (message: string) => PaneInfo;
+  statusTurn: (message: string) => PaneInfo;
+  statusExpired: (message: string) => PaneInfo;
   battleWon: () => PaneInfo;
   battleLost: () => PaneInfo;
-  statusTurn: (message: string) => PaneInfo;
+  characterDamaged: (message: string) => PaneInfo;
 };
 
+// prettier-ignore
 const panes: Panes = {
   getReady: () => ({ type: "text", content: "Get Ready!" }),
   battleStart: () => ({ type: "text", content: "Battle Start!" }),
-  battleWon: () => ({ type: "text", content: "Battle Won!" }),
-  battleLost: () => ({ type: "text", content: "Battle Lost!" }),
   enemyAction: (message: string) => ({ type: "text", content: message }),
   enemyAttack: (message: string) => ({ type: "text", content: message }),
   heroActions: () => ({ type: "list", content: heroActionItems() }),
-  itemSelection: (args: any) => ({
-    type: "list",
-    content: inventoryItems(args),
-  }),
-  itemTargetSelection: (message: string) => ({
-    type: "text",
-    content: message,
-  }),
-  itemUse: (message: string) => ({ type: "text", content: message }),
-  attackTargetSelection: () => ({ type: "text", content: `Select Target` }),
   heroAttack: (message: string) => ({ type: "text", content: message }),
+  attackTargetSelection: () => ({ type: "text", content: `Select Target` }),
+  characterKilled: (message: string) => ({ type: "text", content: message }),
+  itemSelection: (args: any) => ({ type: "list", content: inventoryItems(args) }),
+  itemTargetSelection: (message: string) => ({ type: "text", content: message }),
+  itemUse: (message: string) => ({ type: "text", content: message }),
   statusTurn: (message: string) => ({ type: "text", content: message }),
+  statusExpired: (message: string) => ({ type: "text", content: message }),
+  battleWon: () => ({ type: "text", content: "Battle Won!" }),
+  battleLost: () => ({ type: "text", content: "Battle Lost!" }),
+  characterDamaged: (message: string) => ({ type: "text", content: message }),
 };
 
 export { panes };

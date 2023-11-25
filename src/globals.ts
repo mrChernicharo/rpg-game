@@ -18,7 +18,6 @@ import {
 } from "./types";
 import { calcTurnDuration, idMaker, wait } from "./utils";
 
-let timeline: Turn[] = [];
 let turnCount = 0;
 let battleState: BattleState;
 let playerAction: PlayerAction;
@@ -53,6 +52,7 @@ let enemies: Character[] = [];
 let heroes: Character[] = [];
 let allCharacters: Character[] = [];
 let allStatuses: Status[] = [];
+let timeline: Turn[] = [];
 
 function setBattleState(state: BattleState) {
   battleState = state;

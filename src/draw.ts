@@ -8,7 +8,7 @@ import {
   dismissBtn,
 } from "./dom";
 import { StatusEffectName } from "./enums";
-import { allCharacters, timeline } from "./globals";
+import { allCharacters, getCharacterById, timeline } from "./globals";
 import { Character, InventoryItem, PaneInfo, Status } from "./types";
 import { wait } from "./utils";
 
@@ -67,7 +67,21 @@ function drawTimeline(): void {
     const timeText = document.createElement("small");
 
     nameText.classList.add("character-name");
-    nameText.textContent = turn.entity.name;
+
+    if (turn.type === "status") {
+      // console.log("drawTimeline", turn, timeline);
+
+      // const poisonExpired = turn.turnsPlayed >= turn.turnCount;
+
+      // if (poisonExpired) {
+      //   console.log("poison EXPIRED!", { poisonExpired });
+      //   continue;
+      // }
+
+      nameText.textContent = `🧪${getCharacterById(turn.characterId).name}`;
+    } else {
+      nameText.textContent = turn.entity.name;
+    }
 
     timeText.classList.add("time-to-next-turn");
     timeText.textContent = timeToNextTurnStr;
@@ -141,20 +155,11 @@ async function drawItemEffect(
 
 async function drawStatusEffect(status: Status, characterId: string) {
   const slot = getSlotElementById(characterId);
-  console.log("drawStatusEffect", { slot, status });
 
   if (status.name === StatusEffectName.Poison) {
     slot.classList.add(status.name.toLowerCase());
     await wait(1350);
     slot.classList.remove(status.name.toLowerCase());
-
-    const poisonExpired = status.turnsPlayed >= status.turnCount;
-
-    if (poisonExpired && slot.classList.contains("poisoned")) {
-      slot.classList.remove("poisoned");
-    } else if (!poisonExpired && !slot.classList.contains("poisoned")) {
-      slot.classList.add("poisoned");
-    }
   }
 
   return Promise.resolve();
