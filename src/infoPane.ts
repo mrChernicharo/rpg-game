@@ -81,6 +81,7 @@ export type Panes = {
   itemUse: (message: string) => PaneInfo;
   battleWon: () => PaneInfo;
   battleLost: () => PaneInfo;
+  statusTurn: (message: string) => PaneInfo;
 };
 
 const panes: Panes = {
@@ -102,6 +103,7 @@ const panes: Panes = {
   itemUse: (message: string) => ({ type: "text", content: message }),
   attackTargetSelection: () => ({ type: "text", content: `Select Target` }),
   heroAttack: (message: string) => ({ type: "text", content: message }),
+  statusTurn: (message: string) => ({ type: "text", content: message }),
 };
 
 export { panes };

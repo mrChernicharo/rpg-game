@@ -6,9 +6,16 @@ import {
   InventoryItemName,
   InventoryItemType,
 } from "./enums";
-import { handleCharacterTurn } from "./events";
+import { handleCharacterTurn, handleStatusTurn } from "./events";
 import { panes } from "./infoPane";
-import { Turn, StatusTurn, InventoryItem, Character, Status } from "./types";
+import {
+  Turn,
+  StatusTurn,
+  InventoryItem,
+  Character,
+  Status,
+  CharacterTurn,
+} from "./types";
 import { calcTurnDuration, idMaker, wait } from "./utils";
 
 let timeline: Turn[] = [];
@@ -46,7 +53,7 @@ let inventory: InventoryItem[] = [
 let enemies: Character[] = [];
 let heroes: Character[] = [];
 let allCharacters: Character[] = [];
-let allStatues: Status[] = [];
+let allStatuses: Status[] = [];
 
 function setBattleState(state: BattleState) {
   battleState = state;
@@ -77,7 +84,12 @@ function getCurrentCharacter() {
     (event) => event.type === "character"
   );
 
-  return allCharacters.find((c) => c.id === timelineCharacters[0].entity.id);
+  const currentCharacter = allCharacters.find(
+    (c) => c.id === timelineCharacters[0].entity.id
+  );
+  console.log("currentCharacter", currentCharacter?.name, allCharacters);
+
+  return currentCharacter;
 }
 
 function getCharacterById(id: string): Character | undefined {
@@ -126,15 +138,18 @@ function subtractFromInventory(item: InventoryItem) {
   console.log("inventory", inventory);
 }
 
+function initializeStatuses() {
+  allStatuses = STATUS_LIST as Status[];
+}
+
 function initializeCharacters() {
   heroes = HERO_LIST as Character[];
   enemies = ENEMY_LIST as Character[];
   allCharacters = [...enemies, ...heroes];
-  allStatues = STATUS_LIST as Status[];
 }
 
 function initializeTimeline() {
-  const initialStatues = allStatues.map((s) => ({
+  const initialStatusTurns: StatusTurn[] = allStatuses.map((s) => ({
     type: "status",
     entity: { id: s.id, name: s.name, type: "status" },
     turnDuration: calcTurnDuration(s.speed),
@@ -142,23 +157,19 @@ function initializeTimeline() {
     turnsPlayed: 0,
     characterId: s.characterId,
     turnCount: s.turnCount,
-  })) as StatusTurn[];
+  }));
 
-  timeline = allCharacters
-    .map(
-      (c) =>
-        ({
-          type: "character",
-          entity: { id: c.id, name: c.name, type: "character" },
-          turnDuration: calcTurnDuration(c.speed),
-          nextTurnAt: calcTurnDuration(c.speed),
-          turnsPlayed: 0,
-        } as Turn)
-    )
-    .concat(initialStatues)
-    .sort((a, b) => a.nextTurnAt - b.nextTurnAt);
+  const initialCharacterTurns: CharacterTurn[] = allCharacters.map((c) => ({
+    type: "character",
+    entity: { id: c.id, name: c.name, type: getCharacterById(c.id)!.type },
+    turnDuration: calcTurnDuration(c.speed),
+    nextTurnAt: calcTurnDuration(c.speed),
+    turnsPlayed: 0,
+  }));
 
-  console.log({ timeline, allCharacters });
+  timeline = [...initialCharacterTurns, ...initialStatusTurns].sort(
+    (a, b) => a.nextTurnAt - b.nextTurnAt
+  );
 
   drawTimeline();
 }
@@ -167,9 +178,10 @@ async function startBattle() {
   setBattleState(BattleState.Dormant);
   setPlayerAction(PlayerAction.None);
 
+  initializeStatuses();
   initializeCharacters();
-  drawCharacters();
 
+  drawCharacters();
   drawBottomPane(panes.battleStart());
   await wait(1000);
   drawBottomPane(panes.getReady());
@@ -177,8 +189,16 @@ async function startBattle() {
 
   initializeTimeline();
 
-  const firstToPlay = getCurrentCharacter()!;
-  handleCharacterTurn(firstToPlay);
+  console.log({ timelineZero: timeline[0] });
+
+  if (timeline[0].type === "character") {
+    const character = getCurrentCharacter()!;
+    handleCharacterTurn(character);
+  } else if (timeline[0].type === "status") {
+    const status = allStatuses.find((s) => s.id === timeline[0].entity.id)!;
+    const character = getCharacterById(status?.characterId)!;
+    handleStatusTurn(status, character);
+  }
 }
 
 export {
@@ -191,6 +211,7 @@ export {
   inventory,
   enemies,
   heroes,
+  allStatuses,
   allCharacters,
   getCharacterById,
   getCurrentCharacter,

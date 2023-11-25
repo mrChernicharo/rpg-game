@@ -1,16 +1,21 @@
 export enum BattleState {
   Dormant = "dormant",
   Idle = "idle",
+  Paused = "paused",
+  Ended = "ended",
+
   HeroAction = "hero-action",
   AttackTargetSelection = "attack-target-selection",
   HeroAttack = "hero-attack",
+
+  EnemyAction = "enemy-action",
+  EnemyAttack = "enemy-attack",
+
+  StatusAction = "status-action",
+
   ItemSelection = "item-selection",
   ItemTargetSelect = "item-target-selection",
   ItemUse = "item-use",
-  EnemyAction = "enemy-action",
-  EnemyAttack = "enemy-attack",
-  Paused = "paused",
-  Ended = "ended",
 }
 
 export enum PlayerAction {

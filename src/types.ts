@@ -26,13 +26,17 @@ export type Status = {
   turnsPlayed: number;
   turnCount: number;
   speed: number;
+  power: number;
+};
+
+export type TurnEntity = {
+  id: string;
+  name: string;
+  type: string; // "hero" | "enemy" | "status";
 };
 
 export type TurnBase = {
-  entity: {
-    id: string;
-    name: string;
-  };
+  entity: TurnEntity;
   turnDuration: number;
   nextTurnAt: number;
   turnsPlayed: number;
@@ -48,8 +52,8 @@ export type StatusTurnBase = {
   characterId: string;
 };
 
-export type CharacterTurn = CharacterTurnBase & TurnBase;
-export type StatusTurn = StatusTurnBase & TurnBase;
+export type CharacterTurn = TurnBase & CharacterTurnBase;
+export type StatusTurn = TurnBase & StatusTurnBase;
 
 export type Turn = CharacterTurn | StatusTurn;
 

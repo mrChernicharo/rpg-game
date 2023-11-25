@@ -92,8 +92,8 @@ const HERO_LIST = [
     id: idMaker(),
     name: "Savannah",
     type: "hero",
-    hp: 70,
-    // hp: 570,
+    // hp: 70,
+    hp: 570,
     speed: 62,
     imgUrl: "/sprites/sprite-04.webp",
     position: {
@@ -109,8 +109,8 @@ const HERO_LIST = [
     id: idMaker(),
     name: "Turok",
     type: "hero",
-    hp: 40,
-    // hp: 640,
+    // hp: 40,
+    hp: 640,
     speed: 45,
     imgUrl: "/sprites/sprite-27.webp",
     position: {
@@ -128,11 +128,22 @@ const STATUS_LIST: Status[] = [
   {
     id: idMaker(),
     characterId: HERO_LIST[0].id,
-    name: "poison",
-    speed: 60,
-    // speed: 90,
+    name: "Poison",
+    // speed: 60,
+    speed: 90,
+    power: 12,
     turnsPlayed: 0,
     turnCount: 7,
+  },
+  {
+    id: idMaker(),
+    characterId: HERO_LIST[1].id,
+    name: "Poison",
+    // speed: 60,
+    speed: 80,
+    power: 16,
+    turnsPlayed: 0,
+    turnCount: 3,
   },
 ];
 

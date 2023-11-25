@@ -8,8 +8,16 @@ import {
   dismissBtn,
 } from "./dom";
 import { allCharacters, timeline } from "./globals";
-import { Character, InventoryItem, PaneInfo } from "./types";
+import { Character, InventoryItem, PaneInfo, Status } from "./types";
 import { wait } from "./utils";
+
+async function drawStatusEffect(status: Status, characterId: string) {
+  const slot = getSlotElementById(characterId);
+  console.log("drawStatusEffect", { slot, status });
+
+  await wait(1150);
+  return Promise.resolve();
+}
 
 function drawCharacters(): void {
   allCharacters.forEach((entity) => {
@@ -58,7 +66,8 @@ function drawTimeline(): void {
     const turn = timeline[i];
     const timeToNextTurn = turn.nextTurnAt - timeline[0].nextTurnAt;
     const timeToNextTurnStr =
-      i === 0 ? " now" : i === 1 ? " next" : ` ${timeToNextTurn.toFixed(2)}`;
+      i === 0 ? " now" : ` ${timeToNextTurn.toFixed(2)}`;
+    // i === 0 ? " now" : i === 1 ? " next" : ` ${timeToNextTurn.toFixed(2)}`;
 
     const div = document.createElement("div");
     const nameText = document.createElement("small");
@@ -193,4 +202,5 @@ export {
   drawDefenseEffect,
   drawBottomPane,
   drawItemEffect,
+  drawStatusEffect,
 };

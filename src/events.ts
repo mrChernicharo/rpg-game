@@ -6,10 +6,11 @@ import {
   drawDefenseEffect,
   drawItemEffect,
   drawSelectedCharacterOutline,
+  drawStatusEffect,
   drawTimeline,
   drawTurnCount,
 } from "./draw";
-import { PlayerAction, BattleState } from "./enums";
+import { PlayerAction, BattleState, StatusEffectName } from "./enums";
 import {
   setBattleState,
   getCharacterById,
@@ -28,9 +29,10 @@ import {
   currentTurn,
   getCurrentCharacter,
   allCharacters,
+  allStatuses,
 } from "./globals";
 import { panes } from "./infoPane";
-import { Character, InventoryItem, Turn } from "./types";
+import { Character, InventoryItem, Status, StatusTurn, Turn } from "./types";
 import { calculateNextTurnTime, wait } from "./utils";
 
 window.addEventListener("hero-defense", onHeroDefense);
@@ -41,6 +43,12 @@ dismissBtn.addEventListener("click", onDismiss);
 
 for (const slot of slots) {
   slot.addEventListener("click", onSlotClick);
+}
+
+async function onStatusActed(status: Status, character: Character) {
+  await drawStatusEffect(status, character.id);
+  setPlayerAction(PlayerAction.None);
+  handleUpdateTimeline();
 }
 
 async function onHeroDefense(data: any) {
@@ -164,14 +172,14 @@ function handleUpdateTimeline(): void {
   if (battleState === BattleState.Ended) return;
 
   const prevTimeline = timeline.slice();
-  const currentTurn = timeline.shift()!;
+  const turnZero = timeline.shift()!;
 
-  setCurrentTurn(currentTurn);
+  setCurrentTurn({ ...turnZero });
 
   const nextTurn = {
     ...currentTurn,
     nextTurnAt: calculateNextTurnTime(currentTurn),
-    turnsPlayed: currentTurn.turnsPlayed + 1,
+    turnsPlayed: currentTurn!.turnsPlayed + 1,
   } as Turn;
 
   let insertionIdx = timeline.length;
@@ -194,20 +202,62 @@ function handleUpdateTimeline(): void {
     currentTurn,
   });
 
-  if (nextTurn.type === "status") {
-    console.log("STATUUUUUSSS TURN!!", nextTurn);
-    const character = allCharacters.find((c) => c.id === nextTurn.characterId);
+  if (timeline[0] === null) {
+    return;
+  } else if (timeline[0].type === "status") {
+    const status = allStatuses.find(
+      (s) => s.id === (timeline[0] as StatusTurn).entity.id
+    )!;
+    const character = allCharacters.find(
+      (c) => c.id === (timeline[0] as StatusTurn).characterId
+    )!;
 
-    // handleStatusTurn(status, character);
-  } else if (nextTurn.type === "character") {
+    handleStatusTurn(status, character);
+  } else if (timeline[0].type === "character") {
     const character = getCurrentCharacter()!;
+
     handleCharacterTurn(character);
   }
+}
+
+function handleStatusTurn(status: Status, character: Character) {
+  status.turnsPlayed++;
+
+  setBattleState(BattleState.StatusAction);
+  drawBottomPane(
+    panes.statusTurn(
+      `${character.name} received ${status.power} damage from poison`
+    )
+  );
+
+  switch (status.name) {
+    case StatusEffectName.Poison:
+      character.hp -= status.power;
+      console.log("STATUUUUUSSS TURN!! POISON", { status, character });
+
+      // await drawPoisonEffect(character.id)
+      break;
+    default:
+      break;
+  }
+
+  drawCharacters();
+
+  if (status.turnsPlayed === status.turnCount) {
+    const removeIdx = timeline.findIndex(
+      (turn) => turn.entity.id === status.id
+    );
+    const removedTurn = timeline.splice(removeIdx, 1);
+    console.log("remove status from timeline!", { removedTurn });
+  }
+
   drawTimeline();
+
+  onStatusActed(status, character);
 }
 
 async function handleCharacterTurn(entity: Character): Promise<void> {
-  console.log({ currentTurn });
+  console.log("handleCurrentCharacter", { currentTurn, entity });
   console.log(`==========================================`);
   console.log(`It's ${entity.name.toUpperCase()}'s turn...`);
   console.log(`==========================================`);
@@ -239,7 +289,6 @@ async function handleCharacterTurn(entity: Character): Promise<void> {
 
     if (battleState === BattleState.Ended) return Promise.resolve();
 
-    setBattleState(BattleState.Idle);
     await wait(800);
 
     handleUpdateTimeline();
@@ -266,4 +315,4 @@ function handleItemEffect(item: InventoryItem, target: Character) {
   }
 }
 
-export { handleUpdateTimeline, handleCharacterTurn };
+export { handleUpdateTimeline, handleCharacterTurn, handleStatusTurn };
