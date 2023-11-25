@@ -19,7 +19,6 @@ import {
 import { calcTurnDuration, idMaker, wait } from "./utils";
 
 let timeline: Turn[] = [];
-let currentTurn: Turn | null = null;
 let turnCount = 0;
 let battleState: BattleState;
 let playerAction: PlayerAction;
@@ -66,10 +65,6 @@ function setPlayerAction(action: PlayerAction) {
   console.log(`%cPlayerAction ::: ${playerAction}`, "color: lightblue");
 }
 
-function setCurrentTurn(turn: Turn) {
-  currentTurn = turn;
-}
-
 function setSelectedItem(item: InventoryItem) {
   selectedItem = item;
 }
@@ -86,14 +81,14 @@ function getCurrentCharacter() {
 
   const currentCharacter = allCharacters.find(
     (c) => c.id === timelineCharacters[0].entity.id
-  );
-  console.log("currentCharacter", currentCharacter?.name, allCharacters);
+  )!;
+  console.log("currentCharacter", currentCharacter.name, allCharacters);
 
   return currentCharacter;
 }
 
-function getCharacterById(id: string): Character | undefined {
-  return allCharacters.find((c) => c.id === id);
+function getCharacterById(id: string): Character {
+  return allCharacters.find((c) => c.id === id)!;
 }
 
 function chooseTargetForEnemy(enemy: Character): Character {
@@ -192,18 +187,17 @@ async function startBattle() {
   console.log({ timelineZero: timeline[0] });
 
   if (timeline[0].type === "character") {
-    const character = getCurrentCharacter()!;
-    handleCharacterTurn(character);
+    const character = getCurrentCharacter();
+    await handleCharacterTurn(character);
   } else if (timeline[0].type === "status") {
     const status = allStatuses.find((s) => s.id === timeline[0].entity.id)!;
     const character = getCharacterById(status?.characterId)!;
-    handleStatusTurn(status, character);
+    await handleStatusTurn(status, character);
   }
 }
 
 export {
   timeline,
-  currentTurn,
   turnCount,
   battleState,
   playerAction,
@@ -216,7 +210,6 @@ export {
   getCharacterById,
   getCurrentCharacter,
   initializeTimeline,
-  setCurrentTurn,
   setBattleState,
   setPlayerAction,
   incrementTurnCount,

@@ -7,17 +7,10 @@ import {
   bottomSection,
   dismissBtn,
 } from "./dom";
+import { StatusEffectName } from "./enums";
 import { allCharacters, timeline } from "./globals";
 import { Character, InventoryItem, PaneInfo, Status } from "./types";
 import { wait } from "./utils";
-
-async function drawStatusEffect(status: Status, characterId: string) {
-  const slot = getSlotElementById(characterId);
-  console.log("drawStatusEffect", { slot, status });
-
-  await wait(1150);
-  return Promise.resolve();
-}
 
 function drawCharacters(): void {
   allCharacters.forEach((entity) => {
@@ -143,6 +136,27 @@ async function drawItemEffect(
 
   senderSlot.classList.remove("item-send");
   receiverSlot.classList.remove("item-receive");
+  return Promise.resolve();
+}
+
+async function drawStatusEffect(status: Status, characterId: string) {
+  const slot = getSlotElementById(characterId);
+  console.log("drawStatusEffect", { slot, status });
+
+  if (status.name === StatusEffectName.Poison) {
+    slot.classList.add(status.name.toLowerCase());
+    await wait(1350);
+    slot.classList.remove(status.name.toLowerCase());
+
+    const poisonExpired = status.turnsPlayed >= status.turnCount;
+
+    if (poisonExpired && slot.classList.contains("poisoned")) {
+      slot.classList.remove("poisoned");
+    } else if (!poisonExpired && !slot.classList.contains("poisoned")) {
+      slot.classList.add("poisoned");
+    }
+  }
+
   return Promise.resolve();
 }
 

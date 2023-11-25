@@ -1,4 +1,9 @@
-import { slots, dismissBtn, getSlotOverlayElementById } from "./dom";
+import {
+  slots,
+  dismissBtn,
+  getSlotOverlayElementById,
+  getSlotElementById,
+} from "./dom";
 import {
   drawAttackEffect,
   drawBottomPane,
@@ -24,9 +29,7 @@ import {
   subtractFromInventory,
   chooseTargetForEnemy,
   incrementTurnCount,
-  setCurrentTurn,
   turnCount,
-  currentTurn,
   getCurrentCharacter,
   allCharacters,
   allStatuses,
@@ -63,7 +66,7 @@ async function onHeroDefense(data: any) {
 
 async function onHeroAttack(data: any) {
   const { selectedCharacter: target } = data.detail;
-  const hero = getCurrentCharacter()!;
+  const hero = getCurrentCharacter();
   // console.log("onHeroAttack", {
   //   target,
   //   hero,
@@ -82,7 +85,7 @@ async function onHeroAttack(data: any) {
 
 async function onItemTargetSelected(data: any) {
   const { selectedCharacter: target } = data.detail;
-  const hero = getCurrentCharacter()!;
+  const hero = getCurrentCharacter();
   const message = `${target.name} received ${selectedItem?.name}`;
   // console.log("onItemTargetSelected", {
   //   target,
@@ -107,7 +110,7 @@ async function onItemTargetSelected(data: any) {
 
 function onDismiss() {
   setBattleState(BattleState.HeroAction);
-  const hero = getCurrentCharacter()!;
+  const hero = getCurrentCharacter();
   drawBottomPane(panes.heroActions(hero));
 }
 
@@ -171,10 +174,11 @@ async function handleAttack(
 function handleUpdateTimeline(): void {
   if (battleState === BattleState.Ended) return;
 
-  const prevTimeline = timeline.slice();
-  const turnZero = timeline.shift()!;
+  incrementTurnCount();
+  drawTurnCount(turnCount);
 
-  setCurrentTurn({ ...turnZero });
+  const prevTimeline = timeline.slice();
+  const currentTurn = timeline.shift()!;
 
   const nextTurn = {
     ...currentTurn,
@@ -198,13 +202,14 @@ function handleUpdateTimeline(): void {
   console.log("timeline", {
     prev: prevTimeline,
     next: timeline.slice(),
-    nextTurn,
-    currentTurn,
+    // nextTurn,
+    // currentTurn,
+    curr: timeline[0],
   });
 
-  if (timeline[0] === null) {
-    return;
-  } else if (timeline[0].type === "status") {
+  drawTimeline();
+
+  if (timeline[0].type === "status") {
     const status = allStatuses.find(
       (s) => s.id === (timeline[0] as StatusTurn).entity.id
     )!;
@@ -214,13 +219,13 @@ function handleUpdateTimeline(): void {
 
     handleStatusTurn(status, character);
   } else if (timeline[0].type === "character") {
-    const character = getCurrentCharacter()!;
+    const character = getCurrentCharacter();
 
     handleCharacterTurn(character);
   }
 }
 
-function handleStatusTurn(status: Status, character: Character) {
+async function handleStatusTurn(status: Status, character: Character) {
   status.turnsPlayed++;
 
   setBattleState(BattleState.StatusAction);
@@ -233,7 +238,6 @@ function handleStatusTurn(status: Status, character: Character) {
   switch (status.name) {
     case StatusEffectName.Poison:
       character.hp -= status.power;
-      console.log("STATUUUUUSSS TURN!! POISON", { status, character });
 
       // await drawPoisonEffect(character.id)
       break;
@@ -243,27 +247,14 @@ function handleStatusTurn(status: Status, character: Character) {
 
   drawCharacters();
 
-  if (status.turnsPlayed === status.turnCount) {
-    const removeIdx = timeline.findIndex(
-      (turn) => turn.entity.id === status.id
-    );
-    const removedTurn = timeline.splice(removeIdx, 1);
-    console.log("remove status from timeline!", { removedTurn });
-  }
-
-  drawTimeline();
-
-  onStatusActed(status, character);
+  await onStatusActed(status, character);
 }
 
 async function handleCharacterTurn(entity: Character): Promise<void> {
-  console.log("handleCurrentCharacter", { currentTurn, entity });
+  console.log("handleCurrentCharacter", { entity });
   console.log(`==========================================`);
   console.log(`It's ${entity.name.toUpperCase()}'s turn...`);
   console.log(`==========================================`);
-
-  incrementTurnCount();
-  drawTurnCount(turnCount);
 
   console.log(entity.type);
 

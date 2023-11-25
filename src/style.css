@@ -160,7 +160,6 @@ button:focus-visible {
 
 .lane-slot.dead > .avatar {
   filter: blur(4px);
-  transition: filter 2s;
 }
 
 .lane-slot[id]:hover > .avatar > img {
@@ -234,6 +233,18 @@ button:focus-visible {
 }
 
 /******************/
+
+.poisoned {
+  .avatar-img {
+    filter:  drop-shadow(0 0 0.75rem rgba(25, 216, 38, 0.6));
+  }
+}
+
+.poison {
+  .avatar-img {
+    filter: blur(4px) drop-shadow(0 0 1.5rem rgba(25, 216, 38, 0.6));
+  }
+}
 
 .ranged-attack-perform,
 .melee-attack-perform {

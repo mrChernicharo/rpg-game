@@ -1,4 +1,4 @@
-import { Status, StatusTurn } from "./types";
+import { Status } from "./types";
 import { idMaker } from "./utils";
 
 const ENEMY_LIST = [
@@ -133,7 +133,7 @@ const STATUS_LIST: Status[] = [
     speed: 90,
     power: 12,
     turnsPlayed: 0,
-    turnCount: 7,
+    turnCount: 4,
   },
   {
     id: idMaker(),
@@ -143,7 +143,7 @@ const STATUS_LIST: Status[] = [
     speed: 80,
     power: 16,
     turnsPlayed: 0,
-    turnCount: 3,
+    turnCount: 2,
   },
 ];
 
