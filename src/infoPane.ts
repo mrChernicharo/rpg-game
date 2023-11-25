@@ -43,11 +43,13 @@ const heroActionItems = () => [
     action: () => {
       console.log("clicked defend");
 
+      const hero = getCurrentCharacter();
       setPlayerAction(PlayerAction.Defend);
+      drawBottomPane(panes.defenseStart(`${hero.name} raised its defenses`));
 
       window.dispatchEvent(
         new CustomEvent("hero-defense", {
-          detail: { hero: getCurrentCharacter() },
+          detail: { hero },
         })
       );
     },
@@ -85,6 +87,7 @@ export type Panes = {
   battleWon: () => PaneInfo;
   battleLost: () => PaneInfo;
   characterDamaged: (message: string) => PaneInfo;
+  defenseStart: (message: string) => PaneInfo;
 };
 
 // prettier-ignore
@@ -105,6 +108,7 @@ const panes: Panes = {
   battleWon: () => ({ type: "text", content: "Battle Won!" }),
   battleLost: () => ({ type: "text", content: "Battle Lost!" }),
   characterDamaged: (message: string) => ({ type: "text", content: message }),
+  defenseStart: (message: string) => ({ type: "text", content: message }),
 };
 
 export { panes };

@@ -92,9 +92,10 @@ async function onStatusActed(status: Status, character: Character) {
 
 async function onHeroDefense(data: any) {
   const { hero } = data.detail;
-  console.log("onHeroDefense", hero);
 
   await drawDefenseEffect(hero);
+
+  await wait(500);
 
   setPlayerAction(PlayerAction.None);
   handleUpdateTimeline();
