@@ -22,8 +22,8 @@ import {
   timeline,
   battleState,
   cleanupSelectedItem,
-  enemies,
-  heroes,
+  getAllEnemies,
+  getAllHeroes,
   selectedItem,
   setPlayerAction,
   subtractFromInventory,
@@ -89,9 +89,16 @@ async function onStatusActed(status: Status, character: Character) {
 }
 
 async function onHeroDefense(data: any) {
-  const { hero } = data.detail;
+  const { hero: heroData } = data.detail;
 
-  await drawDefenseEffect(hero);
+  setPlayerAction(PlayerAction.Defend);
+  drawBottomPane(panes.text(`${heroData.name} raised its defenses`));
+
+  await drawDefenseEffect(heroData);
+
+  const hero = getAllHeroes().find((c) => c.id === heroData.id);
+
+  hero?.statuses.push("defending");
 
   await wait(500);
 
@@ -180,10 +187,22 @@ async function handleAttack(
 
   await drawAttackEffect(attacker, target);
 
-  target.hp -= attackPower;
-  drawBottomPane(
-    panes.text(`${target.name} suffered ${attackPower} of damage`)
-  );
+  if (target.statuses.includes("defending")) {
+    const halfPowerAttack = Math.ceil(attackPower / 2);
+    console.log("HIT DEFENDING HERO!", { attackPower, halfPowerAttack });
+
+    target.hp -= halfPowerAttack;
+    drawBottomPane(
+      panes.text(`${target.name} suffered ${halfPowerAttack} of damage`)
+    );
+  } else {
+    console.log("HIT!", { attackPower });
+
+    target.hp -= attackPower;
+    drawBottomPane(
+      panes.text(`${target.name} suffered ${attackPower} of damage`)
+    );
+  }
   await wait(1020);
 
   // handle character kill
@@ -203,13 +222,13 @@ async function handleAttack(
   drawCharacters();
 
   // handle battle over
-  if (enemies.every((e) => e.hp <= 0)) {
+  if (getAllEnemies().every((e) => e.hp <= 0)) {
     setBattleState(BattleState.Ended);
     drawBottomPane(panes.text("Battle Won!"));
     await wait(3000);
   }
 
-  if (heroes.every((h) => h.hp <= 0)) {
+  if (getAllHeroes().every((h) => h.hp <= 0)) {
     setBattleState(BattleState.Ended);
     drawBottomPane(panes.text("Battle Lost!"));
     await wait(3000);

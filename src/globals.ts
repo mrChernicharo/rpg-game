@@ -48,8 +48,8 @@ let inventory: InventoryItem[] = [
     quantity: 1,
   },
 ];
-let enemies: Character[] = [];
-let heroes: Character[] = [];
+// let enemies: Character[] = [];
+// let heroes: Character[] = [];
 let allCharacters: Character[] = [];
 let allStatuses: Status[] = [];
 let timeline: Turn[] = [];
@@ -73,6 +73,26 @@ function incrementTurnCount() {
   turnCount++;
 }
 
+function getAllHeroes() {
+  const allHeroes = [];
+  for (const char of allCharacters) {
+    if (char.type === "hero") {
+      allHeroes.push(char);
+    }
+  }
+  return allHeroes;
+}
+
+function getAllEnemies() {
+  const allEnemies = [];
+  for (const char of allCharacters) {
+    if (char.type === "enemy") {
+      allEnemies.push(char);
+    }
+  }
+  return allEnemies;
+}
+
 function getCurrentCharacter() {
   // return allCharacters.find((c) => c.id === timeline[0].entity.id);
   const timelineCharacters = timeline.filter(
@@ -93,6 +113,7 @@ function getCharacterById(id: string): Character {
 
 function chooseTargetForEnemy(enemy: Character): Character {
   let possibleTargets: Character[];
+  const heroes = getAllHeroes();
 
   if (enemy.actions.attack.type === "ranged") {
     possibleTargets = [...heroes].filter((h) => h.hp > 0);
@@ -138,9 +159,7 @@ function initializeStatuses() {
 }
 
 function initializeCharacters() {
-  heroes = HERO_LIST as Character[];
-  enemies = ENEMY_LIST as Character[];
-  allCharacters = [...enemies, ...heroes];
+  allCharacters = [...ENEMY_LIST, ...HERO_LIST] as Character[];
 }
 
 function initializeTimeline() {
@@ -203,10 +222,10 @@ export {
   playerAction,
   selectedItem,
   inventory,
-  enemies,
-  heroes,
   allStatuses,
   allCharacters,
+  getAllHeroes,
+  getAllEnemies,
   getCharacterById,
   getCurrentCharacter,
   initializeTimeline,

@@ -13,7 +13,7 @@ const ENEMY_LIST = [
       lane: "front",
       col: "left",
     },
-    lastAction: "none",
+    statuses: [],
     actions: {
       attack: { type: "melee", power: 40 },
     },
@@ -29,7 +29,7 @@ const ENEMY_LIST = [
       lane: "front",
       col: "center",
     },
-    lastAction: "none",
+    statuses: [],
     actions: {
       attack: { type: "melee", power: 55 },
     },
@@ -46,7 +46,7 @@ const ENEMY_LIST = [
       lane: "back",
       col: "center",
     },
-    lastAction: "none",
+    statuses: [],
     actions: {
       attack: { type: "ranged", power: 30 },
     },
@@ -63,7 +63,7 @@ const ENEMY_LIST = [
       lane: "back",
       col: "left",
     },
-    lastAction: "none",
+    statuses: [],
     actions: {
       attack: { type: "ranged", power: 30 },
     },
@@ -83,7 +83,7 @@ const HERO_LIST = [
       lane: "back",
       col: "center",
     },
-    lastAction: "none",
+    statuses: [],
     actions: {
       attack: { type: "melee", power: 40 },
     },
@@ -100,7 +100,7 @@ const HERO_LIST = [
       lane: "front",
       col: "left",
     },
-    lastAction: "none",
+    statuses: [],
     actions: {
       attack: { type: "melee", power: 60 },
     },
@@ -117,7 +117,7 @@ const HERO_LIST = [
       lane: "front",
       col: "right",
     },
-    lastAction: "none",
+    statuses: [],
     actions: {
       attack: { type: "melee", power: 76 },
     },
