@@ -1,26 +1,5 @@
+import { InventoryItemName, InventoryItemType } from "./enums";
 import { allCharacters } from "./globals";
-
-export enum BattleState {
-  Dormant = "dormant",
-  Idle = "idle",
-  HeroAction = "hero-action",
-  AttackTargetSelection = "attack-target-selection",
-  HeroAttack = "hero-attack",
-  ItemSelection = "item-selection",
-  ItemTargetSelect = "item-target-selection",
-  ItemUse = "item-use",
-  EnemyAction = "enemy-action",
-  EnemyAttack = "enemy-attack",
-  Paused = "paused",
-  Ended = "ended",
-}
-
-export enum PlayerAction {
-  Attack = "attack",
-  Item = "item",
-  Defend = "defend",
-  None = "none",
-}
 
 export type Character = (typeof allCharacters)[0];
 
@@ -36,8 +15,8 @@ export type Turn = {
 
 export type InventoryItem = {
   id: string;
-  name: string;
-  type: "equipment" | "consumable";
+  name: InventoryItemName;
+  type: InventoryItemType;
   quantity: number;
 };
 

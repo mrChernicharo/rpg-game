@@ -1,4 +1,5 @@
 import { drawBottomPane } from "./draw";
+import { BattleState, PlayerAction } from "./enums";
 import {
   setBattleState,
   setPlayerAction,
@@ -7,7 +8,7 @@ import {
   setSelectedItem,
   inventory,
 } from "./globals";
-import { InventoryItem, BattleState, PlayerAction, PaneInfo } from "./types";
+import { InventoryItem, PaneInfo } from "./types";
 
 const inventoryItems = (itemList: InventoryItem[]) =>
   itemList
@@ -87,7 +88,7 @@ const panes: { [k: string]: (...args: any) => PaneInfo } = {
     type: "list",
     content: inventoryItems(args),
   }),
-  itemAttackTargetSelection: (itemName: string) => ({
+  itemTargetSelection: (itemName: string) => ({
     type: "text",
     content: `who is getting the ${itemName}?`,
   }),

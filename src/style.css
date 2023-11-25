@@ -142,10 +142,6 @@ button:focus-visible {
   background: darkgoldenrod;
 }
 
-.lane-slot[id]:hover > .avatar > img {
-  filter: drop-shadow(0 0 0.75rem rgba(255, 255, 255, 0.6));
-}
-
 .lane-slot > .top-section {
   /* border: 1px solid; */
   width: 100%;
@@ -155,6 +151,24 @@ button:focus-visible {
 .lane-slot > .avatar {
   width: 96px;
   height: 96px;
+}
+
+.lane-slot.dead {
+  opacity: 0.6;
+  background-color: rgba(189, 0, 40);
+}
+
+.lane-slot.dead > .avatar {
+  filter: blur(4px);
+  transition: filter 2s;
+}
+
+.lane-slot[id]:hover > .avatar > img {
+  filter: drop-shadow(0 0 0.75rem rgba(255, 255, 255, 0.6));
+}
+
+.lane-slot.dead[id]:hover > .avatar > img {
+  filter: none;
 }
 
 .img-efx-overlay {
@@ -217,11 +231,6 @@ button:focus-visible {
 
 .img-efx-overlay.defending {
   opacity: 0.3;
-}
-
-.img-efx-overlay.dead {
-  opacity: 0.6;
-  background-color: rgba(189, 0, 40);
 }
 
 /******************/

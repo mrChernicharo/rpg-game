@@ -8,7 +8,7 @@ import {
   dismissBtn,
 } from "./dom";
 import { allCharacters, timeline } from "./globals";
-import { Character, PaneInfo } from "./types";
+import { Character, InventoryItem, PaneInfo } from "./types";
 import { wait } from "./utils";
 
 function drawCharacters(): void {
@@ -42,9 +42,9 @@ function drawCharacters(): void {
     img.src = entity.imgUrl;
 
     if (entity.hp <= 0) {
-      overlayEl?.classList.add("dead");
-    } else if (overlayEl?.classList.contains("dead")) {
-      overlayEl?.classList.remove("dead");
+      slot?.classList.add("dead");
+    } else if (slot?.classList.contains("dead")) {
+      slot?.classList.remove("dead");
     }
   });
 }
@@ -118,12 +118,14 @@ async function drawDefenseEffect(hero: Character): Promise<void> {
 }
 
 async function drawItemEffect(
+  item: InventoryItem,
   sender: Character,
   receiver: Character
 ): Promise<void> {
   const senderSlot = getSlotElementById(sender.id);
   const receiverSlot = getSlotElementById(receiver.id);
 
+  // @TODO: different classes and animations for different items
   senderSlot.classList.add("item-send");
   receiverSlot.classList.add("item-receive");
 

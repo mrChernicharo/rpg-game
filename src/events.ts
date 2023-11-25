@@ -9,6 +9,7 @@ import {
   drawTimeline,
   drawTurnCount,
 } from "./draw";
+import { PlayerAction, BattleState } from "./enums";
 import {
   setBattleState,
   getCharacterById,
@@ -26,7 +27,7 @@ import {
   turnCount,
 } from "./globals";
 import { panes } from "./infoPane";
-import { BattleState, Character, PlayerAction } from "./types";
+import { Character, InventoryItem } from "./types";
 import { calculateNextTurnTime, wait } from "./utils";
 
 // prettier-ignore
@@ -86,7 +87,9 @@ async function onItemTargetSelected(data: any) {
   const item = cleanupSelectedItem();
   subtractFromInventory(item);
 
-  await drawItemEffect(hero, target);
+  await drawItemEffect(item, hero, target);
+
+  handleItemEffect(item, target);
 
   setPlayerAction(PlayerAction.None);
   handleUpdateTimeline();
@@ -237,6 +240,11 @@ async function handleCharacterTurn(entity: Character): Promise<void> {
 
     await drawSelectedCharacterOutline(entity);
     await wait(700);
+  }
+}
+
+function handleItemEffect(item: InventoryItem, target: Character) {
+  switch (item.name) {
   }
 }
 

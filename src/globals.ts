@@ -1,11 +1,11 @@
 import { drawTimeline } from "./draw";
 import {
-  Turn,
   BattleState,
   PlayerAction,
-  InventoryItem,
-  Character,
-} from "./types";
+  InventoryItemName,
+  InventoryItemType,
+} from "./enums";
+import { Turn, InventoryItem, Character } from "./types";
 import { getTurnDuration, idMaker } from "./utils";
 
 let timeline: Turn[] = [];
@@ -15,9 +15,30 @@ let battleState: BattleState;
 let playerAction: PlayerAction;
 let selectedItem: InventoryItem | null = null;
 let inventory: InventoryItem[] = [
-  { id: idMaker(), name: "Potion", type: "consumable", quantity: 3 },
-  { id: idMaker(), name: "Ether", type: "consumable", quantity: 2 },
-  { id: idMaker(), name: "Short Sword", type: "equipment", quantity: 1 },
+  {
+    id: idMaker(),
+    name: InventoryItemName.Potion,
+    type: InventoryItemType.Consumable,
+    quantity: 3,
+  },
+  {
+    id: idMaker(),
+    name: InventoryItemName.Ether,
+    type: InventoryItemType.Consumable,
+    quantity: 2,
+  },
+  {
+    id: idMaker(),
+    name: InventoryItemName.PhoenixDown,
+    type: InventoryItemType.Consumable,
+    quantity: 4,
+  },
+  {
+    id: idMaker(),
+    name: InventoryItemName.ShortSword,
+    type: InventoryItemType.Equipment,
+    quantity: 1,
+  },
 ];
 
 function setBattleState(state: BattleState) {
@@ -27,8 +48,8 @@ function setBattleState(state: BattleState) {
 
 function setPlayerAction(action: PlayerAction) {
   playerAction = action;
+  // console.trace("setPlayerAction");
   console.log(`%cPlayerAction ::: ${playerAction}`, "color: lightblue");
-  console.trace("setPlayerAction");
 }
 
 function setCurrentTurn(turn: Turn) {
