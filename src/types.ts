@@ -1,7 +1,23 @@
-import { InventoryItemName, InventoryItemType } from "./enums";
-import { allCharacters } from "./globals";
+import { Col, InventoryItemName, InventoryItemType, Lane } from "./enums";
 
-export type Character = (typeof allCharacters)[0];
+export type Position = {
+  lane: Lane;
+  col: Col;
+};
+
+export type Character = {
+  id: string;
+  name: string;
+  type: string;
+  hp: number;
+  speed: number;
+  imgUrl: string;
+  position: Position;
+  lastAction: string;
+  actions: {
+    attack: { type: string; power: number };
+  };
+};
 
 export type Turn = {
   entity: {
@@ -21,6 +37,7 @@ export type InventoryItem = {
 };
 
 export type PaneInfo =
+  | { type: "none"; content: undefined }
   | { type: "text"; content: string }
   | {
       type: "list";
@@ -28,5 +45,4 @@ export type PaneInfo =
         text: string;
         action: (...args: any) => void;
       }[];
-    }
-  | { type: "none"; content: undefined };
+    };

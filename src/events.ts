@@ -25,6 +25,7 @@ import {
   incrementTurnCount,
   setCurrentTurn,
   turnCount,
+  currentTurn,
 } from "./globals";
 import { panes } from "./infoPane";
 import { Character, InventoryItem } from "./types";
@@ -193,8 +194,10 @@ function handleUpdateTimeline(): void {
 }
 
 async function handleCharacterTurn(entity: Character): Promise<void> {
+  console.log(currentTurn);
   console.log(`==========================================`);
-  console.log(`it's ${entity.name.toUpperCase()}'s turn...`);
+  console.log(`It's ${entity.name.toUpperCase()}'s turn...`);
+  console.log(`==========================================`);
 
   incrementTurnCount();
   drawTurnCount(turnCount);

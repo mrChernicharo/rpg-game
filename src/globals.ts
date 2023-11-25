@@ -1,12 +1,15 @@
-import { drawTimeline } from "./draw";
+import { ENEMY_LIST, HERO_LIST } from "./data";
+import { drawBottomPane, drawCharacters, drawTimeline } from "./draw";
 import {
   BattleState,
   PlayerAction,
   InventoryItemName,
   InventoryItemType,
 } from "./enums";
+import { handleCharacterTurn } from "./events";
+import { panes } from "./infoPane";
 import { Turn, InventoryItem, Character } from "./types";
-import { getTurnDuration, idMaker } from "./utils";
+import { getTurnDuration, idMaker, wait } from "./utils";
 
 let timeline: Turn[] = [];
 let currentTurn: Turn | null = null;
@@ -40,6 +43,9 @@ let inventory: InventoryItem[] = [
     quantity: 1,
   },
 ];
+let enemies: Character[] = [];
+let heroes: Character[] = [];
+let allCharacters: Character[] = [];
 
 function setBattleState(state: BattleState) {
   battleState = state;
@@ -110,6 +116,12 @@ function subtractFromInventory(item: InventoryItem) {
   console.log("inventory", inventory);
 }
 
+function intializeCharacters() {
+  heroes = HERO_LIST as Character[];
+  enemies = ENEMY_LIST as Character[];
+  allCharacters = [...enemies, ...heroes];
+}
+
 function initializeTimeline() {
   timeline = allCharacters
     .map((c) => ({
@@ -123,146 +135,23 @@ function initializeTimeline() {
   drawTimeline();
 }
 
-const enemies = [
-  {
-    id: idMaker(),
-    name: "Skeleton 01",
-    type: "enemy",
-    hp: 120,
-    speed: 70,
-    imgUrl: "/sprites/sprite-70.webp",
-    position: {
-      lane: "front",
-      col: "left",
-    },
-    lastAction: "none",
-    actions: {
-      attack: { type: "melee", power: 40 },
-    },
-  },
-  // {
-  //   id: idMaker(),
-  //   name: "Demon",
-  //   type: "enemy",
-  //   hp: 250,
-  //   speed: 58,
-  //   imgUrl: "/sprites/sprite-77.webp",
-  //   position: {
-  //     lane: "front",
-  //     col: "center",
-  //   },
-  //   lastAction: "none",
-  //   actions: {
-  //     attack: { type: "melee", power: 55 },
-  //   },
-  // },
-  // {
-  //   id: idMaker(),
-  //   name: "Skeleton 02",
-  //   type: "enemy",
-  //   hp: 120,
-  //   speed: 70,
-  //   imgUrl: "/sprites/sprite-70.webp",
-  //   position: {
-  //     lane: "front",
-  //     col: "right",
-  //   },
-  //   lastAction: "none",
-  //   actions: {
-  //     attack: { type: "melee", power: 40 },
-  //   },
-  // },
-  {
-    id: idMaker(),
-    name: "Ice Sorcerer",
-    type: "enemy",
-    hp: 20,
-    // hp: 320,
-    speed: 50,
-    imgUrl: "/sprites/sprite-78.webp",
-    position: {
-      lane: "back",
-      col: "center",
-    },
-    lastAction: "none",
-    actions: {
-      attack: { type: "ranged", power: 30 },
-    },
-  },
-  {
-    id: idMaker(),
-    name: "Ice Sorcerer",
-    type: "enemy",
-    hp: 20,
-    // hp: 320,
-    speed: 50,
-    imgUrl: "/sprites/sprite-78.webp",
-    position: {
-      lane: "back",
-      col: "left",
-    },
-    lastAction: "none",
-    actions: {
-      attack: { type: "ranged", power: 30 },
-    },
-  },
-];
+async function startBattle() {
+  setBattleState(BattleState.Dormant);
+  setPlayerAction(PlayerAction.None);
 
-const heroes = [
-  {
-    id: idMaker(),
-    name: "Abigail",
-    type: "hero",
-    hp: 20,
-    // hp: 520,
-    speed: 54,
-    imgUrl: "/sprites/sprite-09.webp",
-    position: {
-      lane: "back",
-      col: "center",
-    },
-    lastAction: "none",
-    actions: {
-      attack: { type: "melee", power: 40 },
-    },
-  },
-  {
-    id: idMaker(),
-    name: "Savannah",
-    type: "hero",
-    hp: 70,
-    // hp: 570,
-    speed: 62,
-    imgUrl: "/sprites/sprite-04.webp",
-    position: {
-      lane: "front",
-      col: "left",
-    },
-    lastAction: "none",
-    actions: {
-      attack: { type: "melee", power: 60 },
-    },
-  },
-  {
-    id: idMaker(),
-    name: "Turok",
-    type: "hero",
-    hp: 40,
-    // hp: 640,
-    speed: 45,
-    imgUrl: "/sprites/sprite-27.webp",
-    position: {
-      lane: "front",
-      col: "right",
-    },
-    lastAction: "none",
-    actions: {
-      attack: { type: "melee", power: 76 },
-    },
-  },
-];
+  intializeCharacters();
+  drawCharacters();
 
-const allCharacters = [...enemies, ...heroes];
+  drawBottomPane(panes.battleStart());
+  await wait(1000);
+  drawBottomPane(panes.getReady());
+  await wait(1000);
+
+  initializeTimeline();
+
+  const firstToPlay = getCharacterById(timeline[0].entity.id)!;
+  handleCharacterTurn(firstToPlay);
+}
 
 export {
   timeline,
@@ -285,4 +174,5 @@ export {
   subtractFromInventory,
   chooseTargetForEnemy,
   setSelectedItem,
+  startBattle,
 };

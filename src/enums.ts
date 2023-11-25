@@ -20,6 +20,17 @@ export enum PlayerAction {
   None = "none",
 }
 
+export enum Lane {
+  Front = "front",
+  Back = "back",
+}
+
+export enum Col {
+  Left = "left",
+  Center = "center",
+  Right = "right",
+}
+
 export enum InventoryItemType {
   Equipment = "equipment",
   Consumable = "consumable",
