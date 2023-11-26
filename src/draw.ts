@@ -8,7 +8,7 @@ import {
   dismissBtn,
   getSlotDefenseOverlayById,
 } from "./dom";
-import { StatusEffectName } from "./enums";
+import { StatusName } from "./enums";
 import { allCharacters, getCharacterById, timeline } from "./globals";
 import { Character, InventoryItem, PaneInfo, Status } from "./types";
 import { wait } from "./utils";
@@ -157,7 +157,7 @@ async function drawItemEffect(
 async function drawStatusEffect(status: Status, characterId: string) {
   const slot = getSlotElementById(characterId);
 
-  if (status.name === StatusEffectName.Poison) {
+  if (status.name === StatusName.Poison) {
     slot.classList.add(status.name.toLowerCase());
     await wait(1350);
     slot.classList.remove(status.name.toLowerCase());
