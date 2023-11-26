@@ -1,9 +1,49 @@
-import { Col, InventoryItemName, InventoryItemType, Lane } from "./enums";
+import {
+  ActionName,
+  AttackName,
+  Col,
+  Element,
+  InventoryItemName,
+  InventoryItemType,
+  Lane,
+  MagicSpellName,
+} from "./enums";
 
 export type Position = {
   lane: Lane;
   col: Col;
 };
+
+export type ActionTarget =
+  | "self"
+  | "single"
+  | "vert"
+  | "horiz"
+  | "party"
+  | "all";
+
+export type Spell = {
+  name: MagicSpellName;
+  power: number;
+  mpCost: number;
+  element?: Element;
+};
+
+export type Attack = {
+  name: AttackName;
+  power: number;
+  ranged?: boolean;
+  element?: Element;
+};
+
+export type Action =
+  | (
+      | { type: "other" }
+      | { type: "physical"; attack: Attack }
+      | { type: "magical"; spell: Spell }
+    ) & {
+      targets: ActionTarget;
+    };
 
 export type Character = {
   id: string;
@@ -13,10 +53,14 @@ export type Character = {
   speed: number;
   imgUrl: string;
   position: Position;
-  actions: {
-    attack: { type: string; power: number };
-  };
   statuses: string[];
+  actions: ActionName[];
+  skills: {
+    attack: AttackName[];
+    magic: MagicSpellName[];
+    invoke?: string[];
+    summon?: string[];
+  };
 };
 
 export type Status = {
@@ -32,20 +76,17 @@ export type Status = {
 export type TurnEntity = {
   id: string;
   name: string;
-  type: string; // "hero" | "enemy" | "status";
+  type: "hero" | "enemy" | "npc" | "status";
 };
-
 export type TurnBase = {
   entity: TurnEntity;
   turnDuration: number;
   nextTurnAt: number;
   turnsPlayed: number;
 };
-
 export type CharacterTurnBase = {
   type: "character";
 };
-
 export type StatusTurnBase = {
   type: "status";
   turnCount: number;

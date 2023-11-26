@@ -249,6 +249,21 @@ export enum StatusDescription {
   // Zombie = "Turns the affected character undead, making healing abilities harm instead of help.",
 }
 
+export enum AttackName {
+  StoneThrow = "StoneThrow",
+  Arrow = "Arrow",
+  Slash = "Slash",
+  Stab = "Stab",
+  Pierce = "Pierce",
+  Claws = "Claws",
+  Bite = "Bite",
+  TailWhip = "TailWhip",
+  SnowStorm = "SnowStorm",
+  FireBreath = "FireBreath",
+  Electrocute = "Electrocute",
+  IceBolt = "IceBolt",
+}
+
 export enum MagicSpellName {
   // Attack Spells
   Fire = "Fire",
@@ -257,7 +272,7 @@ export enum MagicSpellName {
   Quake = "Quake",
   Thunder = "Thunder",
   Blizzard = "Blizzard",
-  Poison = "Poison",
+  Bio = "Bio",
   Meteor = "Meteor",
   Demi = "Demi",
   Drain = "Drain",
@@ -314,4 +329,33 @@ export enum SkillNames {
   invoke = "invoke", // invoke npc or controllable unit
   summon = "summon", // magic entity
   steal = "steal",
+}
+
+export enum ActionName {
+  Attack = "Attack",
+  Magic = "Magic",
+  Defend = "Defend",
+  Steal = "Steal",
+  Invoke = "Invoke",
+  Summon = "Summon",
+  Hide = "Hide",
+  Item = "Item",
+  Move = "Move",
+}
+
+export enum Element {
+  Fire = "Fire",
+  Water = "Water",
+  Wind = "Wind",
+  Earth = "Earth",
+  Ice = "Ice",
+  Poison = "Poison",
+  Lightning = "Lightning",
+  Shadow = "Shadow",
+  // Gravity = 'Gravity',
+  // Time = 'Time',
+  // Death = 'Death',
+  // Healing = 'Healing',
+  // Barrier = 'Barrier',
+  // Sound = 'Sound',
 }

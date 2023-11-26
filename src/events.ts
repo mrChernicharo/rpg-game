@@ -1,372 +1,372 @@
-import {
-  slots,
-  dismissBtn,
-  getSlotEfxOverlayById,
-  getSlotElementById,
-} from "./dom";
-import {
-  drawAttackEffect,
-  drawBottomPane,
-  drawCharacters,
-  drawDefenseEffect,
-  drawItemEffect,
-  drawSelectedCharacterOutline,
-  drawStatusEffect,
-  drawTimeline,
-  drawTurnCount,
-} from "./draw";
-import { PlayerAction, BattleState, StatusName } from "./enums";
-import {
-  setBattleState,
-  getCharacterById,
-  timeline,
-  battleState,
-  cleanupSelectedItem,
-  getAllEnemies,
-  getAllHeroes,
-  selectedItem,
-  setPlayerAction,
-  subtractFromInventory,
-  chooseTargetForEnemy,
-  incrementTurnCount,
-  turnCount,
-  getCurrentCharacter,
-  allCharacters,
-  allStatuses,
-} from "./globals";
-import { panes } from "./infoPane";
-import { Character, InventoryItem, Status, StatusTurn, Turn } from "./types";
-import { calculateNextTurnTime, wait } from "./utils";
-
-window.addEventListener("hero-defense", onHeroDefense);
-window.addEventListener("hero-attack-target-selected", onHeroAttack);
-window.addEventListener("item-target-selected", onItemTargetSelected);
-
-dismissBtn.addEventListener("click", onDismiss);
-
-for (const slot of slots) {
-  slot.addEventListener("click", onSlotClick);
-}
-
-async function onStatusActed(status: Status, character: Character) {
-  await drawStatusEffect(status, character.id);
-
-  const slot = getSlotElementById(character.id);
-
-  if (status.name === StatusName.Poison) {
-    const poisonExpired = status.turnsPlayed >= status.turnCount;
-
-    if (poisonExpired) {
-      const statusIdx = allStatuses.findIndex((s) => s.id === status.id);
-      const timelineIdx = timeline.findIndex((s) => s.entity.id === status.id);
-
-      allStatuses.splice(statusIdx, 1);
-      timeline.splice(timelineIdx, 1);
-      drawTimeline();
-
-      console.log("DELETED POISON RECORD", {
-        timeline: timeline.slice(),
-        allStatuses: allStatuses.slice(),
-      });
-
-      if (character.statuses.includes(StatusName.Poison)) {
-        character.statuses = character.statuses.filter(
-          (s) => s !== StatusName.Poison
-        );
-      }
-      if (slot.classList.contains("poisoned")) {
-        slot.classList.remove("poisoned");
-      }
-
-      setBattleState(BattleState.StatusExpired);
-      drawBottomPane(
-        panes.text(`${status.name} effect on ${character.name} has expired`)
-      );
-
-      await wait(1240);
-    } else if (!poisonExpired && !slot.classList.contains("poisoned")) {
-      slot.classList.add("poisoned");
-    }
-  }
-
-  setPlayerAction(PlayerAction.None);
-  handleUpdateTimeline();
-}
-
-async function onHeroDefense(data: any) {
-  const { hero: heroData } = data.detail;
-
-  setPlayerAction(PlayerAction.Defend);
-  drawBottomPane(panes.text(`${heroData.name} raised its defenses`));
-
-  await drawDefenseEffect(heroData);
-
-  const hero = getAllHeroes().find((c) => c.id === heroData.id);
-
-  hero?.statuses.push(StatusName.Defense);
-
-  await wait(500);
-
-  setPlayerAction(PlayerAction.None);
-  handleUpdateTimeline();
-}
-
-async function onHeroAttack(data: any) {
-  const { selectedCharacter: target } = data.detail;
-  const hero = getCurrentCharacter();
-  // console.log("onHeroAttack", {
-  //   target,
-  //   hero,
-  //   playerAction,
-  // });
-
-  setPlayerAction(PlayerAction.Attack);
-  setBattleState(BattleState.HeroAttack);
-  drawBottomPane(panes.text(`${hero.name} attacks ${target.name}`));
-
-  await handleAttack(hero, target);
-
-  setPlayerAction(PlayerAction.None);
-  handleUpdateTimeline();
-}
-
-async function onItemTargetSelected(data: any) {
-  const { selectedCharacter: target } = data.detail;
-  const hero = getCurrentCharacter();
-  const message = `${target.name} received ${selectedItem?.name}`;
-  // console.log("onItemTargetSelected", {
-  //   target,
-  //   hero,
-  //   playerAction,
-  // });
-
-  setPlayerAction(PlayerAction.Item);
-  setBattleState(BattleState.ItemUse);
-  drawBottomPane(panes.text(message));
-
-  const item = cleanupSelectedItem();
-  subtractFromInventory(item);
-
-  await drawItemEffect(item, hero, target);
-
-  handleItemEffect(item, target);
-
-  setPlayerAction(PlayerAction.None);
-  handleUpdateTimeline();
-}
-
-function onDismiss() {
-  setBattleState(BattleState.HeroAction);
-  const hero = getCurrentCharacter();
-  drawBottomPane(panes.heroActions(hero));
-}
-
-function onSlotClick(e: MouseEvent) {
-  const slot = (e.target as HTMLElement).closest(".lane-slot") as HTMLLIElement;
-  const selectedCharacter = getCharacterById(slot.id);
-  // console.log(":::onSlotClick", slot, selectedCharacter, battleState);
-
-  if (battleState === BattleState.AttackTargetSelection) {
-    window.dispatchEvent(
-      new CustomEvent("hero-attack-target-selected", {
-        detail: { selectedCharacter },
-      })
-    );
-  }
-
-  if (battleState === BattleState.ItemTargetSelect) {
-    // @TODO: add item info to event payload
-    window.dispatchEvent(
-      new CustomEvent("item-target-selected", {
-        detail: { selectedCharacter },
-      })
-    );
-  }
-}
-
-async function handleAttack(
-  attacker: Character,
-  target: Character
-): Promise<void> {
-  const attackPower = attacker.actions.attack.power;
-
-  await drawAttackEffect(attacker, target);
-
-  if (target.statuses.includes(StatusName.Defense)) {
-    const halfPowerAttack = Math.ceil(attackPower / 2);
-    console.log("HIT DEFENDING HERO!", { attackPower, halfPowerAttack });
-
-    target.hp -= halfPowerAttack;
-    drawBottomPane(
-      panes.text(`${target.name} suffered ${halfPowerAttack} of damage`)
-    );
-  } else {
-    console.log("HIT!", { attackPower });
-
-    target.hp -= attackPower;
-    drawBottomPane(
-      panes.text(`${target.name} suffered ${attackPower} of damage`)
-    );
-  }
-  await wait(1020);
-
-  // handle character kill
-  if (target.hp <= 0) {
-    target.hp = 0;
-    console.log(target.name, "died!");
-    const timelineIdx = timeline.findIndex((o) => o.entity.id === target.id);
-    console.log("DELETED character entry from timeline", timeline.slice());
-    timeline.splice(timelineIdx, 1);
-    drawTimeline();
-
-    setBattleState(BattleState.CharacterKilled);
-    drawBottomPane(panes.text(`${attacker.name} has slain ${target.name}`));
-    await wait(1220);
-  }
-
-  drawCharacters();
-
-  // handle battle over
-  if (getAllEnemies().every((e) => e.hp <= 0)) {
-    setBattleState(BattleState.Ended);
-    drawBottomPane(panes.text("Battle Won!"));
-    await wait(3000);
-  }
-
-  if (getAllHeroes().every((h) => h.hp <= 0)) {
-    setBattleState(BattleState.Ended);
-    drawBottomPane(panes.text("Battle Lost!"));
-    await wait(3000);
-  }
-}
-
-function handleUpdateTimeline(): void {
-  if (battleState === BattleState.Ended) return;
-
-  incrementTurnCount();
-  drawTurnCount(turnCount);
-
-  const prevTimeline = timeline.slice();
-  const currentTurn = timeline.shift()!;
-
-  const nextTurn = {
-    ...currentTurn,
-    nextTurnAt: calculateNextTurnTime(currentTurn),
-    // turnsPlayed: currentTurn!.turnsPlayed + 1,
-  } as Turn;
-
-  let insertionIdx = timeline.length;
-  let smallestPositiveTimeDiff = Infinity;
-  for (let i = 0; i < timeline.length; i++) {
-    const timeDiff = timeline[i].nextTurnAt - nextTurn.nextTurnAt;
-
-    if (timeDiff > 0 && timeDiff < smallestPositiveTimeDiff) {
-      smallestPositiveTimeDiff = timeDiff;
-      insertionIdx = i;
-    }
-  }
-
-  timeline.splice(insertionIdx, 0, nextTurn);
-  drawTimeline();
-
-  console.log("timeline", {
-    prev: prevTimeline,
-    next: timeline.slice(),
-    // nextTurn,
-    // currentTurn,
-    curr: timeline[0],
-  });
-
-  if (timeline[0].type === "status") {
-    const status = allStatuses.find(
-      (s) => s.id === (timeline[0] as StatusTurn).entity.id
-    )!;
-    const character = allCharacters.find(
-      (c) => c.id === (timeline[0] as StatusTurn).characterId
-    )!;
-
-    handleStatusTurn(status, character);
-  } else if (timeline[0].type === "character") {
-    const character = getCurrentCharacter();
-
-    handleCharacterTurn(character);
-  }
-}
-
-async function handleStatusTurn(status: Status, character: Character) {
-  status.turnsPlayed++;
-
-  setBattleState(BattleState.StatusAction);
-  drawBottomPane(
-    panes.text(`${character.name} received ${status.power} damage from poison`)
-  );
-
-  switch (status.name) {
-    case StatusName.Poison:
-      character.hp -= status.power;
-
-      if (!character.statuses.includes(StatusName.Poison)) {
-        character.statuses.push(StatusName.Poison);
-      }
-
-      break;
-    default:
-      break;
-  }
-
-  drawCharacters();
-
-  await onStatusActed(status, character);
-}
-
-async function handleCharacterTurn(entity: Character): Promise<void> {
-  console.log("handleCurrentCharacter", { entity });
-  console.log(`==========================================`);
-  console.log(`It's ${entity.name.toUpperCase()}'s turn...`);
-  console.log(`==========================================`);
-
-  console.log(":::", entity.name, entity.type, allCharacters);
-
-  if (entity.type === "enemy") {
-    const targetHero = chooseTargetForEnemy(entity);
-
-    setBattleState(BattleState.EnemyAction);
-    drawBottomPane(panes.text(`${entity.name}'s turn`));
-
-    await drawSelectedCharacterOutline(entity);
-    await wait(750);
-
-    setBattleState(BattleState.EnemyAttack);
-    drawBottomPane(panes.text(`${entity.name} attacked ${targetHero.name}`));
-
-    await handleAttack(entity, targetHero);
-
-    drawBottomPane({ type: "none", content: undefined });
-
-    if (battleState === BattleState.Ended) return Promise.resolve();
-
-    handleUpdateTimeline();
-    Promise.resolve();
-  }
-  //
-  else if (entity.type === "hero") {
-    // if was defending, cleanup defending UI
-    const slotOverlay = getSlotEfxOverlayById(entity.id)!;
-    if (slotOverlay.classList.contains("defending")) {
-      slotOverlay.classList.remove("defending");
-    }
-
-    setBattleState(BattleState.HeroAction);
-    drawBottomPane(panes.heroActions(entity));
-
-    await drawSelectedCharacterOutline(entity);
-    await wait(700);
-  }
-}
-
-function handleItemEffect(item: InventoryItem, target: Character) {
-  switch (item.name) {
-  }
-}
-
-export { handleUpdateTimeline, handleCharacterTurn, handleStatusTurn };
+// import {
+//   slots,
+//   dismissBtn,
+//   getSlotEfxOverlayById,
+//   getSlotElementById,
+// } from "./dom";
+// import {
+//   drawAttackEffect,
+//   drawBottomPane,
+//   drawCharacters,
+//   drawDefenseEffect,
+//   drawItemEffect,
+//   drawSelectedCharacterOutline,
+//   drawStatusEffect,
+//   drawTimeline,
+//   drawTurnCount,
+// } from "./draw";
+// import { PlayerAction, BattleState, StatusName } from "./enums";
+// import {
+//   setBattleState,
+//   getCharacterById,
+//   timeline,
+//   battleState,
+//   cleanupSelectedItem,
+//   getAllEnemies,
+//   getAllHeroes,
+//   selectedItem,
+//   setPlayerAction,
+//   subtractFromInventory,
+//   chooseTargetForEnemy,
+//   incrementTurnCount,
+//   turnCount,
+//   getCurrentCharacter,
+//   allCharacters,
+//   allStatuses,
+// } from "./globals";
+// import { panes } from "./infoPane";
+// import { Character, InventoryItem, Status, StatusTurn, Turn } from "./types";
+// import { calculateNextTurnTime, wait } from "./utils";
+
+// window.addEventListener("hero-defense", onHeroDefense);
+// window.addEventListener("hero-attack-target-selected", onHeroAttack);
+// window.addEventListener("item-target-selected", onItemTargetSelected);
+
+// dismissBtn.addEventListener("click", onDismiss);
+
+// for (const slot of slots) {
+//   slot.addEventListener("click", onSlotClick);
+// }
+
+// async function onStatusActed(status: Status, character: Character) {
+//   await drawStatusEffect(status, character.id);
+
+//   const slot = getSlotElementById(character.id);
+
+//   if (status.name === StatusName.Poison) {
+//     const poisonExpired = status.turnsPlayed >= status.turnCount;
+
+//     if (poisonExpired) {
+//       const statusIdx = allStatuses.findIndex((s) => s.id === status.id);
+//       const timelineIdx = timeline.findIndex((s) => s.entity.id === status.id);
+
+//       allStatuses.splice(statusIdx, 1);
+//       timeline.splice(timelineIdx, 1);
+//       drawTimeline();
+
+//       console.log("DELETED POISON RECORD", {
+//         timeline: timeline.slice(),
+//         allStatuses: allStatuses.slice(),
+//       });
+
+//       if (character.statuses.includes(StatusName.Poison)) {
+//         character.statuses = character.statuses.filter(
+//           (s) => s !== StatusName.Poison
+//         );
+//       }
+//       if (slot.classList.contains("poisoned")) {
+//         slot.classList.remove("poisoned");
+//       }
+
+//       setBattleState(BattleState.StatusExpired);
+//       drawBottomPane(
+//         panes.text(`${status.name} effect on ${character.name} has expired`)
+//       );
+
+//       await wait(1240);
+//     } else if (!poisonExpired && !slot.classList.contains("poisoned")) {
+//       slot.classList.add("poisoned");
+//     }
+//   }
+
+//   setPlayerAction(PlayerAction.None);
+//   handleUpdateTimeline();
+// }
+
+// async function onHeroDefense(data: any) {
+//   const { hero: heroData } = data.detail;
+
+//   setPlayerAction(PlayerAction.Defend);
+//   drawBottomPane(panes.text(`${heroData.name} raised its defenses`));
+
+//   await drawDefenseEffect(heroData);
+
+//   const hero = getAllHeroes().find((c) => c.id === heroData.id);
+
+//   hero?.statuses.push(StatusName.Defense);
+
+//   await wait(500);
+
+//   setPlayerAction(PlayerAction.None);
+//   handleUpdateTimeline();
+// }
+
+// async function onHeroAttack(data: any) {
+//   const { selectedCharacter: target } = data.detail;
+//   const hero = getCurrentCharacter();
+//   // console.log("onHeroAttack", {
+//   //   target,
+//   //   hero,
+//   //   playerAction,
+//   // });
+
+//   setPlayerAction(PlayerAction.Attack);
+//   setBattleState(BattleState.HeroAttack);
+//   drawBottomPane(panes.text(`${hero.name} attacks ${target.name}`));
+
+//   await handleAttack(hero, target);
+
+//   setPlayerAction(PlayerAction.None);
+//   handleUpdateTimeline();
+// }
+
+// async function onItemTargetSelected(data: any) {
+//   const { selectedCharacter: target } = data.detail;
+//   const hero = getCurrentCharacter();
+//   const message = `${target.name} received ${selectedItem?.name}`;
+//   // console.log("onItemTargetSelected", {
+//   //   target,
+//   //   hero,
+//   //   playerAction,
+//   // });
+
+//   setPlayerAction(PlayerAction.Item);
+//   setBattleState(BattleState.ItemUse);
+//   drawBottomPane(panes.text(message));
+
+//   const item = cleanupSelectedItem();
+//   subtractFromInventory(item);
+
+//   await drawItemEffect(item, hero, target);
+
+//   handleItemEffect(item, target);
+
+//   setPlayerAction(PlayerAction.None);
+//   handleUpdateTimeline();
+// }
+
+// function onDismiss() {
+//   setBattleState(BattleState.HeroAction);
+//   const hero = getCurrentCharacter();
+//   drawBottomPane(panes.heroActions(hero));
+// }
+
+// function onSlotClick(e: MouseEvent) {
+//   const slot = (e.target as HTMLElement).closest(".lane-slot") as HTMLLIElement;
+//   const selectedCharacter = getCharacterById(slot.id);
+//   // console.log(":::onSlotClick", slot, selectedCharacter, battleState);
+
+//   if (battleState === BattleState.AttackTargetSelection) {
+//     window.dispatchEvent(
+//       new CustomEvent("hero-attack-target-selected", {
+//         detail: { selectedCharacter },
+//       })
+//     );
+//   }
+
+//   if (battleState === BattleState.ItemTargetSelect) {
+//     // @TODO: add item info to event payload
+//     window.dispatchEvent(
+//       new CustomEvent("item-target-selected", {
+//         detail: { selectedCharacter },
+//       })
+//     );
+//   }
+// }
+
+// async function handleAttack(
+//   attacker: Character,
+//   target: Character
+// ): Promise<void> {
+//   const attackPower = attacker.actions.attack.power;
+
+//   await drawAttackEffect(attacker, target);
+
+//   if (target.statuses.includes(StatusName.Defense)) {
+//     const halfPowerAttack = Math.ceil(attackPower / 2);
+//     console.log("HIT DEFENDING HERO!", { attackPower, halfPowerAttack });
+
+//     target.hp -= halfPowerAttack;
+//     drawBottomPane(
+//       panes.text(`${target.name} suffered ${halfPowerAttack} of damage`)
+//     );
+//   } else {
+//     console.log("HIT!", { attackPower });
+
+//     target.hp -= attackPower;
+//     drawBottomPane(
+//       panes.text(`${target.name} suffered ${attackPower} of damage`)
+//     );
+//   }
+//   await wait(1020);
+
+//   // handle character kill
+//   if (target.hp <= 0) {
+//     target.hp = 0;
+//     console.log(target.name, "died!");
+//     const timelineIdx = timeline.findIndex((o) => o.entity.id === target.id);
+//     console.log("DELETED character entry from timeline", timeline.slice());
+//     timeline.splice(timelineIdx, 1);
+//     drawTimeline();
+
+//     setBattleState(BattleState.CharacterKilled);
+//     drawBottomPane(panes.text(`${attacker.name} has slain ${target.name}`));
+//     await wait(1220);
+//   }
+
+//   drawCharacters();
+
+//   // handle battle over
+//   if (getAllEnemies().every((e) => e.hp <= 0)) {
+//     setBattleState(BattleState.Ended);
+//     drawBottomPane(panes.text("Battle Won!"));
+//     await wait(3000);
+//   }
+
+//   if (getAllHeroes().every((h) => h.hp <= 0)) {
+//     setBattleState(BattleState.Ended);
+//     drawBottomPane(panes.text("Battle Lost!"));
+//     await wait(3000);
+//   }
+// }
+
+// function handleUpdateTimeline(): void {
+//   if (battleState === BattleState.Ended) return;
+
+//   incrementTurnCount();
+//   drawTurnCount(turnCount);
+
+//   const prevTimeline = timeline.slice();
+//   const currentTurn = timeline.shift()!;
+
+//   const nextTurn = {
+//     ...currentTurn,
+//     nextTurnAt: calculateNextTurnTime(currentTurn),
+//     // turnsPlayed: currentTurn!.turnsPlayed + 1,
+//   } as Turn;
+
+//   let insertionIdx = timeline.length;
+//   let smallestPositiveTimeDiff = Infinity;
+//   for (let i = 0; i < timeline.length; i++) {
+//     const timeDiff = timeline[i].nextTurnAt - nextTurn.nextTurnAt;
+
+//     if (timeDiff > 0 && timeDiff < smallestPositiveTimeDiff) {
+//       smallestPositiveTimeDiff = timeDiff;
+//       insertionIdx = i;
+//     }
+//   }
+
+//   timeline.splice(insertionIdx, 0, nextTurn);
+//   drawTimeline();
+
+//   console.log("timeline", {
+//     prev: prevTimeline,
+//     next: timeline.slice(),
+//     // nextTurn,
+//     // currentTurn,
+//     curr: timeline[0],
+//   });
+
+//   if (timeline[0].type === "status") {
+//     const status = allStatuses.find(
+//       (s) => s.id === (timeline[0] as StatusTurn).entity.id
+//     )!;
+//     const character = allCharacters.find(
+//       (c) => c.id === (timeline[0] as StatusTurn).characterId
+//     )!;
+
+//     handleStatusTurn(status, character);
+//   } else if (timeline[0].type === "character") {
+//     const character = getCurrentCharacter();
+
+//     handleCharacterTurn(character);
+//   }
+// }
+
+// async function handleStatusTurn(status: Status, character: Character) {
+//   status.turnsPlayed++;
+
+//   setBattleState(BattleState.StatusAction);
+//   drawBottomPane(
+//     panes.text(`${character.name} received ${status.power} damage from poison`)
+//   );
+
+//   switch (status.name) {
+//     case StatusName.Poison:
+//       character.hp -= status.power;
+
+//       if (!character.statuses.includes(StatusName.Poison)) {
+//         character.statuses.push(StatusName.Poison);
+//       }
+
+//       break;
+//     default:
+//       break;
+//   }
+
+//   drawCharacters();
+
+//   await onStatusActed(status, character);
+// }
+
+// async function handleCharacterTurn(entity: Character): Promise<void> {
+//   console.log("handleCurrentCharacter", { entity });
+//   console.log(`==========================================`);
+//   console.log(`It's ${entity.name.toUpperCase()}'s turn...`);
+//   console.log(`==========================================`);
+
+//   console.log(":::", entity.name, entity.type, allCharacters);
+
+//   if (entity.type === "enemy") {
+//     const targetHero = chooseTargetForEnemy(entity);
+
+//     setBattleState(BattleState.EnemyAction);
+//     drawBottomPane(panes.text(`${entity.name}'s turn`));
+
+//     await drawSelectedCharacterOutline(entity);
+//     await wait(750);
+
+//     setBattleState(BattleState.EnemyAttack);
+//     drawBottomPane(panes.text(`${entity.name} attacked ${targetHero.name}`));
+
+//     await handleAttack(entity, targetHero);
+
+//     drawBottomPane({ type: "none", content: undefined });
+
+//     if (battleState === BattleState.Ended) return Promise.resolve();
+
+//     handleUpdateTimeline();
+//     Promise.resolve();
+//   }
+//   //
+//   else if (entity.type === "hero") {
+//     // if was defending, cleanup defending UI
+//     const slotOverlay = getSlotEfxOverlayById(entity.id)!;
+//     if (slotOverlay.classList.contains("defending")) {
+//       slotOverlay.classList.remove("defending");
+//     }
+
+//     setBattleState(BattleState.HeroAction);
+//     drawBottomPane(panes.heroActions(entity));
+
+//     await drawSelectedCharacterOutline(entity);
+//     await wait(700);
+//   }
+// }
+
+// function handleItemEffect(item: InventoryItem, target: Character) {
+//   switch (item.name) {
+//   }
+// }
+
+// export { handleUpdateTimeline, handleCharacterTurn, handleStatusTurn };
