@@ -1,13 +1,16 @@
-// import {
-//   battleLanesUI,
-//   getSlotEfxOverlayById,
-//   getSlotElementById,
-//   timelineUI,
-//   turnCountUI,
-//   bottomSection,
-//   dismissBtn,
-//   getSlotDefenseOverlayById,
-// } from "./dom";
+import {
+  battleLanesUI,
+  getSlotEfxOverlayById,
+  getSlotElementById,
+  timelineUI,
+  turnCountUI,
+  bottomSection,
+  dismissBtn,
+  getSlotDefenseOverlayById,
+} from "./dom";
+import { getCharacterById, getTimeline } from "./main";
+import { PaneInfo } from "./types";
+// import { getCharacterById, getTimeline } from "./main";
 // import { StatusName } from "./enums";
 // import { allCharacters, getCharacterById, timeline } from "./globals";
 // import { Character, InventoryItem, PaneInfo, Status } from "./types";
@@ -52,47 +55,47 @@
 //   });
 // }
 
-// function drawTimeline(): void {
-//   // console.log(turnCount, ...turnSequence);
-//   timelineUI.innerHTML = "";
+function drawTimeline(): void {
+  // console.log(turnCount, ...turnSequence);
+  timelineUI.innerHTML = "";
 
-//   for (let i = 0; i < timeline.length; i++) {
-//     const turn = timeline[i];
-//     const timeToNextTurn = turn.nextTurnAt - timeline[0].nextTurnAt;
-//     const timeToNextTurnStr =
-//       i === 0 ? " now" : ` ${timeToNextTurn.toFixed(2)}`;
-//     // i === 0 ? " now" : i === 1 ? " next" : ` ${timeToNextTurn.toFixed(2)}`;
+  for (let i = 0; i < getTimeline().length; i++) {
+    const turn = getTimeline()[i];
+    const timeToNextTurn = turn.nextTurnAt - getTimeline()[0].nextTurnAt;
+    const timeToNextTurnStr =
+      i === 0 ? " now" : ` ${timeToNextTurn.toFixed(2)}`;
+    // i === 0 ? " now" : i === 1 ? " next" : ` ${timeToNextTurn.toFixed(2)}`;
 
-//     const div = document.createElement("div");
-//     const nameText = document.createElement("small");
-//     const timeText = document.createElement("small");
+    const div = document.createElement("div");
+    const nameText = document.createElement("small");
+    const timeText = document.createElement("small");
 
-//     nameText.classList.add("character-name");
+    nameText.classList.add("character-name");
 
-//     if (turn.type === "status") {
-//       // console.log("drawTimeline", turn, timeline);
+    if (turn.type === "status") {
+      // console.log("drawTimeline", turn, timeline);
 
-//       // const poisonExpired = turn.turnsPlayed >= turn.turnCount;
+      // const poisonExpired = turn.turnsPlayed >= turn.turnCount;
 
-//       // if (poisonExpired) {
-//       //   console.log("poison EXPIRED!", { poisonExpired });
-//       //   continue;
-//       // }
+      // if (poisonExpired) {
+      //   console.log("poison EXPIRED!", { poisonExpired });
+      //   continue;
+      // }
 
-//       nameText.textContent = `🧪${getCharacterById(turn.characterId).name}`;
-//     } else {
-//       nameText.textContent = turn.entity.name;
-//     }
+      nameText.textContent = `🧪${getCharacterById(turn.characterId)}`;
+    } else {
+      nameText.textContent = turn.entity.name;
+    }
 
-//     timeText.classList.add("time-to-next-turn");
-//     timeText.textContent = timeToNextTurnStr;
+    timeText.classList.add("time-to-next-turn");
+    timeText.textContent = timeToNextTurnStr;
 
-//     div.classList.add("turn-item");
-//     div.append(nameText, timeText);
+    div.classList.add("turn-item");
+    div.append(nameText, timeText);
 
-//     timelineUI.append(div);
-//   }
-// }
+    timelineUI.append(div);
+  }
+}
 
 // async function drawSelectedCharacterOutline(entity: Character): Promise<void> {
 //   const prevSlot = document.querySelector(`.selected`);
@@ -174,53 +177,55 @@
 //   outputEl.textContent = String(turn);
 // }
 
-// function drawBottomPane(paneInfo: PaneInfo, showDismissBtn = false) {
-//   bottomSection.text.innerHTML = "";
-//   bottomSection.list.innerHTML = "";
+function drawBottomPane(paneInfo: PaneInfo, dismissFn?: () => void) {
+  bottomSection.text.innerHTML = "";
+  bottomSection.list.innerHTML = "";
 
-//   // console.log("drawBottomPane", timeline[0]?.entity?.name, paneInfo);
+  // console.log("drawBottomPane", timeline[0]?.entity?.name, paneInfo);
 
-//   switch (paneInfo.type) {
-//     case "text":
-//       bottomSection.list.classList.add("hidden");
-//       bottomSection.text.classList.remove("hidden");
+  switch (paneInfo.type) {
+    case "text":
+      bottomSection.list.classList.add("hidden");
+      bottomSection.text.classList.remove("hidden");
 
-//       bottomSection.text.textContent = paneInfo.content;
-//       break;
-//     case "list":
-//       bottomSection.list.classList.remove("hidden");
-//       bottomSection.text.classList.add("hidden");
+      bottomSection.text.textContent = paneInfo.content;
+      break;
+    case "list":
+      bottomSection.list.classList.remove("hidden");
+      bottomSection.text.classList.add("hidden");
 
-//       paneInfo.content.forEach((item) => {
-//         const li = document.createElement("li");
+      paneInfo.content.forEach((item) => {
+        const li = document.createElement("li");
 
-//         li.textContent = item.text;
-//         li.classList.add("list-option", item.text.replaceAll(" ", "-"));
-//         li.onclick = () => item.action();
-//         bottomSection.list.append(li);
-//       });
-//       break;
-//     case "none":
-//       bottomSection.list.classList.add("hidden");
-//       bottomSection.text.classList.add("hidden");
-//       break;
-//   }
+        li.textContent = item.text;
+        li.classList.add("list-option", item.text.replaceAll(" ", "-"));
+        li.onclick = () => item.action();
+        bottomSection.list.append(li);
+      });
+      break;
+    case "none":
+      bottomSection.list.classList.add("hidden");
+      bottomSection.text.classList.add("hidden");
+      break;
+  }
 
-//   if (showDismissBtn) {
-//     dismissBtn.classList.remove("hidden");
-//   } else {
-//     dismissBtn.classList.add("hidden");
-//   }
-// }
+  if (dismissFn) {
+    dismissBtn.classList.remove("hidden");
+    dismissBtn.onclick = () => dismissFn();
+  } else {
+    dismissBtn.classList.add("hidden");
+    dismissBtn.onclick = null;
+  }
+}
 
-// export {
-//   drawTimeline,
-//   drawCharacters,
-//   drawSelectedCharacterOutline,
-//   drawAttackEffect,
-//   drawTurnCount,
-//   drawDefenseEffect,
-//   drawBottomPane,
-//   drawItemEffect,
-//   drawStatusEffect,
-// };
+export {
+  drawTimeline,
+  //   drawCharacters,
+  //   drawSelectedCharacterOutline,
+  //   drawAttackEffect,
+  //   drawTurnCount,
+  //   drawDefenseEffect,
+  drawBottomPane,
+  //   drawItemEffect,
+  //   drawStatusEffect,
+};

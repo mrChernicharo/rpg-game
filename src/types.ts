@@ -9,6 +9,8 @@ import {
   MagicSpellName,
 } from "./enums";
 
+export {}; //keep that for TS compiler.
+
 export type Position = {
   lane: Lane;
   col: Col;
@@ -56,10 +58,10 @@ export type Character = {
   statuses: string[];
   actions: ActionName[];
   skills: {
-    attack: AttackName[];
-    magic: MagicSpellName[];
-    invoke?: string[];
-    summon?: string[];
+    [ActionName.Attack]: AttackName[];
+    [ActionName.Magic]: MagicSpellName[];
+    [ActionName.Invoke]?: string[];
+    [ActionName.Summon]?: string[];
   };
 };
 
@@ -106,7 +108,7 @@ export type InventoryItem = {
 };
 
 export type PaneInfo =
-  | { type: "none"; content: undefined }
+  | { type: "none" }
   | { type: "text"; content: string }
   | {
       type: "list";
@@ -115,3 +117,10 @@ export type PaneInfo =
         action: (...args: any) => void;
       }[];
     };
+
+export type CurrentActionData = {
+  character: Character | null;
+  actionName: ActionName | null;
+  actionDetail: string | null;
+  actionTarget: Character | null;
+};

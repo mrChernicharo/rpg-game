@@ -21,13 +21,6 @@ export enum BattleState {
   ItemUse = "item-use",
 }
 
-export enum PlayerAction {
-  Attack = "attack",
-  Item = "item",
-  Defend = "defend",
-  None = "none",
-}
-
 export enum Lane {
   Front = "front",
   Back = "back",
@@ -199,54 +192,16 @@ export enum InventoryItemDescription {
   ZodiacSpear = "Spear embodying the signs of the zodiac, offering versatile abilities.",
 }
 
-export enum StatusName {
-  Defense = "Defense",
-  Poison = "Poison",
-  Silence = "Silence",
-  Petrify = "Petrify",
-  Slow = "Slow",
-  Stop = "Stop",
-  Confuse = "Confuse",
-  Sleep = "Sleep",
-  Berserk = "Berserk",
-  Blind = "Blind",
-  Mini = "Mini",
-  DeathSentence = "DeathSentence",
-  Regen = "Regen",
-  Haste = "Haste",
-  Barrier = "Barrier",
-  MagiBarrier = "MagiBarrier",
-  // Reflect = "Reflect",
-  // Doom = "Doom",
-  // Toad = "Toad",
-  // Curse = "Curse",
-  // Charm = "Charm",
-  // Zombie = "Zombie",
-}
-
-export enum StatusDescription {
-  Defense = "Halves damage from physical attacks",
-  Regen = "Gradually restores the affected character's health over time.",
-  Haste = "Increases the affected character's speed or action frequency.",
-  Barrier = "Enhances the affected character's defenses against physical attacks.",
-  MagiBarrier = "Enhances the affected character's defenses against magic attacks.",
-  Poison = "Inflicts gradual damage over time to the affected character.",
-  Berserk = "Enrages the affected character, causing them to attack relentlessly.",
-  Silence = "Prevents the affected character from casting magic.",
-  Petrify = "Turns the affected character into stone, rendering them unable to act.",
-  Slow = "Reduces the affected character's speed or action frequency.",
-  Stop = "Completely halts the affected character's actions for a duration.",
-  Confuse = "Causes the affected character to randomly attack allies or enemies.",
-  Sleep = "Puts the affected character into a deep slumber, making them unable to act.",
-  Blind = "Reduces the affected character's accuracy, making their attacks more likely to miss.",
-  Mini = "Shrinks the affected character, reducing their stats and making them vulnerable.",
-  DeathSentence = "Places a countdown on the affected character, leading to instant KO when it reaches zero.",
-  // Reflect = "Causes spells cast on the affected character to bounce back to the caster.",
-  // Doom = "Sets a timer on the affected character, resulting in instant KO when it expires.",
-  // Toad = "Transforms the affected character into a frog, limiting their abilities.",
-  // Curse = "Imposes various negative effects on the affected character's abilities.",
-  // Charm = "Controls the affected character temporarily, making them act against their will.",
-  // Zombie = "Turns the affected character undead, making healing abilities harm instead of help.",
+export enum ActionName {
+  Attack = "Attack",
+  Magic = "Magic",
+  Defend = "Defend",
+  Steal = "Steal",
+  Invoke = "Invoke",
+  Summon = "Summon",
+  Hide = "Hide",
+  Item = "Item",
+  Move = "Move",
 }
 
 export enum AttackName {
@@ -325,24 +280,6 @@ export enum MagicSpellDescription {
   // Purify = "Cleanses a single target of all negative effects.",
 }
 
-export enum SkillNames {
-  invoke = "invoke", // invoke npc or controllable unit
-  summon = "summon", // magic entity
-  steal = "steal",
-}
-
-export enum ActionName {
-  Attack = "Attack",
-  Magic = "Magic",
-  Defend = "Defend",
-  Steal = "Steal",
-  Invoke = "Invoke",
-  Summon = "Summon",
-  Hide = "Hide",
-  Item = "Item",
-  Move = "Move",
-}
-
 export enum Element {
   Fire = "Fire",
   Water = "Water",
@@ -358,4 +295,54 @@ export enum Element {
   // Healing = 'Healing',
   // Barrier = 'Barrier',
   // Sound = 'Sound',
+}
+
+export enum StatusName {
+  Defense = "Defense",
+  Poison = "Poison",
+  Silence = "Silence",
+  Petrify = "Petrify",
+  Slow = "Slow",
+  Stop = "Stop",
+  Confuse = "Confuse",
+  Sleep = "Sleep",
+  Berserk = "Berserk",
+  Blind = "Blind",
+  Mini = "Mini",
+  DeathSentence = "DeathSentence",
+  Regen = "Regen",
+  Haste = "Haste",
+  Barrier = "Barrier",
+  MagiBarrier = "MagiBarrier",
+  // Reflect = "Reflect",
+  // Doom = "Doom",
+  // Toad = "Toad",
+  // Curse = "Curse",
+  // Charm = "Charm",
+  // Zombie = "Zombie",
+}
+
+export enum StatusDescription {
+  Defense = "Halves damage from physical attacks",
+  Regen = "Gradually restores the affected character's health over time.",
+  Haste = "Increases the affected character's speed or action frequency.",
+  Barrier = "Enhances the affected character's defenses against physical attacks.",
+  MagiBarrier = "Enhances the affected character's defenses against magic attacks.",
+  Poison = "Inflicts gradual damage over time to the affected character.",
+  Berserk = "Enrages the affected character, causing them to attack relentlessly.",
+  Silence = "Prevents the affected character from casting magic.",
+  Petrify = "Turns the affected character into stone, rendering them unable to act.",
+  Slow = "Reduces the affected character's speed or action frequency.",
+  Stop = "Completely halts the affected character's actions for a duration.",
+  Confuse = "Causes the affected character to randomly attack allies or enemies.",
+  Sleep = "Puts the affected character into a deep slumber, making them unable to act.",
+  Blind = "Reduces the affected character's accuracy, making their attacks more likely to miss.",
+  Mini = "Shrinks the affected character, reducing their stats and making them vulnerable.",
+  DeathSentence = "Places a countdown on the affected character, leading to instant KO when it reaches zero.",
+  // Reflect = "Causes spells cast on the affected character to bounce back to the caster.",
+  // Doom = "Sets a timer on the affected character, resulting in instant KO when it expires.",
+  // Toad = "Transforms the affected character into a frog, limiting their abilities.",
+  // Curse = "Imposes various negative effects on the affected character's abilities.",
+  // Charm = "Controls the affected character temporarily, making them act against their will.",
+  // Zombie = "Turns the affected character undead, making healing abilities harm instead of help.",
 }

@@ -9,28 +9,63 @@
 // } from "./globals";
 // import { Character, InventoryItem, PaneInfo } from "./types";
 
-// const inventoryItems = (itemList: InventoryItem[]) =>
-//   itemList
-//     .filter((item) => item.type === "consumable")
-//     .map((item) => ({
-//       text: `${item.name} x${item.quantity}`,
-//       action: () => {
-//         console.log("item selected", item);
+import { ActionName, InventoryItemType } from "./enums";
+import { Character, InventoryItem, PaneInfo } from "./types";
 
-//         setSelectedItem(item);
-//         setBattleState(BattleState.ItemTargetSelect);
-//         drawBottomPane(panes.text(`who is getting the ${item.name}?`), true);
-//       },
-//     }));
+const inventoryItems = (itemList: InventoryItem[]) =>
+  itemList
+    .filter((item) => item.type === InventoryItemType.Consumable)
+    .map((item) => ({
+      text: `${item.name} x${item.quantity}`,
+      action: () => {
+        console.log("item selected", item);
 
-// const heroActionItems = () => [
+        // setSelectedItem(item);
+        // setBattleState(BattleState.ItemTargetSelect);
+        // drawBottomPane(panes.text(`who is getting the ${item.name}?`), true);
+      },
+    }));
+
+const heroActionDetailItems = (hero: Character, actionName: ActionName) => {
+  switch (actionName) {
+    case ActionName.Attack:
+    case ActionName.Magic:
+    case ActionName.Summon:
+    case ActionName.Invoke:
+      return hero.skills[actionName]!.map((skill) => ({
+        text: skill,
+        action: () => {
+          console.log("action detail selected", skill);
+
+          window.dispatchEvent(
+            new CustomEvent("action-detail-selected", { detail: skill })
+          );
+        },
+      }));
+    default:
+      return [];
+  }
+};
+
+const heroActionItems = (hero: Character) => {
+  return hero.actions.map((action) => ({
+    text: action,
+    action: () => {
+      window.dispatchEvent(
+        new CustomEvent("action-selected", { detail: action })
+      );
+    },
+  }));
+};
+
+// const heroActionItems = (hero: Character) => [
 //   {
 //     text: "attack",
 //     action: () => {
 //       console.log("clicked attack");
 
-//       setBattleState(BattleState.AttackTargetSelection);
-//       drawBottomPane(panes.text(`Select Target`), true);
+//       // setBattleState(BattleState.AttackTargetSelection);
+//       // drawBottomPane(panes.text(`Select Target`), true);
 
 //       // now hero needs to select a target to complete attack action
 //       // or dismiss attack action
@@ -41,13 +76,13 @@
 //     action: () => {
 //       console.log("clicked defend");
 
-//       const hero = getCurrentCharacter();
+//       // const hero = getCurrentCharacter();
 
-//       window.dispatchEvent(
-//         new CustomEvent("hero-defense", {
-//           detail: { hero },
-//         })
-//       );
+//       // window.dispatchEvent(
+//       //   new CustomEvent("hero-defense", {
+//       //     detail: { hero },
+//       //   })
+//       // );
 //     },
 //   },
 //   {
@@ -55,10 +90,10 @@
 //     action: () => {
 //       console.log("clicked item");
 
-//       setPlayerAction(PlayerAction.Item);
+//       // setPlayerAction(PlayerAction.Item);
 
-//       setBattleState(BattleState.ItemSelection);
-//       drawBottomPane(panes.itemSelection(inventory), true);
+//       // setBattleState(BattleState.ItemSelection);
+//       // drawBottomPane(panes.itemSelection(inventory), true);
 
 //       // now hero needs to select an item to complete item action
 //       // or dismiss item action
@@ -66,17 +101,19 @@
 //   },
 // ];
 
-// export type Panes = {
-//   heroActions: (hero: Character) => PaneInfo;
-//   itemSelection: (args: any) => PaneInfo;
-//   text: (message: string) => PaneInfo;
-// };
+export type Panes = {
+  heroActions: (hero: Character) => PaneInfo;
+  heroActionDetail: (hero: Character, action: ActionName) => PaneInfo;
+  itemSelection: (args: InventoryItem[]) => PaneInfo;
+  text: (message: string) => PaneInfo;
+};
 
-// // prettier-ignore
-// const panes: Panes = {
-//   text: (message: string) => ({ type: 'text', content: message}),
-//   heroActions: () => ({ type: "list", content: heroActionItems() }),
-//   itemSelection: (args: any) => ({ type: "list", content: inventoryItems(args) }),
-// };
+// prettier-ignore
+const panes: Panes = {
+  text: (message: string) => ({ type: 'text', content: message}),
+  heroActions: (hero: Character) => ({ type: "list", content: heroActionItems(hero) }),
+  heroActionDetail: (hero: Character, actionName: ActionName) => ({ type: "list", content: heroActionDetailItems(hero, actionName) }),
+  itemSelection: (itemList: InventoryItem[]) => ({ type: "list", content: inventoryItems(itemList) }),
+};
 
-// export { panes };
+export { panes };

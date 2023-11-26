@@ -1,12 +1,5 @@
-import {
-  ActionName,
-  AttackName,
-  Col,
-  Element,
-  Lane,
-  MagicSpellName,
-} from "./enums";
-import { Action, Character, Status } from "./types";
+import { ActionName, AttackName, Col, Lane, MagicSpellName } from "./enums";
+import { Character } from "./types";
 import { idMaker } from "./utils";
 
 const ENEMY_LIST: Character[] = [
@@ -24,8 +17,8 @@ const ENEMY_LIST: Character[] = [
     statuses: [],
     actions: [ActionName.Attack],
     skills: {
-      attack: [AttackName.Slash],
-      magic: [MagicSpellName.Bio],
+      [ActionName.Attack]: [AttackName.Slash],
+      [ActionName.Magic]: [MagicSpellName.Bio],
     },
   },
   {
@@ -42,8 +35,12 @@ const ENEMY_LIST: Character[] = [
     statuses: [],
     actions: [ActionName.Attack],
     skills: {
-      attack: [AttackName.Bite, AttackName.Claws, AttackName.TailWhip],
-      magic: [MagicSpellName.Fire, MagicSpellName.Bio],
+      [ActionName.Attack]: [
+        AttackName.Bite,
+        AttackName.Claws,
+        AttackName.TailWhip,
+      ],
+      [ActionName.Magic]: [MagicSpellName.Fire, MagicSpellName.Bio],
     },
   },
   {
@@ -61,13 +58,37 @@ const ENEMY_LIST: Character[] = [
     statuses: [],
     actions: [ActionName.Attack],
     skills: {
-      attack: [AttackName.IceBolt],
-      magic: [MagicSpellName.Blizzard],
+      [ActionName.Attack]: [AttackName.IceBolt],
+      [ActionName.Magic]: [MagicSpellName.Blizzard],
     },
   },
 ];
 
 const HERO_LIST: Character[] = [
+  {
+    id: idMaker(),
+    name: "Turok",
+    type: "hero",
+    hp: 640, // hp: 40,
+    speed: 45,
+    imgUrl: "/sprites/sprite-27.webp",
+    position: {
+      lane: Lane.Front,
+      col: Col.Right,
+    },
+    statuses: [],
+    actions: [
+      ActionName.Attack,
+      ActionName.Defend,
+      ActionName.Magic,
+      ActionName.Item,
+      ActionName.Move,
+    ],
+    skills: {
+      [ActionName.Attack]: [AttackName.Slash],
+      [ActionName.Magic]: [MagicSpellName.Quake],
+    },
+  },
   {
     id: idMaker(),
     name: "Abigail",
@@ -89,9 +110,9 @@ const HERO_LIST: Character[] = [
       ActionName.Move,
     ],
     skills: {
-      attack: [AttackName.Stab, AttackName.Arrow],
-      magic: [MagicSpellName.Thunder, MagicSpellName.Cure],
-      summon: ["DireWolf"],
+      [ActionName.Attack]: [AttackName.Stab, AttackName.Arrow],
+      [ActionName.Magic]: [MagicSpellName.Thunder, MagicSpellName.Cure],
+      [ActionName.Summon]: ["DireWolf"],
     },
   },
   {
@@ -116,33 +137,9 @@ const HERO_LIST: Character[] = [
       ActionName.Move,
     ],
     skills: {
-      attack: [AttackName.Stab],
-      magic: [MagicSpellName.Water],
-      invoke: ["DireWolf"],
-    },
-  },
-  {
-    id: idMaker(),
-    name: "Turok",
-    type: "hero",
-    hp: 640, // hp: 40,
-    speed: 45,
-    imgUrl: "/sprites/sprite-27.webp",
-    position: {
-      lane: Lane.Front,
-      col: Col.Right,
-    },
-    statuses: [],
-    actions: [
-      ActionName.Attack,
-      ActionName.Defend,
-      ActionName.Magic,
-      ActionName.Item,
-      ActionName.Move,
-    ],
-    skills: {
-      attack: [AttackName.Slash],
-      magic: [MagicSpellName.Quake],
+      [ActionName.Attack]: [AttackName.Stab],
+      [ActionName.Magic]: [MagicSpellName.Water],
+      [ActionName.Invoke]: ["DireWolf"],
     },
   },
 ];
