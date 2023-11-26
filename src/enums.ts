@@ -205,24 +205,26 @@ export enum ActionName {
 }
 
 export enum AttackName {
-  StoneThrow = "StoneThrow",
-  Arrow = "Arrow",
-  Slash = "Slash",
   Stab = "Stab",
-  Pierce = "Pierce",
+  Slash = "Slash",
+  Arrow = "Arrow",
+  StoneThrow = "StoneThrow",
+  // Pierce = "Pierce",
+
   Claws = "Claws",
   Bite = "Bite",
   TailWhip = "TailWhip",
-  SnowStorm = "SnowStorm",
-  FireBreath = "FireBreath",
-  Electrocute = "Electrocute",
+
   IceBolt = "IceBolt",
+  // SnowStorm = "SnowStorm",
+  // FireBreath = "FireBreath",
+  // Electrocute = "Electrocute",
 }
 
 export enum MagicSpellName {
   // Attack Spells
   Fire = "Fire",
-  Water = "Water",
+  Hydro = "Hydro",
   Aero = "Aero",
   Quake = "Quake",
   Thunder = "Thunder",

@@ -8,7 +8,7 @@ import {
   dismissBtn,
   getSlotDefenseOverlayById,
 } from "./dom";
-import { getCharacterById, getTimeline } from "./main";
+import { getAllCharacters, getCharacterById, getTimeline } from "./main";
 import { PaneInfo } from "./types";
 // import { getCharacterById, getTimeline } from "./main";
 // import { StatusName } from "./enums";
@@ -16,44 +16,44 @@ import { PaneInfo } from "./types";
 // import { Character, InventoryItem, PaneInfo, Status } from "./types";
 // import { wait } from "./utils";
 
-// function drawCharacters(): void {
-//   allCharacters.forEach((entity) => {
-//     const battleLane = battleLanesUI.find(
-//       (el) =>
-//         el.classList.contains(`${entity.type}-lane`) &&
-//         el.classList.contains(`${entity.position.lane}-row`)
-//     )!;
+function drawCharacters(): void {
+  getAllCharacters().forEach((entity) => {
+    const battleLane = battleLanesUI.find(
+      (el) =>
+        el.classList.contains(`${entity.type}-lane`) &&
+        el.classList.contains(`${entity.position.lane}-row`)
+    )!;
 
-//     const slotIndices = {
-//       left: 0,
-//       center: 1,
-//       right: 2,
-//     } as const;
+    const slotIndices = {
+      left: 0,
+      center: 1,
+      right: 2,
+    } as const;
 
-//     const slotIdx =
-//       slotIndices[entity.position.col as "left" | "center" | "right"];
+    const slotIdx =
+      slotIndices[entity.position.col as "left" | "center" | "right"];
 
-//     const slot = Array.from(battleLane.children)[slotIdx];
-//     const [topSection, avatar, bottomSection] = Array.from(slot.children);
-//     const img = avatar.children[0] as HTMLImageElement;
-//     // const overlayEl = Array.from(slot.children).find((el) =>
-//     //   el.classList.contains("efx-overlay")
-//     // );
+    const slot = Array.from(battleLane.children)[slotIdx];
+    const [topSection, avatar, bottomSection] = Array.from(slot.children);
+    const img = avatar.children[0] as HTMLImageElement;
+    // const overlayEl = Array.from(slot.children).find((el) =>
+    //   el.classList.contains("efx-overlay")
+    // );
 
-//     // console.log({ slot, overlayEl });
+    // console.log({ slot, overlayEl });
 
-//     slot.id = `${entity.id}`;
-//     topSection.textContent = entity.name;
-//     bottomSection.textContent = `HP ${entity.hp}`;
-//     img.src = entity.imgUrl;
+    slot.id = `${entity.id}`;
+    topSection.textContent = entity.name;
+    bottomSection.textContent = `HP ${entity.hp}`;
+    img.src = entity.imgUrl;
 
-//     if (entity.hp <= 0) {
-//       slot?.classList.add("dead");
-//     } else if (slot?.classList.contains("dead")) {
-//       slot?.classList.remove("dead");
-//     }
-//   });
-// }
+    if (entity.hp <= 0) {
+      slot?.classList.add("dead");
+    } else if (slot?.classList.contains("dead")) {
+      slot?.classList.remove("dead");
+    }
+  });
+}
 
 function drawTimeline(): void {
   // console.log(turnCount, ...turnSequence);
@@ -220,7 +220,7 @@ function drawBottomPane(paneInfo: PaneInfo, dismissFn?: () => void) {
 
 export {
   drawTimeline,
-  //   drawCharacters,
+  drawCharacters,
   //   drawSelectedCharacterOutline,
   //   drawAttackEffect,
   //   drawTurnCount,

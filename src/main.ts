@@ -1,7 +1,12 @@
-import { ENEMY_LIST, HERO_LIST } from "./data";
-import { dismissBtn } from "./dom";
-import { drawBottomPane, drawTimeline } from "./draw";
-import { ActionName, InventoryItemName, InventoryItemType } from "./enums";
+import { ACTION_DICT, ENEMY_LIST, HERO_LIST } from "./data";
+import { dismissBtn, slots } from "./dom";
+import { drawBottomPane, drawCharacters, drawTimeline } from "./draw";
+import {
+  ActionName,
+  InventoryItemName,
+  InventoryItemType,
+  MagicSpellName,
+} from "./enums";
 import { panes } from "./infoPane";
 import {
   StatusTurn,
@@ -10,6 +15,7 @@ import {
   InventoryItem,
   Turn,
   CurrentActionData,
+  Action,
 } from "./types";
 import {
   calcTurnDuration,
@@ -53,6 +59,8 @@ let currentActionData: CurrentActionData = {
   actionName: null,
   actionTarget: null,
 };
+let shouldSelectTarget = false;
+
 export function getCharacterById(id: string): Character {
   return allCharacters.find((c) => c.id === id)!;
 }
@@ -84,13 +92,36 @@ export function getAllEnemies() {
 export function getTimeline() {
   return timeline;
 }
+export function getAllCharacters() {
+  return allCharacters;
+}
 
 // window.addEventListener("turn-start", onTurnStart);
 window.addEventListener("character-action", onCharacterAction);
 window.addEventListener("action-selected", onActionSelected);
 window.addEventListener("action-detail-selected", onActionDetailSelected);
 window.addEventListener("action-target-selected", onActionTargetSelected);
-// function onTurnStart(e: any) {}
+
+for (const slot of slots) {
+  slot.onclick = onSlotClick;
+}
+
+function onSlotClick(e: MouseEvent) {
+  const el = e.target as HTMLElement;
+  const slot = el.closest(".lane-slot")!;
+
+  if (!slot.id) return;
+
+  const targetCharacter = getCharacterById(slot.id);
+  // console.log("onSlotClick", { slot, targetCharacter });
+
+  if (shouldSelectTarget) {
+    shouldSelectTarget = false;
+    // console.log("Target selected", { slot, targetCharacter });
+    currentActionData.actionTarget = targetCharacter;
+    window.dispatchEvent(new CustomEvent("action-target-selected"));
+  }
+}
 
 async function onCharacterAction(e: any) {
   const { characterId } = e.detail;
@@ -100,11 +131,10 @@ async function onCharacterAction(e: any) {
   console.log("onCharacterAction", character.name);
 
   drawBottomPane(panes.text(`${character.name}'s turn`));
-  await wait(2000);
+  await wait(1000);
 
   if (character.type === "enemy" || character.type === "npc") {
     //  decideEnemyAction
-    // await wait(1200);
     return updateTimeline();
   }
 
@@ -121,7 +151,6 @@ async function onActionSelected(e: any) {
   if (!currentActionData.character) {
     throw Error("no character data inside currentActionData");
   }
-
   currentActionData.actionName = actionName;
 
   if (
@@ -148,6 +177,9 @@ async function onActionSelected(e: any) {
           dismissFn
         );
         break;
+      case ActionName.Item:
+        drawBottomPane(panes.itemSelection(inventory), dismissFn);
+        break;
       case ActionName.Defend:
         drawBottomPane(
           panes.text(`${currentActionData.character.name} raised its defenses`)
@@ -155,28 +187,89 @@ async function onActionSelected(e: any) {
         await wait(1000);
         updateTimeline();
         break;
-      case ActionName.Item:
-        drawBottomPane(panes.itemSelection(inventory), dismissFn);
+      case ActionName.Steal:
+        shouldSelectTarget = true;
+        drawBottomPane(panes.text("select target to steal"));
         break;
       default:
         break;
     }
   }
 }
+
 function onActionDetailSelected(e: any) {
-  console.log("onActionDetailSelected", e);
-  // currentActionData.actionDetail =
-}
-function onActionTargetSelected(e: any) {
-  console.log("onActionTargetSelected", e);
-  // currentActionData.actionName =
+  const skill = e.detail;
+  console.log("onActionDetailSelected", skill);
 
-  // processAction()
+  currentActionData.actionDetail = skill;
+  shouldSelectTarget = true;
+  drawBottomPane(panes.text("select target"));
 }
 
-// function processAction() {
-//   console.log("processAction", { currentActionData });
-// }
+async function onActionTargetSelected() {
+  const actionData = { ...currentActionData };
+
+  // RESET CURRENT ACTION DATA
+  currentActionData.character = null;
+  currentActionData.actionDetail = null;
+  currentActionData.actionName = null;
+  currentActionData.actionTarget = null;
+
+  console.log("onActionTargetSelected", actionData);
+  await processAction(actionData);
+}
+
+async function processAction(actionData: CurrentActionData) {
+  console.log("PROCESSING ACTION!!!", { actionData });
+  const actor = actionData.character!;
+  const target = actionData.actionTarget!;
+  const action = createNewAction(actionData)!;
+
+  await wait(1000);
+
+  computeCharacterChanges(action, actor, target);
+
+  // await drawEfx()
+
+  // drawCharacters(); // to reflect the updated hp values, statuses etc
+
+  await updateTimeline();
+}
+
+function computeCharacterChanges(
+  action: Action,
+  actor: Character,
+  target: Character
+) {
+  console.log("COMPUTE CHARACTER CHANGES", { action, actor, target });
+
+  if (action.type === "physical") {
+    if (action.ranged) {
+      target.hp -= action.power; // + dexterity
+    } else {
+      target.hp -= action.power; // + strength
+    }
+  }
+  if (action.type === "magical") {
+    actor.mp -= action.mpCost;
+
+    if (action.power) {
+      if (
+        [
+          MagicSpellName.Cure,
+          MagicSpellName.Regen,
+          MagicSpellName.Protect,
+        ].includes(action.name as MagicSpellName)
+      ) {
+        target.hp += action.power;
+      } else {
+        target.hp -= action.power;
+      }
+    }
+  }
+  if (action.type === "other") {
+  }
+}
 
 function startTurn(turn: Turn) {
   console.log("startTurn", turn);
@@ -265,6 +358,7 @@ async function initializeTimeline() {
 }
 
 async function main() {
+  drawCharacters();
   await initializeTimeline();
   await wait(1000);
   await updateTimeline();
@@ -275,3 +369,16 @@ main();
 // // startTurn -> updateTimeline -> startTurn -> updateTimeline -> etc....
 
 // export { getTimeline, getCharacterById };
+
+function createNewAction(data: CurrentActionData) {
+  if (!data.actionName) return;
+
+  let action: Action | null = null;
+  if (data.actionDetail) {
+    action = ACTION_DICT[data.actionName]![data.actionDetail];
+  } else {
+  }
+
+  console.log("ACTION", action);
+  return action;
+}

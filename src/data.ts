@@ -1,6 +1,133 @@
-import { ActionName, AttackName, Col, Lane, MagicSpellName } from "./enums";
-import { Character } from "./types";
+import {
+  ActionName,
+  AttackName,
+  Col,
+  Element,
+  Lane,
+  MagicSpellName,
+  StatusName,
+} from "./enums";
+import { Action, Character } from "./types";
 import { idMaker } from "./utils";
+
+const ACTION_DICT: {
+  [actionName in ActionName]?: { [skill: string]: Action };
+} = {
+  [ActionName.Attack]: {
+    [AttackName.Stab]: {
+      name: AttackName.Stab,
+      type: "physical",
+      power: 28,
+      targets: "single",
+    },
+    [AttackName.Slash]: {
+      name: AttackName.Slash,
+      type: "physical",
+      power: 32,
+      targets: "single",
+    },
+    [AttackName.Arrow]: {
+      name: AttackName.Arrow,
+      type: "physical",
+      power: 21,
+      ranged: true,
+      targets: "single",
+    },
+    [AttackName.StoneThrow]: {
+      name: AttackName.StoneThrow,
+      type: "physical",
+      power: 15,
+      ranged: true,
+      targets: "single",
+    },
+    [AttackName.Claws]: {
+      name: AttackName.Claws,
+      type: "physical",
+      power: 30,
+      targets: "single",
+    },
+    [AttackName.Bite]: {
+      name: AttackName.Bite,
+      type: "physical",
+      power: 24,
+      targets: "single",
+    },
+    [AttackName.TailWhip]: {
+      name: AttackName.TailWhip,
+      type: "physical",
+      power: 19,
+      targets: "horiz",
+    },
+    [AttackName.IceBolt]: {
+      name: AttackName.IceBolt,
+      type: "physical",
+      power: 27,
+      ranged: true,
+      element: Element.Ice,
+      targets: "vert",
+    },
+  },
+  [ActionName.Magic]: {
+    [MagicSpellName.Fire]: {
+      type: "magical",
+      name: MagicSpellName.Fire,
+      power: 125,
+      element: Element.Fire,
+      mpCost: 4,
+      targets: "single",
+    },
+    [MagicSpellName.Thunder]: {
+      type: "magical",
+      name: MagicSpellName.Thunder,
+      power: 125,
+      element: Element.Lightning,
+      mpCost: 4,
+      targets: "single",
+    },
+    [MagicSpellName.Hydro]: {
+      type: "magical",
+      name: MagicSpellName.Hydro,
+      power: 125,
+      element: Element.Water,
+      mpCost: 4,
+      targets: "single",
+    },
+    [MagicSpellName.Bio]: {
+      type: "magical",
+      name: MagicSpellName.Bio,
+      power: 110,
+      element: Element.Poison,
+      mpCost: 6,
+      targets: "single",
+      effects: [
+        {
+          name: StatusName.Poison,
+          speed: 80,
+          power: 15,
+          turnCount: 6,
+          turnsPlayed: 0,
+        },
+      ],
+    },
+    [MagicSpellName.Regen]: {
+      type: "magical",
+      name: MagicSpellName.Regen,
+      power: 24,
+      element: Element.Poison,
+      mpCost: 14,
+      targets: "single",
+      effects: [
+        {
+          name: StatusName.Regen,
+          speed: 100,
+          power: 24,
+          turnCount: 20,
+          turnsPlayed: 0,
+        },
+      ],
+    },
+  },
+};
 
 const ENEMY_LIST: Character[] = [
   {
@@ -8,6 +135,7 @@ const ENEMY_LIST: Character[] = [
     name: "Skeleton",
     type: "enemy",
     hp: 120,
+    mp: 50,
     speed: 70,
     imgUrl: "/sprites/sprite-70.webp",
     position: {
@@ -26,6 +154,7 @@ const ENEMY_LIST: Character[] = [
     name: "Demon",
     type: "enemy",
     hp: 250,
+    mp: 50,
     speed: 58,
     imgUrl: "/sprites/sprite-77.webp",
     position: {
@@ -49,6 +178,7 @@ const ENEMY_LIST: Character[] = [
     type: "enemy",
     hp: 20,
     // hp: 320,
+    mp: 50,
     speed: 50,
     imgUrl: "/sprites/sprite-78.webp",
     position: {
@@ -70,6 +200,7 @@ const HERO_LIST: Character[] = [
     name: "Turok",
     type: "hero",
     hp: 640, // hp: 40,
+    mp: 29,
     speed: 45,
     imgUrl: "/sprites/sprite-27.webp",
     position: {
@@ -94,6 +225,7 @@ const HERO_LIST: Character[] = [
     name: "Abigail",
     type: "hero",
     hp: 520, // hp: 20,
+    mp: 50,
     speed: 54,
     imgUrl: "/sprites/sprite-09.webp",
     position: {
@@ -119,7 +251,8 @@ const HERO_LIST: Character[] = [
     id: idMaker(),
     name: "Savannah",
     type: "hero",
-    hp: 570, // hp: 70,
+    hp: 570,
+    mp: 70,
     speed: 62,
     imgUrl: "/sprites/sprite-04.webp",
     position: {
@@ -138,7 +271,7 @@ const HERO_LIST: Character[] = [
     ],
     skills: {
       [ActionName.Attack]: [AttackName.Stab],
-      [ActionName.Magic]: [MagicSpellName.Water],
+      [ActionName.Magic]: [MagicSpellName.Hydro],
       [ActionName.Invoke]: ["DireWolf"],
     },
   },
@@ -177,7 +310,7 @@ const HERO_LIST: Character[] = [
 //   },
 // ];
 
-export { ENEMY_LIST, HERO_LIST /*STATUS_LIST*/ };
+export { ENEMY_LIST, HERO_LIST, ACTION_DICT /*STATUS_LIST*/ };
 
 // const actionDict: { [k in ActionName]?: Action } = {
 //   [ActionName.Attack]: {

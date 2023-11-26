@@ -9,49 +9,17 @@ import {
   MagicSpellName,
 } from "./enums";
 
-export {}; //keep that for TS compiler.
-
 export type Position = {
   lane: Lane;
   col: Col;
 };
-
-export type ActionTarget =
-  | "self"
-  | "single"
-  | "vert"
-  | "horiz"
-  | "party"
-  | "all";
-
-export type Spell = {
-  name: MagicSpellName;
-  power: number;
-  mpCost: number;
-  element?: Element;
-};
-
-export type Attack = {
-  name: AttackName;
-  power: number;
-  ranged?: boolean;
-  element?: Element;
-};
-
-export type Action =
-  | (
-      | { type: "other" }
-      | { type: "physical"; attack: Attack }
-      | { type: "magical"; spell: Spell }
-    ) & {
-      targets: ActionTarget;
-    };
 
 export type Character = {
   id: string;
   name: string;
   type: "hero" | "enemy" | "npc";
   hp: number;
+  mp: number;
   speed: number;
   imgUrl: string;
   position: Position;
@@ -65,10 +33,53 @@ export type Character = {
   };
 };
 
+export type ActionTarget =
+  | "self"
+  | "single"
+  | "vert"
+  | "horiz"
+  | "party"
+  | "all";
+
+// export type Spell = {
+//   name: MagicSpellName;
+//   power: number;
+//   mpCost: number;
+//   element?: Element;
+// };
+
+// export type Attack = {
+//   name: AttackName;
+//   power: number;
+//   ranged?: boolean;
+//   element?: Element;
+// };
+
+export type Action = (
+  | {
+      name: AttackName;
+      type: "physical";
+      power: number;
+      ranged?: boolean;
+      element?: Element;
+    }
+  | {
+      name: MagicSpellName;
+      type: "magical";
+      mpCost: number;
+      power?: number;
+      effects?: Status[];
+      element?: Element;
+    }
+  | {
+      type: "other";
+    }
+) & {
+  targets: ActionTarget;
+};
+
 export type Status = {
-  id: string;
   name: string;
-  characterId: string;
   turnsPlayed: number;
   turnCount: number;
   speed: number;
