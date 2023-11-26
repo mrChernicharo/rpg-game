@@ -71,6 +71,19 @@ const ENEMY_LIST = [
 ];
 
 const HERO_LIST = [
+  // {
+  //   id: idMaker(),
+  //   name: "Squall",
+  //   type: "hero",
+  //   // hp: 20,
+  //   hp: 520,
+  //   speed: 64,
+  //   imgUrl: "/sprites/sprite-01.webp",
+  //   position: {
+  //     lane: "front",
+  //     col: "center",
+  //   },
+  // },
   {
     id: idMaker(),
     name: "Abigail",

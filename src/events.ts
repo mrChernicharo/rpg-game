@@ -15,7 +15,7 @@ import {
   drawTimeline,
   drawTurnCount,
 } from "./draw";
-import { PlayerAction, BattleState, StatusEffectName } from "./enums";
+import { PlayerAction, BattleState, StatusName } from "./enums";
 import {
   setBattleState,
   getCharacterById,
@@ -53,7 +53,7 @@ async function onStatusActed(status: Status, character: Character) {
 
   const slot = getSlotElementById(character.id);
 
-  if (status.name === StatusEffectName.Poison) {
+  if (status.name === StatusName.Poison) {
     const poisonExpired = status.turnsPlayed >= status.turnCount;
 
     if (poisonExpired) {
@@ -69,6 +69,11 @@ async function onStatusActed(status: Status, character: Character) {
         allStatuses: allStatuses.slice(),
       });
 
+      if (character.statuses.includes(StatusName.Poison)) {
+        character.statuses = character.statuses.filter(
+          (s) => s !== StatusName.Poison
+        );
+      }
       if (slot.classList.contains("poisoned")) {
         slot.classList.remove("poisoned");
       }
@@ -98,7 +103,7 @@ async function onHeroDefense(data: any) {
 
   const hero = getAllHeroes().find((c) => c.id === heroData.id);
 
-  hero?.statuses.push("defending");
+  hero?.statuses.push(StatusName.Defense);
 
   await wait(500);
 
@@ -187,7 +192,7 @@ async function handleAttack(
 
   await drawAttackEffect(attacker, target);
 
-  if (target.statuses.includes("defending")) {
+  if (target.statuses.includes(StatusName.Defense)) {
     const halfPowerAttack = Math.ceil(attackPower / 2);
     console.log("HIT DEFENDING HERO!", { attackPower, halfPowerAttack });
 
@@ -297,10 +302,13 @@ async function handleStatusTurn(status: Status, character: Character) {
   );
 
   switch (status.name) {
-    case StatusEffectName.Poison:
+    case StatusName.Poison:
       character.hp -= status.power;
 
-      // await drawPoisonEffect(character.id)
+      if (!character.statuses.includes(StatusName.Poison)) {
+        character.statuses.push(StatusName.Poison);
+      }
+
       break;
     default:
       break;
@@ -317,7 +325,7 @@ async function handleCharacterTurn(entity: Character): Promise<void> {
   console.log(`It's ${entity.name.toUpperCase()}'s turn...`);
   console.log(`==========================================`);
 
-  console.log(entity.type);
+  console.log(":::", entity.name, entity.type, allCharacters);
 
   if (entity.type === "enemy") {
     const targetHero = chooseTargetForEnemy(entity);

@@ -199,7 +199,8 @@ export enum InventoryItemDescription {
   ZodiacSpear = "Spear embodying the signs of the zodiac, offering versatile abilities.",
 }
 
-export enum StatusEffectName {
+export enum StatusName {
+  Defense = "Defense",
   Poison = "Poison",
   Silence = "Silence",
   Petrify = "Petrify",
@@ -223,7 +224,8 @@ export enum StatusEffectName {
   // Zombie = "Zombie",
 }
 
-export enum StatusEffectDescription {
+export enum StatusDescription {
+  Defense = "Halves damage from physical attacks",
   Regen = "Gradually restores the affected character's health over time.",
   Haste = "Increases the affected character's speed or action frequency.",
   Barrier = "Enhances the affected character's defenses against physical attacks.",
