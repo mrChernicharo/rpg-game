@@ -20,9 +20,9 @@ const inventoryItems = (itemList: InventoryItem[]) =>
       action: () => {
         console.log("item selected", item);
 
-        // setSelectedItem(item);
-        // setBattleState(BattleState.ItemTargetSelect);
-        // drawBottomPane(panes.text(`who is getting the ${item.name}?`), true);
+        window.dispatchEvent(
+          new CustomEvent("action-detail-selected", { detail: item.name })
+        );
       },
     }));
 

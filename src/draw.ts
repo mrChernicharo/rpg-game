@@ -9,7 +9,8 @@ import {
   getSlotDefenseOverlayById,
 } from "./dom";
 import { getAllCharacters, getCharacterById, getTimeline } from "./main";
-import { PaneInfo } from "./types";
+import { Character, PaneInfo } from "./types";
+import { wait } from "./utils";
 // import { getCharacterById, getTimeline } from "./main";
 // import { StatusName } from "./enums";
 // import { allCharacters, getCharacterById, timeline } from "./globals";
@@ -97,15 +98,15 @@ function drawTimeline(): void {
   }
 }
 
-// async function drawSelectedCharacterOutline(entity: Character): Promise<void> {
-//   const prevSlot = document.querySelector(`.selected`);
-//   const slot = document.querySelector(`#${entity.id}`);
+async function drawSelectedCharacterOutline(entity: Character): Promise<void> {
+  const prevSlot = document.querySelector(`.selected`);
+  const slot = document.querySelector(`#${entity.id}`);
 
-//   prevSlot?.classList.remove("selected");
-//   slot?.classList.add("selected");
+  prevSlot?.classList.remove("selected");
+  slot?.classList.add("selected");
 
-//   return Promise.resolve();
-// }
+  return Promise.resolve();
+}
 
 // async function drawAttackEffect(
 //   attacker: Character,
@@ -127,16 +128,16 @@ function drawTimeline(): void {
 //   return Promise.resolve();
 // }
 
-// async function drawDefenseEffect(hero: Character): Promise<void> {
-//   const slotEl = getSlotElementById(hero.id);
-//   const overlayEl = getSlotDefenseOverlayById(hero.id);
+async function drawDefenseEffect(hero: Character): Promise<void> {
+  const slotEl = getSlotElementById(hero.id);
+  const overlayEl = getSlotDefenseOverlayById(hero.id);
 
-//   slotEl?.classList.add(`defense-perform`);
-//   overlayEl?.classList.add(`defending`); // will be removed at the beginning of next turn
+  slotEl?.classList.add(`defense-perform`);
+  overlayEl?.classList.add(`defending`); // will be removed at the beginning of next turn
 
-//   await wait(900);
-//   slotEl?.classList.remove(`defense-perform`);
-// }
+  await wait(900);
+  slotEl?.classList.remove(`defense-perform`);
+}
 
 // async function drawItemEffect(
 //   item: InventoryItem,
@@ -221,10 +222,10 @@ function drawBottomPane(paneInfo: PaneInfo, dismissFn?: () => void) {
 export {
   drawTimeline,
   drawCharacters,
-  //   drawSelectedCharacterOutline,
+  drawSelectedCharacterOutline,
   //   drawAttackEffect,
   //   drawTurnCount,
-  //   drawDefenseEffect,
+  drawDefenseEffect,
   drawBottomPane,
   //   drawItemEffect,
   //   drawStatusEffect,

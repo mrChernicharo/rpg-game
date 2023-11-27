@@ -193,29 +193,29 @@ export enum InventoryItemDescription {
 }
 
 export enum ActionName {
-  Attack = "Attack",
-  Magic = "Magic",
-  Defend = "Defend",
-  Steal = "Steal",
-  Invoke = "Invoke",
-  Summon = "Summon",
-  Hide = "Hide",
-  Item = "Item",
-  Move = "Move",
+  Attack = "attack",
+  Magic = "magic",
+  Defend = "defend",
+  Steal = "steal",
+  Invoke = "invoke",
+  Summon = "summon",
+  Hide = "hide",
+  Item = "item",
+  Move = "move",
 }
 
 export enum AttackName {
-  Stab = "Stab",
-  Slash = "Slash",
-  Arrow = "Arrow",
-  StoneThrow = "StoneThrow",
-  // Pierce = "Pierce",
+  Punch = "punch",
+  Stab = "stab",
+  Slash = "slash",
+  Arrow = "arrow",
+  StoneThrow = "stone throw",
 
-  Claws = "Claws",
-  Bite = "Bite",
-  TailWhip = "TailWhip",
+  Claws = "claws",
+  Bite = "bite",
+  TailWhip = "tail whip",
 
-  IceBolt = "IceBolt",
+  IceBolt = "ice bolt",
   // SnowStorm = "SnowStorm",
   // FireBreath = "FireBreath",
   // Electrocute = "Electrocute",

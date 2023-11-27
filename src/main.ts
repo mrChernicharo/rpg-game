@@ -1,11 +1,28 @@
-import { ACTION_DICT, ENEMY_LIST, HERO_LIST } from "./data";
-import { dismissBtn, slots } from "./dom";
-import { drawBottomPane, drawCharacters, drawTimeline } from "./draw";
+import {
+  DETAILED_ACTION_DICT,
+  ENEMY_LIST,
+  HERO_LIST,
+  SIMPLE_ACTION_DICT,
+} from "./data";
+import {
+  dismissBtn,
+  getSlotDefenseOverlayById,
+  getSlotEfxOverlayById,
+  slots,
+} from "./dom";
+import {
+  drawBottomPane,
+  drawCharacters,
+  drawDefenseEffect,
+  drawSelectedCharacterOutline,
+  drawTimeline,
+} from "./draw";
 import {
   ActionName,
   InventoryItemName,
   InventoryItemType,
   MagicSpellName,
+  StatusName,
 } from "./enums";
 import { panes } from "./infoPane";
 import {
@@ -16,6 +33,7 @@ import {
   Turn,
   CurrentActionData,
   Action,
+  Status,
 } from "./types";
 import {
   calcTurnDuration,
@@ -61,14 +79,18 @@ let currentActionData: CurrentActionData = {
 };
 let shouldSelectTarget = false;
 
-export function getCharacterById(id: string): Character {
-  return allCharacters.find((c) => c.id === id)!;
+export function getTimeline() {
+  return timeline;
 }
-
+export function getAllCharacters() {
+  return allCharacters;
+}
 function incrementTurnCount() {
   turnCount++;
 }
-
+export function getCharacterById(id: string): Character {
+  return getAllCharacters().find((c) => c.id === id)!;
+}
 export function getAllHeroes() {
   const allHeroes = [];
   for (const char of allCharacters) {
@@ -78,7 +100,6 @@ export function getAllHeroes() {
   }
   return allHeroes;
 }
-
 export function getAllEnemies() {
   const allEnemies = [];
   for (const char of allCharacters) {
@@ -87,13 +108,6 @@ export function getAllEnemies() {
     }
   }
   return allEnemies;
-}
-
-export function getTimeline() {
-  return timeline;
-}
-export function getAllCharacters() {
-  return allCharacters;
 }
 
 // window.addEventListener("turn-start", onTurnStart);
@@ -109,7 +123,6 @@ for (const slot of slots) {
 function onSlotClick(e: MouseEvent) {
   const el = e.target as HTMLElement;
   const slot = el.closest(".lane-slot")!;
-
   if (!slot.id) return;
 
   const targetCharacter = getCharacterById(slot.id);
@@ -152,16 +165,14 @@ async function onActionSelected(e: any) {
     throw Error("no character data inside currentActionData");
   }
   currentActionData.actionName = actionName;
+  const isHeroAction = currentActionData.character.type === "hero";
 
-  if (
-    currentActionData.character.type === "enemy" ||
-    currentActionData.character.type === "npc"
-  ) {
+  if (!isHeroAction) {
     // selectActionDetail
     // selectTarget
   }
 
-  if (currentActionData.character.type === "hero") {
+  if (isHeroAction) {
     const dismissFn = () => {
       console.log("dismiss");
       drawBottomPane(panes.heroActions(currentActionData.character!));
@@ -181,11 +192,8 @@ async function onActionSelected(e: any) {
         drawBottomPane(panes.itemSelection(inventory), dismissFn);
         break;
       case ActionName.Defend:
-        drawBottomPane(
-          panes.text(`${currentActionData.character.name} raised its defenses`)
-        );
-        await wait(1000);
-        updateTimeline();
+        currentActionData.actionTarget = currentActionData.character;
+        onActionTargetSelected();
         break;
       case ActionName.Steal:
         shouldSelectTarget = true;
@@ -198,16 +206,37 @@ async function onActionSelected(e: any) {
 }
 
 function onActionDetailSelected(e: any) {
-  const skill = e.detail;
-  console.log("onActionDetailSelected", skill);
+  const detail = e.detail;
 
-  currentActionData.actionDetail = skill;
+  currentActionData.actionDetail = detail;
   shouldSelectTarget = true;
+
+  // console.log("onActionDetailSelected", { detail, currentActionData });
   drawBottomPane(panes.text("select target"));
 }
 
+function createNewAction(actionName: ActionName, actionDetail: string | null) {
+  let action: Action | null = null;
+
+  if (actionDetail) {
+    action = DETAILED_ACTION_DICT[actionName]![actionDetail];
+  } else {
+    action = SIMPLE_ACTION_DICT[actionName]!;
+  }
+
+  console.log(":::createNewAction", action, actionName, actionDetail);
+  return action;
+}
+
 async function onActionTargetSelected() {
-  const actionData = { ...currentActionData };
+  const actionData = {
+    actorId: currentActionData.character!.id,
+    targetId: currentActionData.actionTarget!.id,
+    action: createNewAction(
+      currentActionData.actionName!,
+      currentActionData.actionDetail || null
+    ) as Action,
+  };
 
   // RESET CURRENT ACTION DATA
   currentActionData.character = null;
@@ -216,27 +245,34 @@ async function onActionTargetSelected() {
   currentActionData.actionTarget = null;
 
   console.log("onActionTargetSelected", actionData);
+
   await processAction(actionData);
 }
 
-async function processAction(actionData: CurrentActionData) {
-  console.log("PROCESSING ACTION!!!", { actionData });
-  const actor = actionData.character!;
-  const target = actionData.actionTarget!;
-  const action = createNewAction(actionData)!;
+async function processAction(actionData: {
+  actorId: string;
+  targetId: string;
+  action: Action;
+}) {
+  const { action, actorId, targetId } = actionData;
+  const actor = getCharacterById(actorId);
+  const target = getCharacterById(targetId);
+
+  console.log("PROCESSING ACTION!!!", { actionData, action, actor, target });
 
   await wait(1000);
 
-  computeCharacterChanges(action, actor, target);
+  await computeCharacterChanges(action, actor, target);
 
   // await drawEfx()
 
-  // drawCharacters(); // to reflect the updated hp values, statuses etc
+  await wait(1000);
+  drawCharacters(); // to reflect the updated hp values, statuses etc
 
   await updateTimeline();
 }
 
-function computeCharacterChanges(
+async function computeCharacterChanges(
   action: Action,
   actor: Character,
   target: Character
@@ -250,6 +286,7 @@ function computeCharacterChanges(
       target.hp -= action.power; // + strength
     }
   }
+  //
   if (action.type === "magical") {
     actor.mp -= action.mpCost;
 
@@ -267,14 +304,62 @@ function computeCharacterChanges(
       }
     }
   }
+  //
+  if (action.type === "item") {
+  }
+  //
   if (action.type === "other") {
+    switch (action.name) {
+      case ActionName.Defend:
+        drawBottomPane(panes.text(`${actor.name} raised its defenses`));
+
+        actor.statuses.push({
+          name: StatusName.Defense,
+          turnCount: 1,
+          turnsPlayed: 0,
+        });
+        console.log("HANDLE DEFEND!", actor.name, {
+          actor,
+          all: getAllCharacters(),
+        });
+
+        await drawDefenseEffect(actor);
+        break;
+      default:
+        break;
+    }
   }
 }
 
-function startTurn(turn: Turn) {
-  console.log("startTurn", turn);
+function getDefenseStatusIdxByName(statusList: Status[]) {
+  const defenseStatusIdx = statusList.findIndex(
+    (s) => s.name === StatusName.Defense
+  );
+  return defenseStatusIdx;
+}
+
+async function startTurn(turn: Turn) {
+  const character = getCharacterById(turn.entity.id);
+  await drawSelectedCharacterOutline(character);
+  console.log("startTurn", character.name, {
+    turn,
+    character: { ...character },
+  });
 
   if (turn.type !== "status") {
+    if (turn.entity.type === "hero") {
+      const character = getCharacterById(turn.entity.id);
+      const removeIdx = getDefenseStatusIdxByName(character.statuses);
+
+      if (removeIdx > -1) {
+        const slotOverlay = getSlotDefenseOverlayById(character.id)!;
+        slotOverlay.classList.remove("defending");
+
+        character.statuses.splice(removeIdx, 1);
+        console.log("REMOVED DEFENSE STATUS", character.name, { ...character });
+      }
+    }
+
     window.dispatchEvent(
       new CustomEvent("character-action", {
         detail: {
@@ -286,7 +371,7 @@ function startTurn(turn: Turn) {
 }
 
 async function updateTimeline() {
-  console.log("updateTimeline");
+  // console.log("updateTimeline");
   incrementTurnCount();
   drawTimeline();
 
@@ -324,12 +409,12 @@ async function updateTimeline() {
   // reinsert turn
   timeline.splice(insertionIdx, 0, nextTurn);
 
-  console.log(
-    "\n prevTimeline \n",
-    prevTimeline,
-    "\n timeline \n",
-    timeline.slice()
-  );
+  // console.log(
+  //   "\n prevTimeline \n",
+  //   prevTimeline,
+  //   "\n timeline \n",
+  //   timeline.slice()
+  // );
 
   startTurn(currentTurn);
 }
@@ -370,15 +455,22 @@ main();
 
 // export { getTimeline, getCharacterById };
 
-function createNewAction(data: CurrentActionData) {
-  if (!data.actionName) return;
+// Marcos vê Fred e Raquel
+// Raquel sai
+// Fred arruma treta com Marcos
+// Marcos volta pro hotel e pede whisky
 
-  let action: Action | null = null;
-  if (data.actionDetail) {
-    action = ACTION_DICT[data.actionName]![data.actionDetail];
-  } else {
-  }
+// Expedito confessa o q fez pra Lorena
+// Lorena briga e manda Expedito se calar q ela vai descansar e pensar
+// Expedito sai pra espairecer e encontra Marina
+// Ela convida ele pro estúdio
+// Lorena acorda e vai tirar satisfação com Marina
+// Chegando no estúdio, vê Expedito lá
+// Lorena manda real e sai
+// Expedito e Marina transam
+// Lorena tem momento música reflexiva
 
-  console.log("ACTION", action);
-  return action;
-}
+//
+
+// Paulinha sacaneia durante encontro da galera na casa do Cesar
+// Rodrigo manda real na Paulinha

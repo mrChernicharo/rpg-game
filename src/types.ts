@@ -23,7 +23,7 @@ export type Character = {
   speed: number;
   imgUrl: string;
   position: Position;
-  statuses: string[];
+  statuses: Status[];
   actions: ActionName[];
   skills: {
     [ActionName.Attack]: AttackName[];
@@ -72,6 +72,11 @@ export type Action = (
       element?: Element;
     }
   | {
+      name: InventoryItemName;
+      type: "item";
+    }
+  | {
+      name: string;
       type: "other";
     }
 ) & {
@@ -82,8 +87,8 @@ export type Status = {
   name: string;
   turnsPlayed: number;
   turnCount: number;
-  speed: number;
-  power: number;
+  speed?: number;
+  power?: number;
 };
 
 export type TurnEntity = {
