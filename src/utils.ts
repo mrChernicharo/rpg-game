@@ -32,3 +32,9 @@ export const wait = async (timeInMilliseconds: number): Promise<void> => {
   console.log(`...................... wait ${timeInMilliseconds}ms`);
   return new Promise((resolve) => setTimeout(resolve, timeInMilliseconds));
 };
+
+export function rowDice(num: number) {
+  const result = Math.floor(Math.random() * num);
+  console.log(`row ${num} side dice`, result);
+  return result;
+}

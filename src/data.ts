@@ -4,12 +4,40 @@ import {
   Col,
   Element,
   InventoryItemName,
+  InventoryItemType,
   Lane,
   MagicSpellName,
   StatusName,
 } from "./enums";
-import { Action, Character, Status } from "./types";
+import { Action, Character, InventoryItem, Status } from "./types";
 import { idMaker } from "./utils";
+
+const INVENTORY_LIST: InventoryItem[] = [
+  {
+    id: idMaker(),
+    name: InventoryItemName.Potion,
+    type: InventoryItemType.Consumable,
+    quantity: 3,
+  },
+  {
+    id: idMaker(),
+    name: InventoryItemName.Ether,
+    type: InventoryItemType.Consumable,
+    quantity: 2,
+  },
+  {
+    id: idMaker(),
+    name: InventoryItemName.PhoenixDown,
+    type: InventoryItemType.Consumable,
+    quantity: 4,
+  },
+  {
+    id: idMaker(),
+    name: InventoryItemName.ShortSword,
+    type: InventoryItemType.Equipment,
+    quantity: 1,
+  },
+];
 
 const ENEMY_LIST: Character[] = [
   {
@@ -46,11 +74,7 @@ const ENEMY_LIST: Character[] = [
     statuses: [],
     actions: [ActionName.Attack],
     skills: {
-      [ActionName.Attack]: [
-        AttackName.Bite,
-        AttackName.Claws,
-        AttackName.TailWhip,
-      ],
+      [ActionName.Attack]: [AttackName.Bite, AttackName.Claws, AttackName.TailWhip],
       [ActionName.Magic]: [MagicSpellName.Fire, MagicSpellName.Bio],
     },
   },
@@ -90,43 +114,31 @@ const HERO_LIST: Character[] = [
       col: Col.Center,
     },
     statuses: [],
-    actions: [
-      ActionName.Attack,
-      ActionName.Defend,
-      ActionName.Magic,
-      ActionName.Item,
-      ActionName.Move,
-    ],
+    actions: [ActionName.Attack, ActionName.Steal, ActionName.Defend, ActionName.Magic, ActionName.Item],
     skills: {
       [ActionName.Attack]: [AttackName.Slash],
       [ActionName.Magic]: [MagicSpellName.Bio],
     },
   },
-  {
-    id: idMaker(),
-    name: "Turok",
-    type: "hero",
-    hp: 640, // hp: 40,
-    mp: 29,
-    speed: 45,
-    imgUrl: "/sprites/sprite-27.webp",
-    position: {
-      lane: Lane.Front,
-      col: Col.Right,
-    },
-    statuses: [],
-    actions: [
-      ActionName.Attack,
-      ActionName.Defend,
-      ActionName.Magic,
-      ActionName.Item,
-      ActionName.Move,
-    ],
-    skills: {
-      [ActionName.Attack]: [AttackName.Slash],
-      [ActionName.Magic]: [MagicSpellName.Quake],
-    },
-  },
+  // {
+  //   id: idMaker(),
+  //   name: "Turok",
+  //   type: "hero",
+  //   hp: 640, // hp: 40,
+  //   mp: 29,
+  //   speed: 45,
+  //   imgUrl: "/sprites/sprite-27.webp",
+  //   position: {
+  //     lane: Lane.Front,
+  //     col: Col.Right,
+  //   },
+  //   statuses: [],
+  //   actions: [ActionName.Attack, ActionName.Defend, ActionName.Magic, ActionName.Item, ActionName.Move],
+  //   skills: {
+  //     [ActionName.Attack]: [AttackName.Slash],
+  //     [ActionName.Magic]: [MagicSpellName.Quake],
+  //   },
+  // },
   {
     id: idMaker(),
     name: "Abigail",
@@ -376,63 +388,4 @@ const SIMPLE_ACTION_DICT: { [actionName in ActionName]?: Action } = {
   },
 };
 
-// {
-//   id: idMaker(),
-//   characterId: HERO_LIST[1].id,
-//   name: "Poison",
-//   // speed: 60,
-//   speed: 80,
-//   power: 16,
-//   turnsPlayed: 0,
-//   turnCount: 2,
-// },
-// {
-//   id: idMaker(),
-//   characterId: HERO_LIST[2].id,
-//   name: "Poison",
-//   // speed: 60,
-//   speed: 70,
-//   power: 16,
-//   turnsPlayed: 0,
-//   turnCount: 1,
-// },
-
-export {
-  ENEMY_LIST,
-  HERO_LIST,
-  STATUS_LIST,
-  DETAILED_ACTION_DICT,
-  SIMPLE_ACTION_DICT,
-};
-
-// const actionDict: { [k in ActionName]?: Action } = {
-//   [ActionName.Attack]: {
-//     type: "physical",
-//     attack: {
-//       name: AttackName.Slash,
-//       power: 65,
-//     },
-//     targets: "single",
-//   },
-//   [ActionName.Magic]: {
-//     type: "magical",
-//     spell: {
-//       name: MagicSpellName.Thunder,
-//       mpCost: 4,
-//       power: 132,
-//     },
-//     targets: "single",
-//   },
-//   [ActionName.Defend]: {
-//     type: "other",
-//     targets: "self",
-//   },
-//   [ActionName.Item]: {
-//     type: "other",
-//     targets: "single",
-//   },
-//   [ActionName.Move]: {
-//     type: "other",
-//     targets: "single",
-//   },
-// };
+export { INVENTORY_LIST, ENEMY_LIST, HERO_LIST, STATUS_LIST, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT };

@@ -9,21 +9,14 @@ import {
   getSlotDefenseOverlayById,
 } from "./dom";
 import { ActionName, StatusName } from "./enums";
-import { getAllCharacters, getCharacterById, getTimeline } from "./main";
+import { getAllCharacters, getTimeline, getCharacterById } from "./globals";
 import { Action, Character, InventoryItem, PaneInfo, Status } from "./types";
 import { wait } from "./utils";
-// import { getCharacterById, getTimeline } from "./main";
-// import { StatusName } from "./enums";
-// import { allCharacters, getCharacterById, timeline } from "./globals";
-// import { Character, InventoryItem, PaneInfo, Status } from "./types";
-// import { wait } from "./utils";
 
 function drawCharacters(): void {
   getAllCharacters().forEach((entity) => {
     const battleLane = battleLanesUI.find(
-      (el) =>
-        el.classList.contains(`${entity.type}-lane`) &&
-        el.classList.contains(`${entity.position.lane}-row`)
+      (el) => el.classList.contains(`${entity.type}-lane`) && el.classList.contains(`${entity.position.lane}-row`)
     )!;
 
     const slotIndices = {
@@ -32,8 +25,7 @@ function drawCharacters(): void {
       right: 2,
     } as const;
 
-    const slotIdx =
-      slotIndices[entity.position.col as "left" | "center" | "right"];
+    const slotIdx = slotIndices[entity.position.col as "left" | "center" | "right"];
 
     const slot = Array.from(battleLane.children)[slotIdx];
     const [topSection, avatar, bottomSection] = Array.from(slot.children);
@@ -64,8 +56,7 @@ function drawTimeline(): void {
   for (let i = 0; i < getTimeline().length; i++) {
     const turn = getTimeline()[i];
     const timeToNextTurn = turn.nextTurnAt - getTimeline()[0].nextTurnAt;
-    const timeToNextTurnStr =
-      i === 0 ? " now" : ` ${timeToNextTurn.toFixed(2)}`;
+    const timeToNextTurnStr = i === 0 ? " now" : ` ${timeToNextTurn.toFixed(2)}`;
     // i === 0 ? " now" : i === 1 ? " next" : ` ${timeToNextTurn.toFixed(2)}`;
 
     const div = document.createElement("div");
@@ -109,11 +100,7 @@ async function drawSelectedCharacterOutline(entity: Character): Promise<void> {
   return Promise.resolve();
 }
 
-async function drawAttackEffect(
-  attacker: Character,
-  target: Character,
-  action: Action
-): Promise<void> {
+async function drawAttackEffect(attacker: Character, target: Character, action: Action): Promise<void> {
   const targetSlot = getSlotElementById(target.id);
   const attackerSlot = getSlotElementById(attacker.id);
 
@@ -128,6 +115,25 @@ async function drawAttackEffect(
 
   attackerSlot.classList.remove(`${attackType}-attack-perform`);
   targetSlot.classList.remove(`${attackType}-attack-receive`);
+
+  return Promise.resolve();
+}
+
+async function drawAMagicEffect(attacker: Character, target: Character, action: Action): Promise<void> {
+  const targetSlot = getSlotElementById(target.id);
+  const attackerSlot = getSlotElementById(attacker.id);
+
+  if (action.type !== "magical") return;
+
+  // const attackType = action.ranged ? "melee" : "ranged";
+
+  attackerSlot.classList.add(`magic-perform`);
+  targetSlot.classList.add(`magic-receive`);
+
+  await wait(1000);
+
+  attackerSlot.classList.remove(`magic-perform`);
+  targetSlot.classList.remove(`magic-receive`);
 
   return Promise.resolve();
 }
@@ -229,6 +235,7 @@ export {
   drawSelectedCharacterOutline,
   drawTurnCount,
   drawAttackEffect,
+  drawAMagicEffect,
   drawDefenseEffect,
   drawItemEffect,
   drawStatusEffect,

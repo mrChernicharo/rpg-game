@@ -248,6 +248,19 @@ button:focus-visible {
   }
 }
 
+
+.magic-perform {
+  .avatar-img {
+    animation: shake-lr 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+}
+
+.magic-receive {
+  .efx-overlay {
+    animation: magic 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+}
+
 .ranged-attack-perform,
 .melee-attack-perform {
   .avatar-img {

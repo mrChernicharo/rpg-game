@@ -18,11 +18,9 @@ const inventoryItems = (itemList: InventoryItem[]) =>
     .map((item) => ({
       text: `${item.name} x${item.quantity}`,
       action: () => {
-        console.log("item selected", item);
+        console.log("", item);
 
-        window.dispatchEvent(
-          new CustomEvent("action-detail-selected", { detail: item.name })
-        );
+        window.dispatchEvent(new CustomEvent("action-detail-selected", { detail: item.name }));
       },
     }));
 
@@ -37,9 +35,7 @@ const heroActionDetailItems = (hero: Character, actionName: ActionName) => {
         action: () => {
           console.log("action detail selected", skill);
 
-          window.dispatchEvent(
-            new CustomEvent("action-detail-selected", { detail: skill })
-          );
+          window.dispatchEvent(new CustomEvent("action-detail-selected", { detail: skill }));
         },
       }));
     default:
@@ -51,9 +47,7 @@ const heroActionItems = (hero: Character) => {
   return hero.actions.map((action) => ({
     text: action,
     action: () => {
-      window.dispatchEvent(
-        new CustomEvent("action-selected", { detail: action })
-      );
+      window.dispatchEvent(new CustomEvent("action-selected", { detail: action }));
     },
   }));
 };

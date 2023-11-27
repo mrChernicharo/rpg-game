@@ -1,16 +1,7 @@
+import { DETAILED_ACTION_DICT, ENEMY_LIST, HERO_LIST, INVENTORY_LIST, SIMPLE_ACTION_DICT } from "./data";
+import { dismissBtn, getSlotDefenseOverlayById, getSlotEfxOverlayById, slots } from "./dom";
 import {
-  DETAILED_ACTION_DICT,
-  ENEMY_LIST,
-  HERO_LIST,
-  SIMPLE_ACTION_DICT,
-} from "./data";
-import {
-  dismissBtn,
-  getSlotDefenseOverlayById,
-  getSlotEfxOverlayById,
-  slots,
-} from "./dom";
-import {
+  drawAMagicEffect,
   drawAttackEffect,
   drawBottomPane,
   drawCharacters,
@@ -20,98 +11,23 @@ import {
   drawTimeline,
   drawTurnCount,
 } from "./draw";
+import { ActionName, InventoryItemName, InventoryItemType, MagicSpellName, StatusName } from "./enums";
 import {
-  ActionName,
-  InventoryItemName,
-  InventoryItemType,
-  MagicSpellName,
-  StatusName,
-} from "./enums";
+  getCharacterById,
+  getAllCharacters,
+  shouldSelectTarget,
+  setShouldSelectTarget,
+  currentActionData,
+  allCharacters,
+  incrementTurnCount,
+  inventory,
+  timeline,
+  turnCount,
+  setTimeline,
+} from "./globals";
 import { panes } from "./infoPane";
-import {
-  StatusTurn,
-  CharacterTurn,
-  Character,
-  InventoryItem,
-  Turn,
-  CurrentActionData,
-  Action,
-  Status,
-} from "./types";
-import {
-  calcTurnDuration,
-  calculateNextTurnTime,
-  idMaker,
-  wait,
-} from "./utils";
-
-let turnCount = 0;
-let allCharacters: Character[] = [...ENEMY_LIST, ...HERO_LIST] as Character[];
-let timeline: Turn[] = [];
-let inventory: InventoryItem[] = [
-  {
-    id: idMaker(),
-    name: InventoryItemName.Potion,
-    type: InventoryItemType.Consumable,
-    quantity: 3,
-  },
-  {
-    id: idMaker(),
-    name: InventoryItemName.Ether,
-    type: InventoryItemType.Consumable,
-    quantity: 2,
-  },
-  {
-    id: idMaker(),
-    name: InventoryItemName.PhoenixDown,
-    type: InventoryItemType.Consumable,
-    quantity: 4,
-  },
-  {
-    id: idMaker(),
-    name: InventoryItemName.ShortSword,
-    type: InventoryItemType.Equipment,
-    quantity: 1,
-  },
-];
-let currentActionData: CurrentActionData = {
-  character: null,
-  actionDetail: null,
-  actionName: null,
-  actionTarget: null,
-};
-let shouldSelectTarget = false;
-
-export function getTimeline() {
-  return timeline;
-}
-export function getAllCharacters() {
-  return allCharacters;
-}
-function incrementTurnCount() {
-  turnCount++;
-}
-export function getCharacterById(id: string): Character {
-  return getAllCharacters().find((c) => c.id === id)!;
-}
-export function getAllHeroes() {
-  const allHeroes = [];
-  for (const char of allCharacters) {
-    if (char.type === "hero") {
-      allHeroes.push(char);
-    }
-  }
-  return allHeroes;
-}
-export function getAllEnemies() {
-  const allEnemies = [];
-  for (const char of allCharacters) {
-    if (char.type === "enemy") {
-      allEnemies.push(char);
-    }
-  }
-  return allEnemies;
-}
+import { StatusTurn, CharacterTurn, Character, InventoryItem, Turn, CurrentActionData, Action, Status } from "./types";
+import { calcTurnDuration, calculateNextTurnTime, idMaker, rowDice, wait } from "./utils";
 
 // window.addEventListener("turn-start", onTurnStart);
 window.addEventListener("character-action", onCharacterAction);
@@ -132,7 +48,7 @@ function onSlotClick(e: MouseEvent) {
   // console.log("onSlotClick", { slot, targetCharacter });
 
   if (shouldSelectTarget) {
-    shouldSelectTarget = false;
+    setShouldSelectTarget(false);
     // console.log("Target selected", { slot, targetCharacter });
     currentActionData.actionTarget = targetCharacter;
     window.dispatchEvent(new CustomEvent("action-target-selected"));
@@ -186,10 +102,7 @@ async function onActionSelected(e: any) {
       case ActionName.Magic:
       case ActionName.Invoke:
       case ActionName.Summon:
-        drawBottomPane(
-          panes.heroActionDetail(currentActionData.character, actionName),
-          dismissFn
-        );
+        drawBottomPane(panes.heroActionDetail(currentActionData.character, actionName), dismissFn);
         break;
       case ActionName.Item:
         drawBottomPane(panes.itemSelection(inventory), dismissFn);
@@ -199,8 +112,7 @@ async function onActionSelected(e: any) {
         onActionTargetSelected();
         break;
       case ActionName.Steal:
-        shouldSelectTarget = true;
-        drawBottomPane(panes.text("select target to steal"));
+        setShouldSelectTarget(true);
         break;
       default:
         break;
@@ -212,7 +124,7 @@ function onActionDetailSelected(e: any) {
   const detail = e.detail;
 
   currentActionData.actionDetail = detail;
-  shouldSelectTarget = true;
+  setShouldSelectTarget(true);
 
   // console.log("onActionDetailSelected", { detail, currentActionData });
   drawBottomPane(panes.text("select target"));
@@ -235,10 +147,7 @@ async function onActionTargetSelected() {
   const actionData = {
     actorId: currentActionData.character!.id,
     targetId: currentActionData.actionTarget!.id,
-    action: createNewAction(
-      currentActionData.actionName!,
-      currentActionData.actionDetail || null
-    ) as Action,
+    action: createNewAction(currentActionData.actionName!, currentActionData.actionDetail || null) as Action,
   };
 
   // RESET CURRENT ACTION DATA
@@ -252,34 +161,89 @@ async function onActionTargetSelected() {
   await processAction(actionData);
 }
 
-async function processAction(actionData: {
-  actorId: string;
-  targetId: string;
-  action: Action;
-}) {
+async function drawActionPane(action: Action, actor: Character, target: Character) {
+  console.log("ACTION PANE", action.name, action);
+  if (action.type === "physical") {
+    drawBottomPane({ type: "text", content: `${actor.name} attacks ${target.name}` });
+  }
+  if (action.type === "magical") {
+    drawBottomPane({ type: "text", content: `${actor.name} casts ${action.name} on ${target.name}` });
+  }
+  if (action.type === "item") {
+    drawBottomPane({ type: "text", content: `${target.name} received ${action.name}` });
+  }
+  if (action.type === "other") {
+    switch (action.name) {
+      case ActionName.Defend:
+        drawBottomPane(panes.text(`${actor.name} raised its defenses`));
+        break;
+      case ActionName.Steal:
+        drawBottomPane({ type: "text", content: `stealing from ${target.name}` });
+        break;
+      case ActionName.Summon:
+        drawBottomPane({ type: "text", content: `${actor.name} summoned ${action.name}` });
+        break;
+      case ActionName.Invoke:
+        drawBottomPane({ type: "text", content: `${actor.name} invoked ${action.name}` });
+        break;
+      case ActionName.Move:
+        drawBottomPane({ type: "text", content: `${target.name} is on the move` });
+        break;
+      case ActionName.Hide:
+        drawBottomPane({ type: "text", content: `${target.name} is hidden` });
+        break;
+      default:
+        break;
+    }
+  }
+
+  await wait(1000);
+}
+
+async function processAction(actionData: { actorId: string; targetId: string; action: Action }) {
   const { action, actorId, targetId } = actionData;
   const actor = getCharacterById(actorId);
   const target = getCharacterById(targetId);
 
   console.log("PROCESSING ACTION!!!", { actionData, action, actor, target });
 
-  await wait(1000);
+  await computeEntityChanges(action, actor, target);
 
-  await computeCharacterChanges(action, actor, target);
+  await drawActionPane(action, actor, target);
 
   await handleActionEfx(action, actor, target);
 
-  await wait(1000);
   drawCharacters(); // to reflect the updated hp values, statuses etc
 
   await updateTimeline();
 }
+function subtractFromInventory(itemName: InventoryItemName) {
+  const itemIdx = inventory.findIndex((obj) => obj.name === itemName)!;
+  const inventoryItem = inventory[itemIdx];
 
-async function handleActionEfx(
-  action: Action,
-  actor: Character,
-  target: Character
-) {
+  if (inventoryItem?.quantity === 1) {
+    inventory.splice(itemIdx, 1);
+  } else {
+    inventoryItem.quantity--;
+  }
+
+  console.log("inventory", inventory);
+}
+
+function addInventoryItem(itemName: InventoryItemName) {
+  const itemIdx = inventory.findIndex((obj) => obj.name === itemName)!;
+  const inventoryItem = inventory[itemIdx];
+
+  if (inventoryItem?.quantity > -1) {
+    inventoryItem.quantity++;
+    // inventory.splice(itemIdx, 1);
+  } else {
+    const newInventoryItem = INVENTORY_LIST.find((item) => item.name === itemName)!;
+    inventory.push({ ...newInventoryItem });
+  }
+}
+
+async function handleActionEfx(action: Action, actor: Character, target: Character) {
   switch (action.type) {
     case "physical":
       await drawAttackEffect(actor, target, action);
@@ -288,75 +252,113 @@ async function handleActionEfx(
       await drawItemEffect(actor, target);
       break;
     case "magical":
+      await drawAMagicEffect(actor, target, action);
       break;
     case "other":
+      if (action.name === ActionName.Defend) {
+        actor.statuses.push({
+          name: StatusName.Defense,
+          turnCount: 1,
+          turnsPlayed: 0,
+        });
+        await drawDefenseEffect(actor);
+      }
+      if (action.name === ActionName.Steal) {
+        const itemName = performStealAttempt(actor, target);
+        if (itemName) {
+          addInventoryItem(itemName);
+          drawBottomPane({ type: "text", content: `stolen ${itemName} from ${target.name}` });
+        } else {
+          drawBottomPane({ type: "text", content: `failed to steal` });
+        }
+        await wait(1000);
+      }
       break;
   }
+
+  await wait(1000);
 }
 
-async function computeCharacterChanges(
-  action: Action,
-  actor: Character,
-  target: Character
-) {
-  console.log("COMPUTE CHARACTER CHANGES", { action, actor, target });
+async function computeEntityChanges(action: Action, actor: Character, target: Character) {
+  console.log("COMPUTE ENTITY CHANGES", { action, actor, target });
 
   if (action.type === "physical") {
+    let attackPower = 0;
+
     if (action.ranged) {
-      target.hp -= action.power; // + dexterity
+      attackPower -= action.power; // + dexterity
     } else {
-      target.hp -= action.power; // + strength
+      attackPower -= action.power; // + strength
     }
+
+    if (getDefenseStatusIdx(target.statuses) > -1) {
+      attackPower /= 2;
+    }
+    target.hp -= attackPower;
   }
-  //
+
   if (action.type === "magical") {
     actor.mp -= action.mpCost;
 
+    if (action.effects?.length) {
+      for (const effect of action.effects) {
+        target.statuses.push(effect);
+      }
+    }
+
     if (action.power) {
-      if (
-        [
-          MagicSpellName.Cure,
-          MagicSpellName.Regen,
-          MagicSpellName.Protect,
-        ].includes(action.name as MagicSpellName)
-      ) {
+      if ([MagicSpellName.Cure, MagicSpellName.Regen, MagicSpellName.Protect].includes(action.name as MagicSpellName)) {
         target.hp += action.power;
       } else {
         target.hp -= action.power;
       }
     }
   }
-  //
+
   if (action.type === "item") {
-  }
-  //
-  if (action.type === "other") {
+    subtractFromInventory(action.name);
+
     switch (action.name) {
-      case ActionName.Defend:
-        drawBottomPane(panes.text(`${actor.name} raised its defenses`));
-
-        actor.statuses.push({
-          name: StatusName.Defense,
-          turnCount: 1,
-          turnsPlayed: 0,
-        });
-        console.log("HANDLE DEFEND!", actor.name, {
-          actor,
-          all: getAllCharacters(),
-        });
-
-        await drawDefenseEffect(actor);
+      case InventoryItemName.Potion:
+        target.hp += 100;
         break;
-      default:
+      case InventoryItemName.Ether:
+        target.mp += 50;
+        break;
+      case InventoryItemName.PhoenixDown:
+        if (target.hp <= 0) {
+          target.hp = 70;
+        }
         break;
     }
   }
+
+  if (action.type === "other") {
+    if (action.name === ActionName.Defend) {
+      actor.statuses.push({
+        name: StatusName.Defense,
+        turnCount: 1,
+        turnsPlayed: 0,
+      });
+    }
+
+    // if (action.name === ActionName.Steal) {
+
+    // }
+  }
 }
 
-function getDefenseStatusIdxByName(statusList: Status[]) {
-  const defenseStatusIdx = statusList.findIndex(
-    (s) => s.name === StatusName.Defense
-  );
+function performStealAttempt(actor: Character, target: Character) {
+  const result = rowDice(20);
+
+  if (result <= 10) return null;
+  else if (result > 10 && result <= 14) return INVENTORY_LIST[0].name;
+  else if (result > 14 && result <= 17) return INVENTORY_LIST[1].name;
+  else return INVENTORY_LIST[2].name;
+}
+
+function getDefenseStatusIdx(statusList: Status[]) {
+  const defenseStatusIdx = statusList.findIndex((s) => s.name === StatusName.Defense);
   return defenseStatusIdx;
 }
 
@@ -366,10 +368,11 @@ async function startTurn(turn: Turn) {
 
   await drawSelectedCharacterOutline(character);
 
-  if (turn.type !== "status") {
+  if (turn.type === "status") {
+  } else {
     if (turn.entity.type === "hero") {
       const character = getCharacterById(turn.entity.id);
-      const removeIdx = getDefenseStatusIdxByName(character.statuses);
+      const removeIdx = getDefenseStatusIdx(character.statuses);
 
       if (removeIdx > -1) {
         const slotOverlay = getSlotDefenseOverlayById(character.id)!;
@@ -451,9 +454,7 @@ async function initializeTimeline() {
 
   // @TODO: handle statuses that might eventually exist at the beginning of the battle
 
-  timeline = [...initialCharacterTurns].sort(
-    (a, b) => a.nextTurnAt - b.nextTurnAt
-  );
+  setTimeline([...initialCharacterTurns].sort((a, b) => a.nextTurnAt - b.nextTurnAt));
 
   drawTimeline();
 

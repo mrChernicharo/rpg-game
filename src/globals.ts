@@ -1,3 +1,58 @@
+import { ENEMY_LIST, HERO_LIST, INVENTORY_LIST } from "./data";
+import { Character, Turn, InventoryItem, CurrentActionData } from "./types";
+
+export let turnCount = 0;
+export let allCharacters: Character[] = [...ENEMY_LIST, ...HERO_LIST];
+export let timeline: Turn[] = [];
+export let inventory: InventoryItem[] = [...INVENTORY_LIST];
+export let currentActionData: CurrentActionData = {
+  character: null,
+  actionDetail: null,
+  actionName: null,
+  actionTarget: null,
+};
+export let shouldSelectTarget = false;
+
+export function getTimeline() {
+  return timeline;
+}
+export function getAllCharacters() {
+  return allCharacters;
+}
+export function incrementTurnCount() {
+  turnCount++;
+}
+export function getShouldSelectTarget() {
+  return shouldSelectTarget;
+}
+export function setShouldSelectTarget(targetSelectionActive: boolean) {
+  shouldSelectTarget = targetSelectionActive;
+}
+export function setTimeline(turns: Turn[]) {
+  timeline = turns;
+}
+export function getCharacterById(id: string): Character {
+  return getAllCharacters().find((c) => c.id === id)!;
+}
+export function getAllHeroes() {
+  const allHeroes = [];
+  for (const char of allCharacters) {
+    if (char.type === "hero") {
+      allHeroes.push(char);
+    }
+  }
+  return allHeroes;
+}
+export function getAllEnemies() {
+  const allEnemies = [];
+  for (const char of allCharacters) {
+    if (char.type === "enemy") {
+      allEnemies.push(char);
+    }
+  }
+  return allEnemies;
+}
+
 // function getCurrentCharacter() {
 //   const timelineCharacters = timeline.filter(
 //     (event) => event.type === "character"
@@ -39,19 +94,6 @@
 //   const temp = { ...selectedItem };
 //   selectedItem = null;
 //   return temp as InventoryItem;
-// }
-
-// function subtractFromInventory(item: InventoryItem) {
-//   const itemIdx = inventory.findIndex((obj) => obj.id === item.id)!;
-//   const inventoryItem = inventory[itemIdx];
-
-//   if (inventoryItem?.quantity === 1) {
-//     inventory.splice(itemIdx, 1);
-//   } else {
-//     inventoryItem.quantity--;
-//   }
-
-//   console.log("inventory", inventory);
 // }
 
 // function initializeStatuses() {
