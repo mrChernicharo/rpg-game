@@ -202,6 +202,7 @@ export enum ActionName {
   Hide = "hide",
   Item = "item",
   Move = "move",
+  Status = "status",
 }
 
 export enum AttackName {

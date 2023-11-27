@@ -66,16 +66,7 @@ function drawTimeline(): void {
     nameText.classList.add("character-name");
 
     if (turn.type === "status") {
-      // console.log("drawTimeline", turn, timeline);
-
-      // const poisonExpired = turn.turnsPlayed >= turn.turnCount;
-
-      // if (poisonExpired) {
-      //   console.log("poison EXPIRED!", { poisonExpired });
-      //   continue;
-      // }
-
-      nameText.textContent = `🧪${getCharacterById(turn.characterId)}`;
+      nameText.textContent = `🧪${getCharacterById(turn.characterId).name}`;
     } else {
       nameText.textContent = turn.entity.name;
     }
@@ -168,13 +159,13 @@ async function drawItemEffect(
   return Promise.resolve();
 }
 
-async function drawStatusEffect(status: Status, characterId: string) {
+async function drawStatusEffect(statusName: StatusName, characterId: string) {
   const slot = getSlotElementById(characterId);
 
-  if (status.name === StatusName.Poison) {
-    slot.classList.add(status.name.toLowerCase());
-    await wait(1350);
-    slot.classList.remove(status.name.toLowerCase());
+  if (statusName === StatusName.Poison) {
+    slot.classList.add(`${statusName.toLocaleLowerCase()}-status`);
+    await wait(1250);
+    slot.classList.remove(`${statusName.toLocaleLowerCase()}-status`);
   }
 
   return Promise.resolve();

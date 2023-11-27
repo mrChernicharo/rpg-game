@@ -1,3 +1,168 @@
+import { STATUS_DICT, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT } from "./data";
+import { slots } from "./dom";
+import { drawBottomPane } from "./draw";
+import { ActionName, StatusName } from "./enums";
+import { getCharacterById, shouldSelectTarget, setShouldSelectTarget, currentActionData, inventory } from "./globals";
+import { panes } from "./infoPane";
+import { processAction, updateTimeline } from "./main";
+import { Action, Status } from "./types";
+import { wait } from "./utils";
+
+// window.addEventListener("turn-start", onTurnStart);
+window.addEventListener("character-action", onCharacterAction);
+window.addEventListener("action-selected", onActionSelected);
+window.addEventListener("action-detail-selected", onActionDetailSelected);
+window.addEventListener("action-target-selected", onActionTargetSelected);
+
+for (const slot of slots) {
+  slot.onclick = onSlotClick;
+}
+
+export function onSlotClick(e: MouseEvent) {
+  const el = e.target as HTMLElement;
+  const slot = el.closest(".lane-slot")!;
+  if (!slot.id) return;
+
+  const targetCharacter = getCharacterById(slot.id);
+  // console.log("onSlotClick", { slot, targetCharacter });
+
+  if (shouldSelectTarget) {
+    setShouldSelectTarget(false);
+    // console.log("Target selected", { slot, targetCharacter });
+    currentActionData.actionTarget = targetCharacter;
+    window.dispatchEvent(new CustomEvent("action-target-selected"));
+  }
+}
+
+export async function onCharacterAction(e: any) {
+  const { characterId } = e.detail;
+  const character = getCharacterById(characterId);
+  currentActionData.character = character;
+
+  // console.log("onCharacterAction", character.name);
+
+  drawBottomPane(panes.text(`${character.name}'s turn`));
+  await wait(1000);
+
+  if (character.type === "enemy" || character.type === "npc") {
+    // console.log("enemy", character);
+    //  decideEnemyAction
+    return updateTimeline();
+  }
+
+  if (character.type === "hero") {
+    // draw actions pane
+    drawBottomPane(panes.heroActions(character));
+  }
+}
+
+export async function onActionSelected(e: any) {
+  const actionName = e.detail;
+  // console.log("onActionSelected", actionName);
+
+  if (!currentActionData.character) {
+    throw Error("no character data inside currentActionData");
+  }
+  currentActionData.actionName = actionName;
+  const isHeroAction = currentActionData.character.type === "hero";
+
+  if (!isHeroAction) {
+    // selectActionDetail
+    // selectTarget
+  }
+
+  if (isHeroAction) {
+    const dismissFn = () => {
+      console.log("dismiss");
+      drawBottomPane(panes.heroActions(currentActionData.character!));
+    };
+
+    switch (actionName) {
+      case ActionName.Attack:
+      case ActionName.Magic:
+      case ActionName.Invoke:
+      case ActionName.Summon:
+        drawBottomPane(panes.heroActionDetail(currentActionData.character, actionName), dismissFn);
+        break;
+      case ActionName.Item:
+        drawBottomPane(panes.itemSelection(inventory), dismissFn);
+        break;
+      case ActionName.Defend:
+        currentActionData.actionTarget = currentActionData.character;
+        onActionTargetSelected();
+        break;
+      case ActionName.Steal:
+        setShouldSelectTarget(true);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+export function onActionDetailSelected(e: any) {
+  const detail = e.detail;
+
+  currentActionData.actionDetail = detail;
+  setShouldSelectTarget(true);
+
+  // console.log("onActionDetailSelected", { detail, currentActionData });
+  drawBottomPane(panes.text("select target"));
+}
+
+export async function onActionTargetSelected() {
+  const actionData = {
+    actorId: currentActionData.character!.id,
+    targetId: currentActionData.actionTarget!.id,
+    action: createNewAction(
+      currentActionData.actionName as ActionName,
+      currentActionData.actionDetail || null
+    ) as Action,
+  };
+
+  // RESET CURRENT ACTION DATA
+  currentActionData.character = null;
+  currentActionData.actionDetail = null;
+  currentActionData.actionName = null;
+  currentActionData.actionTarget = null;
+  currentActionData.isStatusAction = false;
+
+  // console.log("onActionTargetSelected", actionData);
+
+  await processAction(actionData);
+}
+
+export function createNewAction(actionName: ActionName, actionDetail: string | null) {
+  let action: Action | null = null;
+
+  if (actionDetail) {
+    if (actionName === "status") {
+      action = {
+        ...STATUS_DICT[actionDetail as StatusName]!,
+        type: "status",
+        targets: "single",
+        turnsPlayed: 0,
+      };
+    } else {
+      action = DETAILED_ACTION_DICT[actionName]![actionDetail];
+    }
+  } else {
+    action = SIMPLE_ACTION_DICT[actionName]!;
+  }
+
+  console.log(":::createNewAction", { actionName, actionDetail, action: { ...action } });
+  return action;
+}
+
+export function createNewStatus(statusName: StatusName) {
+  const newStatus = {
+    ...STATUS_DICT[statusName],
+  } as Status;
+
+  console.log({ newStatus });
+  return newStatus;
+}
+
 // window.addEventListener("hero-defense", onHeroDefense);
 // window.addEventListener("hero-attack-target-selected", onHeroAttack);
 // window.addEventListener("item-target-selected", onItemTargetSelected);
@@ -198,85 +363,6 @@
 //     drawBottomPane(panes.text("Battle Lost!"));
 //     await wait(3000);
 //   }
-// }
-
-// function handleUpdateTimeline(): void {
-//   if (battleState === BattleState.Ended) return;
-
-//   incrementTurnCount();
-//   drawTurnCount(turnCount);
-
-//   const prevTimeline = timeline.slice();
-//   const currentTurn = timeline.shift()!;
-
-//   const nextTurn = {
-//     ...currentTurn,
-//     nextTurnAt: calculateNextTurnTime(currentTurn),
-//     // turnsPlayed: currentTurn!.turnsPlayed + 1,
-//   } as Turn;
-
-//   let insertionIdx = timeline.length;
-//   let smallestPositiveTimeDiff = Infinity;
-//   for (let i = 0; i < timeline.length; i++) {
-//     const timeDiff = timeline[i].nextTurnAt - nextTurn.nextTurnAt;
-
-//     if (timeDiff > 0 && timeDiff < smallestPositiveTimeDiff) {
-//       smallestPositiveTimeDiff = timeDiff;
-//       insertionIdx = i;
-//     }
-//   }
-
-//   timeline.splice(insertionIdx, 0, nextTurn);
-//   drawTimeline();
-
-//   console.log("timeline", {
-//     prev: prevTimeline,
-//     next: timeline.slice(),
-//     // nextTurn,
-//     // currentTurn,
-//     curr: timeline[0],
-//   });
-
-//   if (timeline[0].type === "status") {
-//     const status = allStatuses.find(
-//       (s) => s.id === (timeline[0] as StatusTurn).entity.id
-//     )!;
-//     const character = allCharacters.find(
-//       (c) => c.id === (timeline[0] as StatusTurn).characterId
-//     )!;
-
-//     handleStatusTurn(status, character);
-//   } else if (timeline[0].type === "character") {
-//     const character = getCurrentCharacter();
-
-//     handleCharacterTurn(character);
-//   }
-// }
-
-// async function handleStatusTurn(status: Status, character: Character) {
-//   status.turnsPlayed++;
-
-//   setBattleState(BattleState.StatusAction);
-//   drawBottomPane(
-//     panes.text(`${character.name} received ${status.power} damage from poison`)
-//   );
-
-//   switch (status.name) {
-//     case StatusName.Poison:
-//       character.hp -= status.power;
-
-//       if (!character.statuses.includes(StatusName.Poison)) {
-//         character.statuses.push(StatusName.Poison);
-//       }
-
-//       break;
-//     default:
-//       break;
-//   }
-
-//   drawCharacters();
-
-//   await onStatusActed(status, character);
 // }
 
 // async function handleCharacterTurn(entity: Character): Promise<void> {

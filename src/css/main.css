@@ -236,18 +236,23 @@ button:focus-visible {
 
 /******************/
 
-.poisoned {
+/* .poisoned {
   .avatar-img {
     filter: drop-shadow(0 0 0.75rem rgba(25, 216, 38, 0.6));
   }
-}
+} */
 
-.poison {
+/* .poison {
   .avatar-img {
     filter: blur(4px) drop-shadow(0 0 1.5rem rgba(25, 216, 38, 0.6));
   }
-}
+} */
 
+.poison-status {
+  .status-overlay {
+    animation: status 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+}
 
 .magic-perform {
   .avatar-img {

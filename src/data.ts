@@ -39,67 +39,6 @@ const INVENTORY_LIST: InventoryItem[] = [
   },
 ];
 
-const ENEMY_LIST: Character[] = [
-  {
-    id: idMaker(),
-    name: "Skeleton",
-    type: "enemy",
-    hp: 120,
-    mp: 50,
-    speed: 70,
-    imgUrl: "/sprites/sprite-70.webp",
-    position: {
-      lane: Lane.Front,
-      col: Col.Left,
-    },
-    statuses: [],
-    actions: [ActionName.Attack],
-    skills: {
-      [ActionName.Attack]: [AttackName.Slash],
-      [ActionName.Magic]: [MagicSpellName.Bio],
-    },
-  },
-  {
-    id: idMaker(),
-    name: "Demon",
-    type: "enemy",
-    hp: 250,
-    mp: 50,
-    speed: 58,
-    imgUrl: "/sprites/sprite-77.webp",
-    position: {
-      lane: Lane.Front,
-      col: Col.Center,
-    },
-    statuses: [],
-    actions: [ActionName.Attack],
-    skills: {
-      [ActionName.Attack]: [AttackName.Bite, AttackName.Claws, AttackName.TailWhip],
-      [ActionName.Magic]: [MagicSpellName.Fire, MagicSpellName.Bio],
-    },
-  },
-  {
-    id: idMaker(),
-    name: "Ice Sorcerer",
-    type: "enemy",
-    hp: 20,
-    // hp: 320,
-    mp: 50,
-    speed: 50,
-    imgUrl: "/sprites/sprite-78.webp",
-    position: {
-      lane: Lane.Back,
-      col: Col.Left,
-    },
-    statuses: [],
-    actions: [ActionName.Attack],
-    skills: {
-      [ActionName.Attack]: [AttackName.IceBolt],
-      [ActionName.Magic]: [MagicSpellName.Blizzard],
-    },
-  },
-];
-
 const HERO_LIST: Character[] = [
   {
     id: idMaker(),
@@ -139,33 +78,33 @@ const HERO_LIST: Character[] = [
   //     [ActionName.Magic]: [MagicSpellName.Quake],
   //   },
   // },
-  {
-    id: idMaker(),
-    name: "Abigail",
-    type: "hero",
-    hp: 520, // hp: 20,
-    mp: 50,
-    speed: 54,
-    imgUrl: "/sprites/sprite-09.webp",
-    position: {
-      lane: Lane.Back,
-      col: Col.Center,
-    },
-    statuses: [],
-    actions: [
-      ActionName.Attack,
-      ActionName.Defend,
-      ActionName.Magic,
-      ActionName.Summon,
-      ActionName.Item,
-      ActionName.Move,
-    ],
-    skills: {
-      [ActionName.Attack]: [AttackName.Stab, AttackName.Arrow],
-      [ActionName.Magic]: [MagicSpellName.Thunder, MagicSpellName.Cure],
-      [ActionName.Summon]: ["DireWolf"],
-    },
-  },
+  // {
+  //   id: idMaker(),
+  //   name: "Abigail",
+  //   type: "hero",
+  //   hp: 520, // hp: 20,
+  //   mp: 50,
+  //   speed: 54,
+  //   imgUrl: "/sprites/sprite-09.webp",
+  //   position: {
+  //     lane: Lane.Back,
+  //     col: Col.Center,
+  //   },
+  //   statuses: [],
+  //   actions: [
+  //     ActionName.Attack,
+  //     ActionName.Defend,
+  //     ActionName.Magic,
+  //     ActionName.Summon,
+  //     ActionName.Item,
+  //     ActionName.Move,
+  //   ],
+  //   skills: {
+  //     [ActionName.Attack]: [AttackName.Stab, AttackName.Arrow],
+  //     [ActionName.Magic]: [MagicSpellName.Thunder, MagicSpellName.Bio, MagicSpellName.Cure],
+  //     [ActionName.Summon]: ["DireWolf"],
+  //   },
+  // },
   {
     id: idMaker(),
     name: "Savannah",
@@ -190,19 +129,80 @@ const HERO_LIST: Character[] = [
     ],
     skills: {
       [ActionName.Attack]: [AttackName.Stab],
-      [ActionName.Magic]: [MagicSpellName.Hydro],
+      [ActionName.Magic]: [MagicSpellName.Hydro, MagicSpellName.Bio],
       [ActionName.Invoke]: ["DireWolf"],
     },
   },
 ];
 
-const STATUS_LIST: { [k in StatusName]?: Status } = {
+const ENEMY_LIST: Character[] = [
+  // {
+  //   id: idMaker(),
+  //   name: "Skeleton",
+  //   type: "enemy",
+  //   hp: 120,
+  //   mp: 50,
+  //   speed: 70,
+  //   imgUrl: "/sprites/sprite-70.webp",
+  //   position: {
+  //     lane: Lane.Front,
+  //     col: Col.Left,
+  //   },
+  //   statuses: [],
+  //   actions: [ActionName.Attack],
+  //   skills: {
+  //     [ActionName.Attack]: [AttackName.Slash],
+  //     [ActionName.Magic]: [MagicSpellName.Bio],
+  //   },
+  // },
+  {
+    id: idMaker(),
+    name: "Demon",
+    type: "enemy",
+    hp: 1450,
+    mp: 50,
+    speed: 58,
+    imgUrl: "/sprites/sprite-77.webp",
+    position: {
+      lane: Lane.Front,
+      col: Col.Center,
+    },
+    statuses: [],
+    actions: [ActionName.Attack],
+    skills: {
+      [ActionName.Attack]: [AttackName.Bite, AttackName.Claws, AttackName.TailWhip],
+      [ActionName.Magic]: [MagicSpellName.Fire, MagicSpellName.Bio],
+    },
+  },
+  {
+    id: idMaker(),
+    name: "Ice Sorcerer",
+    type: "enemy",
+    hp: 2620,
+    // hp: 320,
+    mp: 50,
+    speed: 52,
+    imgUrl: "/sprites/sprite-78.webp",
+    position: {
+      lane: Lane.Back,
+      col: Col.Left,
+    },
+    statuses: [],
+    actions: [ActionName.Attack],
+    skills: {
+      [ActionName.Attack]: [AttackName.IceBolt],
+      [ActionName.Magic]: [MagicSpellName.Blizzard],
+    },
+  },
+];
+
+const STATUS_DICT: { [k in StatusName]?: Status } = {
   [StatusName.Poison]: {
     name: StatusName.Poison,
-    speed: 82,
+    speed: 78,
     power: 12,
     turnsPlayed: 0,
-    turnCount: 5,
+    turnCount: 3,
   },
   [StatusName.Regen]: {
     name: StatusName.Regen,
@@ -213,7 +213,7 @@ const STATUS_LIST: { [k in StatusName]?: Status } = {
   },
   [StatusName.Defense]: {
     name: StatusName.Defense,
-    turnCount: 20,
+    turnCount: 1,
     turnsPlayed: 0,
   },
 };
@@ -323,7 +323,7 @@ const DETAILED_ACTION_DICT: {
       element: Element.Poison,
       mpCost: 6,
       targets: "single",
-      effects: [STATUS_LIST[StatusName.Poison]!],
+      effects: [StatusName.Poison],
     },
     [MagicSpellName.Regen]: {
       type: "magical",
@@ -332,7 +332,7 @@ const DETAILED_ACTION_DICT: {
       element: Element.Poison,
       mpCost: 14,
       targets: "single",
-      effects: [STATUS_LIST[StatusName.Regen]!],
+      effects: [StatusName.Regen],
     },
   },
   // item
@@ -388,4 +388,4 @@ const SIMPLE_ACTION_DICT: { [actionName in ActionName]?: Action } = {
   },
 };
 
-export { INVENTORY_LIST, ENEMY_LIST, HERO_LIST, STATUS_LIST, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT };
+export { INVENTORY_LIST, ENEMY_LIST, HERO_LIST, STATUS_DICT, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT };

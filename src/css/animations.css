@@ -183,3 +183,14 @@
     opacity: 0;
   }
 }
+
+@keyframes status {
+  0% {
+    clip-path: polygon(100% 0%, 100% 0, 50% 50%, 0 0, 0 0);
+  }
+
+  100% {
+    opacity: 0.9;
+    clip-path: polygon(100% 0%, 100% 50%, 50% 100%, 0% 50%, 0 0);
+  }
+}

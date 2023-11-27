@@ -1,5 +1,7 @@
 import { ENEMY_LIST, HERO_LIST, INVENTORY_LIST } from "./data";
-import { Character, Turn, InventoryItem, CurrentActionData } from "./types";
+import { InventoryItemName, StatusName } from "./enums";
+import { Character, Turn, InventoryItem, CurrentActionData, Status } from "./types";
+import { rowDice } from "./utils";
 
 export let turnCount = 0;
 export let allCharacters: Character[] = [...ENEMY_LIST, ...HERO_LIST];
@@ -7,9 +9,10 @@ export let timeline: Turn[] = [];
 export let inventory: InventoryItem[] = [...INVENTORY_LIST];
 export let currentActionData: CurrentActionData = {
   character: null,
-  actionDetail: null,
-  actionName: null,
+  actionDetail: null, // stab | fire | potion | poison
+  actionName: null, // attack | magic | steal | status
   actionTarget: null,
+  isStatusAction: false,
 };
 export let shouldSelectTarget = false;
 
@@ -34,6 +37,11 @@ export function setTimeline(turns: Turn[]) {
 export function getCharacterById(id: string): Character {
   return getAllCharacters().find((c) => c.id === id)!;
 }
+export function getCharacterStatusIdxByName(characterId: string, statusName: StatusName) {
+  const character = getAllCharacters().find((char) => char.id === characterId);
+  if (!character) throw Error(`should've been able to find the user`);
+  return character.statuses.findIndex((s) => s.name === statusName);
+}
 export function getAllHeroes() {
   const allHeroes = [];
   for (const char of allCharacters) {
@@ -52,19 +60,42 @@ export function getAllEnemies() {
   }
   return allEnemies;
 }
+export function subtractFromInventory(itemName: InventoryItemName) {
+  const itemIdx = inventory.findIndex((obj) => obj.name === itemName)!;
+  const inventoryItem = inventory[itemIdx];
 
-// function getCurrentCharacter() {
-//   const timelineCharacters = timeline.filter(
-//     (event) => event.type === "character"
-//   );
+  if (inventoryItem?.quantity === 1) {
+    inventory.splice(itemIdx, 1);
+  } else {
+    inventoryItem.quantity--;
+  }
 
-//   const currentCharacter = allCharacters.find(
-//     (c) => c.id === timelineCharacters[0].entity.id
-//   )!;
-//   console.log("currentCharacter", currentCharacter.name, allCharacters);
+  console.log("inventory", inventory);
+}
+export function addInventoryItem(itemName: InventoryItemName) {
+  const itemIdx = inventory.findIndex((obj) => obj.name === itemName)!;
+  const inventoryItem = inventory[itemIdx];
 
-//   return currentCharacter;
-// }
+  if (inventoryItem?.quantity > -1) {
+    inventoryItem.quantity++;
+    // inventory.splice(itemIdx, 1);
+  } else {
+    const newInventoryItem = INVENTORY_LIST.find((item) => item.name === itemName)!;
+    inventory.push({ ...newInventoryItem });
+  }
+}
+export function performStealAttempt(actor: Character, target: Character) {
+  const result = rowDice(20);
+
+  if (result <= 10) return null;
+  else if (result > 10 && result <= 14) return INVENTORY_LIST[0].name;
+  else if (result > 14 && result <= 17) return INVENTORY_LIST[1].name;
+  else return INVENTORY_LIST[2].name;
+}
+export function getDefenseStatusIdx(statusList: Status[]) {
+  const defenseStatusIdx = statusList.findIndex((s) => s.name === StatusName.Defense);
+  return defenseStatusIdx;
+}
 
 // function chooseTargetForEnemy(enemy: Character): Character {
 //   let possibleTargets: Character[];
@@ -88,82 +119,4 @@ export function getAllEnemies() {
 
 //   const idx = Math.floor(Math.random() * possibleTargets.length);
 //   return possibleTargets[idx];
-// }
-
-// function cleanupSelectedItem() {
-//   const temp = { ...selectedItem };
-//   selectedItem = null;
-//   return temp as InventoryItem;
-// }
-
-// function initializeStatuses() {
-//   allStatuses = STATUS_LIST as Status[];
-// }
-
-// function initializeTimeline() {
-//   const initialStatusTurns: StatusTurn[] = allStatuses.map((s) => ({
-//     type: "status",
-//     entity: { id: s.id, name: s.name, type: "status" },
-//     turnDuration: calcTurnDuration(s.speed),
-//     nextTurnAt: calcTurnDuration(s.speed),
-//     turnsPlayed: 0,
-//     characterId: s.characterId,
-//     turnCount: s.turnCount,
-//   }));
-
-//   const initialCharacterTurns: CharacterTurn[] = allCharacters.map((c) => ({
-//     type: "character",
-//     entity: { id: c.id, name: c.name, type: getCharacterById(c.id)!.type },
-//     turnDuration: calcTurnDuration(c.speed),
-//     nextTurnAt: calcTurnDuration(c.speed),
-//     turnsPlayed: 0,
-//   }));
-
-//   timeline = [...initialCharacterTurns, ...initialStatusTurns].sort(
-//     (a, b) => a.nextTurnAt - b.nextTurnAt
-//   );
-
-//   drawTimeline();
-// }
-
-// async function startBattle() {
-//   setBattleState(BattleState.Dormant);
-//   setPlayerAction(PlayerAction.None);
-
-//   initializeStatuses();
-//   initializeCharacters();
-
-//   drawCharacters();
-//   drawBottomPane(panes.text("Battle Start!"));
-//   await wait(1000);
-//   drawBottomPane(panes.text("Get ready"));
-//   await wait(1000);
-
-//   initializeTimeline();
-
-//   console.log({ timelineZero: timeline[0] });
-
-//   if (timeline[0].type === "character") {
-//     const character = getCurrentCharacter();
-//     await handleCharacterTurn(character);
-//   } else if (timeline[0].type === "status") {
-//     const status = allStatuses.find((s) => s.id === timeline[0].entity.id)!;
-//     const character = getCharacterById(status?.characterId)!;
-//     await handleStatusTurn(status, character);
-//   }
-// }
-
-// function setBattleState(state: BattleState) {
-//   battleState = state;
-//   console.log(`%cBattleState ::: ${battleState}`, "color: lightgreen");
-// }
-
-// function setPlayerAction(action: PlayerAction) {
-//   playerAction = action;
-//   // console.trace("setPlayerAction");
-//   console.log(`%cPlayerAction ::: ${playerAction}`, "color: lightblue");
-// }
-
-// function setSelectedItem(item: InventoryItem) {
-//   selectedItem = item;
 // }

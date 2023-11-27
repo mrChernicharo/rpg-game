@@ -7,6 +7,7 @@ import {
   InventoryItemType,
   Lane,
   MagicSpellName,
+  StatusName,
 } from "./enums";
 
 export type Position = {
@@ -33,13 +34,7 @@ export type Character = {
   };
 };
 
-export type ActionTarget =
-  | "self"
-  | "single"
-  | "vert"
-  | "horiz"
-  | "party"
-  | "all";
+export type ActionTarget = "self" | "single" | "vert" | "horiz" | "party" | "all";
 
 // export type Spell = {
 //   name: MagicSpellName;
@@ -68,12 +63,20 @@ export type Action = (
       type: "magical";
       mpCost: number;
       power?: number;
-      effects?: Status[];
+      effects?: StatusName[];
       element?: Element;
     }
   | {
       name: InventoryItemName;
       type: "item";
+    }
+  | {
+      type: "status";
+      name: StatusName;
+      turnsPlayed: number;
+      turnCount: number;
+      speed?: number;
+      power?: number;
     }
   | {
       name: string;
@@ -84,7 +87,7 @@ export type Action = (
 };
 
 export type Status = {
-  name: string;
+  name: StatusName;
   turnsPlayed: number;
   turnCount: number;
   speed?: number;
@@ -138,5 +141,6 @@ export type CurrentActionData = {
   character: Character | null;
   actionName: ActionName | null;
   actionDetail: string | null;
+  isStatusAction: boolean;
   actionTarget: Character | null;
 };
