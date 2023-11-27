@@ -79,6 +79,31 @@ const ENEMY_LIST: Character[] = [
 const HERO_LIST: Character[] = [
   {
     id: idMaker(),
+    name: "Otto",
+    type: "hero",
+    hp: 490, // hp: 40,
+    mp: 65,
+    speed: 62,
+    imgUrl: "/sprites/sprite-01.webp",
+    position: {
+      lane: Lane.Front,
+      col: Col.Center,
+    },
+    statuses: [],
+    actions: [
+      ActionName.Attack,
+      ActionName.Defend,
+      ActionName.Magic,
+      ActionName.Item,
+      ActionName.Move,
+    ],
+    skills: {
+      [ActionName.Attack]: [AttackName.Slash],
+      [ActionName.Magic]: [MagicSpellName.Bio],
+    },
+  },
+  {
+    id: idMaker(),
     name: "Turok",
     type: "hero",
     hp: 640, // hp: 40,
@@ -271,6 +296,14 @@ const DETAILED_ACTION_DICT: {
       mpCost: 4,
       targets: "single",
     },
+    [MagicSpellName.Quake]: {
+      type: "magical",
+      name: MagicSpellName.Quake,
+      power: 125,
+      element: Element.Earth,
+      mpCost: 10,
+      targets: "party",
+    },
     [MagicSpellName.Bio]: {
       type: "magical",
       name: MagicSpellName.Bio,
@@ -313,7 +346,9 @@ const DETAILED_ACTION_DICT: {
       targets: "single",
     },
   },
-  // [ActionName.Invoke]: {},
+  [ActionName.Invoke]: {
+    // [NPCName]
+  },
   // [ActionName.Summon]: {},
 };
 

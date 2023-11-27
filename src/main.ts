@@ -11,11 +11,14 @@ import {
   slots,
 } from "./dom";
 import {
+  drawAttackEffect,
   drawBottomPane,
   drawCharacters,
   drawDefenseEffect,
+  drawItemEffect,
   drawSelectedCharacterOutline,
   drawTimeline,
+  drawTurnCount,
 } from "./draw";
 import {
   ActionName,
@@ -264,12 +267,31 @@ async function processAction(actionData: {
 
   await computeCharacterChanges(action, actor, target);
 
-  // await drawEfx()
+  await handleActionEfx(action, actor, target);
 
   await wait(1000);
   drawCharacters(); // to reflect the updated hp values, statuses etc
 
   await updateTimeline();
+}
+
+async function handleActionEfx(
+  action: Action,
+  actor: Character,
+  target: Character
+) {
+  switch (action.type) {
+    case "physical":
+      await drawAttackEffect(actor, target, action);
+      break;
+    case "item":
+      await drawItemEffect(actor, target);
+      break;
+    case "magical":
+      break;
+    case "other":
+      break;
+  }
 }
 
 async function computeCharacterChanges(
@@ -340,11 +362,9 @@ function getDefenseStatusIdxByName(statusList: Status[]) {
 
 async function startTurn(turn: Turn) {
   const character = getCharacterById(turn.entity.id);
+  console.log("startTurn", character.name);
+
   await drawSelectedCharacterOutline(character);
-  console.log("startTurn", character.name, {
-    turn,
-    character: { ...character },
-  });
 
   if (turn.type !== "status") {
     if (turn.entity.type === "hero") {
@@ -373,6 +393,7 @@ async function startTurn(turn: Turn) {
 async function updateTimeline() {
   // console.log("updateTimeline");
   incrementTurnCount();
+  drawTurnCount(turnCount);
   drawTimeline();
 
   // drawTurnCount(turnCount);
@@ -384,7 +405,7 @@ async function updateTimeline() {
   // @TODO: 2. check if turn must be removed HERE! if so, remove it!
   // const turnRemoved = await shouldRemoveTurn()
 
-  // if (turnRemoved)
+  // if (turnRemoved) return startTurn(currentTurn);
   // else
 
   // update turn
@@ -474,3 +495,5 @@ main();
 
 // Paulinha sacaneia durante encontro da galera na casa do Cesar
 // Rodrigo manda real na Paulinha
+
+// Fernanda manda chamar salete, ela sabe q vai morrer...

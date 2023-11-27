@@ -8,8 +8,9 @@ import {
   dismissBtn,
   getSlotDefenseOverlayById,
 } from "./dom";
+import { ActionName, StatusName } from "./enums";
 import { getAllCharacters, getCharacterById, getTimeline } from "./main";
-import { Character, PaneInfo } from "./types";
+import { Action, Character, InventoryItem, PaneInfo, Status } from "./types";
 import { wait } from "./utils";
 // import { getCharacterById, getTimeline } from "./main";
 // import { StatusName } from "./enums";
@@ -45,7 +46,7 @@ function drawCharacters(): void {
 
     slot.id = `${entity.id}`;
     topSection.textContent = entity.name;
-    bottomSection.textContent = `HP ${entity.hp}`;
+    bottomSection.textContent = `HP ${entity.hp} MP ${entity.mp}`;
     img.src = entity.imgUrl;
 
     if (entity.hp <= 0) {
@@ -108,25 +109,28 @@ async function drawSelectedCharacterOutline(entity: Character): Promise<void> {
   return Promise.resolve();
 }
 
-// async function drawAttackEffect(
-//   attacker: Character,
-//   target: Character
-// ): Promise<void> {
-//   const targetSlot = getSlotElementById(target.id);
-//   const attackerSlot = getSlotElementById(attacker.id);
+async function drawAttackEffect(
+  attacker: Character,
+  target: Character,
+  action: Action
+): Promise<void> {
+  const targetSlot = getSlotElementById(target.id);
+  const attackerSlot = getSlotElementById(attacker.id);
 
-//   attackerSlot.classList.add(`${attacker.actions.attack.type}-attack-perform`);
-//   targetSlot.classList.add(`${attacker.actions.attack.type}-attack-receive`);
+  if (action.type !== "physical") return;
 
-//   await wait(1000);
+  const attackType = action.ranged ? "melee" : "ranged";
 
-//   attackerSlot.classList.remove(
-//     `${attacker.actions.attack.type}-attack-perform`
-//   );
-//   targetSlot.classList.remove(`${attacker.actions.attack.type}-attack-receive`);
+  attackerSlot.classList.add(`${attackType}-attack-perform`);
+  targetSlot.classList.add(`${attackType}-attack-receive`);
 
-//   return Promise.resolve();
-// }
+  await wait(1000);
+
+  attackerSlot.classList.remove(`${attackType}-attack-perform`);
+  targetSlot.classList.remove(`${attackType}-attack-receive`);
+
+  return Promise.resolve();
+}
 
 async function drawDefenseEffect(hero: Character): Promise<void> {
   const slotEl = getSlotElementById(hero.id);
@@ -139,44 +143,44 @@ async function drawDefenseEffect(hero: Character): Promise<void> {
   slotEl?.classList.remove(`defense-perform`);
 }
 
-// async function drawItemEffect(
-//   item: InventoryItem,
-//   sender: Character,
-//   receiver: Character
-// ): Promise<void> {
-//   const senderSlot = getSlotElementById(sender.id);
-//   const receiverSlot = getSlotElementById(receiver.id);
+async function drawItemEffect(
+  // item: InventoryItem,
+  sender: Character,
+  receiver: Character
+): Promise<void> {
+  const senderSlot = getSlotElementById(sender.id);
+  const receiverSlot = getSlotElementById(receiver.id);
 
-//   // @TODO: different classes and animations for different items
-//   senderSlot.classList.add("item-send");
-//   receiverSlot.classList.add("item-receive");
+  // @TODO: different classes and animations for different items
+  senderSlot.classList.add("item-send");
+  receiverSlot.classList.add("item-receive");
 
-//   await wait(1500);
+  await wait(1500);
 
-//   senderSlot.classList.remove("item-send");
-//   receiverSlot.classList.remove("item-receive");
-//   return Promise.resolve();
-// }
+  senderSlot.classList.remove("item-send");
+  receiverSlot.classList.remove("item-receive");
+  return Promise.resolve();
+}
 
-// async function drawStatusEffect(status: Status, characterId: string) {
-//   const slot = getSlotElementById(characterId);
+async function drawStatusEffect(status: Status, characterId: string) {
+  const slot = getSlotElementById(characterId);
 
-//   if (status.name === StatusName.Poison) {
-//     slot.classList.add(status.name.toLowerCase());
-//     await wait(1350);
-//     slot.classList.remove(status.name.toLowerCase());
-//   }
+  if (status.name === StatusName.Poison) {
+    slot.classList.add(status.name.toLowerCase());
+    await wait(1350);
+    slot.classList.remove(status.name.toLowerCase());
+  }
 
-//   return Promise.resolve();
-// }
+  return Promise.resolve();
+}
 
-// function drawTurnCount(turn: number) {
-//   if (turnCountUI?.classList.contains("hidden")) {
-//     turnCountUI?.classList.remove("hidden");
-//   }
-//   const outputEl = turnCountUI?.children[0] as HTMLOutputElement;
-//   outputEl.textContent = String(turn);
-// }
+function drawTurnCount(turn: number) {
+  if (turnCountUI?.classList.contains("hidden")) {
+    turnCountUI?.classList.remove("hidden");
+  }
+  const outputEl = turnCountUI?.children[0] as HTMLOutputElement;
+  outputEl.textContent = String(turn);
+}
 
 function drawBottomPane(paneInfo: PaneInfo, dismissFn?: () => void) {
   bottomSection.text.innerHTML = "";
@@ -223,10 +227,10 @@ export {
   drawTimeline,
   drawCharacters,
   drawSelectedCharacterOutline,
-  //   drawAttackEffect,
-  //   drawTurnCount,
+  drawTurnCount,
+  drawAttackEffect,
   drawDefenseEffect,
+  drawItemEffect,
+  drawStatusEffect,
   drawBottomPane,
-  //   drawItemEffect,
-  //   drawStatusEffect,
 };
