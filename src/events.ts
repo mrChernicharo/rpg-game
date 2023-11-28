@@ -106,8 +106,11 @@ export function onActionDetailSelected(e: any) {
   currentActionData.actionDetail = detail;
   setShouldSelectTarget(true);
 
-  // console.log("onActionDetailSelected", { detail, currentActionData });
-  drawBottomPane(panes.text("select target"));
+  const dismissFn = () => {
+    // @TODO: what pane should we navigate to?
+    // drawBottomPane(panes.heroActions(currentActionData.character!));
+  };
+  drawBottomPane(panes.text("select target"), dismissFn);
 }
 
 export async function onActionTargetSelected() {

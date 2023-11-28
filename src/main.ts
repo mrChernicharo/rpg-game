@@ -1,6 +1,7 @@
-import { getSlotDefenseOverlayById } from "./dom";
+import { getSlotDefenseOverlayById, getSlotElementById } from "./dom";
 import {
   drawAMagicEffect,
+  drawActionPane,
   drawAttackEffect,
   drawBottomPane,
   drawCharacters,
@@ -27,7 +28,6 @@ import {
   subtractFromInventory,
   getCharacterStatusIdxByName,
 } from "./globals";
-import { panes } from "./infoPane";
 import { CharacterTurn, Character, Turn, Action, Status, StatusTurn } from "./types";
 import { calcTurnDuration, calculateNextTurnTime, idMaker, wait } from "./utils";
 
@@ -104,7 +104,8 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
     action: { ...action },
     actor: { ...actor },
     target: { ...target },
-    targetStatuses: target.statuses[getCharacterStatusIdxByName(target.id, StatusName.Poison)],
+    targetStatuses: { ...target.statuses },
+    // targetStatuses: target.statuses[getCharacterStatusIdxByName(target.id, StatusName.Poison)],
   });
 
   if (action.type === "physical") {
@@ -170,6 +171,9 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
     if (action.name === StatusName.Poison) {
       target.hp -= action.power!;
     }
+    if (action.name === StatusName.Regen) {
+      target.hp += action.power!;
+    }
   }
 
   if (action.type === "other") {
@@ -192,50 +196,6 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
   if (actor.mp < 0) {
     actor.mp = 0;
   }
-}
-
-async function drawActionPane(action: Action, actor: Character, target: Character) {
-  console.log("ACTION PANE", action.name, action);
-  if (action.type === "physical") {
-    drawBottomPane({ type: "text", content: `${actor.name} attacks ${target.name}` });
-  }
-  if (action.type === "magical") {
-    drawBottomPane({ type: "text", content: `${actor.name} casts ${action.name} on ${target.name}` });
-  }
-  if (action.type === "item") {
-    drawBottomPane({ type: "text", content: `${target.name} received ${action.name}` });
-  }
-  if (action.type === "status") {
-    if (action.name === StatusName.Poison) {
-      drawBottomPane({ type: "text", content: `${target.name} received ${action.power!} HP of ${action.name} damage` });
-    }
-  }
-  if (action.type === "other") {
-    switch (action.name) {
-      case ActionName.Defend:
-        drawBottomPane(panes.text(`${actor.name} raised its defenses`));
-        break;
-      case ActionName.Steal:
-        drawBottomPane({ type: "text", content: `stealing from ${target.name}` });
-        break;
-      case ActionName.Summon:
-        drawBottomPane({ type: "text", content: `${actor.name} summoned ${action.name}` });
-        break;
-      case ActionName.Invoke:
-        drawBottomPane({ type: "text", content: `${actor.name} invoked ${action.name}` });
-        break;
-      case ActionName.Move:
-        drawBottomPane({ type: "text", content: `${target.name} is on the move` });
-        break;
-      case ActionName.Hide:
-        drawBottomPane({ type: "text", content: `${target.name} is hidden` });
-        break;
-      default:
-        break;
-    }
-  }
-
-  await wait(1000);
 }
 
 async function handleActionEfx(action: Action, actor: Character, target: Character) {
@@ -274,7 +234,18 @@ async function handleActionEfx(action: Action, actor: Character, target: Charact
       break;
   }
 
-  // await wait(1000);
+  const slot = getSlotElementById(target.id);
+  const isPoisoned = target.statuses.some((s) => s.name === StatusName.Poison);
+
+  if (isPoisoned && !slot.classList.contains("poisoned")) {
+    console.log("add poisoned class");
+    slot.classList.add("poisoned");
+  }
+
+  if (slot.classList.contains("poisoned") && !isPoisoned) {
+    console.log("remove poisoned class");
+    slot.classList.remove("poisoned");
+  }
 }
 
 async function startTurn(turn: Turn) {

@@ -1,3 +1,4 @@
+import { STATUS_ICONS } from "./data";
 import {
   battleLanesUI,
   getSlotEfxOverlayById,
@@ -10,6 +11,7 @@ import {
 } from "./dom";
 import { ActionName, StatusName } from "./enums";
 import { getAllCharacters, getTimeline, getCharacterById } from "./globals";
+import { panes } from "./infoPane";
 import { Action, Character, InventoryItem, PaneInfo, Status } from "./types";
 import { wait } from "./utils";
 
@@ -66,7 +68,8 @@ function drawTimeline(): void {
     nameText.classList.add("character-name");
 
     if (turn.type === "status") {
-      nameText.textContent = `🧪${getCharacterById(turn.characterId).name}`;
+      const icon = STATUS_ICONS[turn.entity.name as StatusName];
+      nameText.textContent = `${icon}${getCharacterById(turn.characterId).name}`;
     } else {
       nameText.textContent = turn.entity.name;
     }
@@ -97,7 +100,8 @@ async function drawAttackEffect(attacker: Character, target: Character, action: 
 
   if (action.type !== "physical") return;
 
-  const attackType = action.ranged ? "melee" : "ranged";
+  const attackType = action.ranged ? "ranged" : "melee";
+  console.log(`:::::${attackType}-attack-receive`);
 
   attackerSlot.classList.add(`${attackType}-attack-perform`);
   targetSlot.classList.add(`${attackType}-attack-receive`);
@@ -115,8 +119,6 @@ async function drawAMagicEffect(attacker: Character, target: Character, action: 
   const attackerSlot = getSlotElementById(attacker.id);
 
   if (action.type !== "magical") return;
-
-  // const attackType = action.ranged ? "melee" : "ranged";
 
   attackerSlot.classList.add(`magic-perform`);
   targetSlot.classList.add(`magic-receive`);
@@ -162,13 +164,9 @@ async function drawItemEffect(
 async function drawStatusEffect(statusName: StatusName, characterId: string) {
   const slot = getSlotElementById(characterId);
 
-  if (statusName === StatusName.Poison) {
-    slot.classList.add(`${statusName.toLocaleLowerCase()}-status`);
-    await wait(1250);
-    slot.classList.remove(`${statusName.toLocaleLowerCase()}-status`);
-  }
-
-  return Promise.resolve();
+  slot.classList.add(`${statusName.toLocaleLowerCase()}-status`);
+  await wait(1100);
+  slot.classList.remove(`${statusName.toLocaleLowerCase()}-status`);
 }
 
 function drawTurnCount(turn: number) {
@@ -177,6 +175,53 @@ function drawTurnCount(turn: number) {
   }
   const outputEl = turnCountUI?.children[0] as HTMLOutputElement;
   outputEl.textContent = String(turn);
+}
+
+async function drawActionPane(action: Action, actor: Character, target: Character) {
+  console.log("ACTION PANE", action.name, action);
+  if (action.type === "physical") {
+    drawBottomPane({ type: "text", content: `${actor.name} attacks ${target.name}` });
+  }
+  if (action.type === "magical") {
+    drawBottomPane({ type: "text", content: `${actor.name} casts ${action.name} on ${target.name}` });
+  }
+  if (action.type === "item") {
+    drawBottomPane({ type: "text", content: `${target.name} received ${action.name}` });
+  }
+  if (action.type === "status") {
+    if (action.name === StatusName.Poison) {
+      drawBottomPane({ type: "text", content: `${target.name} received ${action.power!} HP of ${action.name} damage` });
+    }
+    if (action.name === StatusName.Regen) {
+      drawBottomPane({ type: "text", content: `${target.name} regenerated ${action.power!} HP` });
+    }
+  }
+  if (action.type === "other") {
+    switch (action.name) {
+      case ActionName.Defend:
+        drawBottomPane(panes.text(`${actor.name} raised its defenses`));
+        break;
+      case ActionName.Steal:
+        drawBottomPane({ type: "text", content: `stealing from ${target.name}` });
+        break;
+      case ActionName.Summon:
+        drawBottomPane({ type: "text", content: `${actor.name} summoned ${action.name}` });
+        break;
+      case ActionName.Invoke:
+        drawBottomPane({ type: "text", content: `${actor.name} invoked ${action.name}` });
+        break;
+      case ActionName.Move:
+        drawBottomPane({ type: "text", content: `${target.name} is on the move` });
+        break;
+      case ActionName.Hide:
+        drawBottomPane({ type: "text", content: `${target.name} is hidden` });
+        break;
+      default:
+        break;
+    }
+  }
+
+  await wait(1000);
 }
 
 function drawBottomPane(paneInfo: PaneInfo, dismissFn?: () => void) {
@@ -230,5 +275,6 @@ export {
   drawDefenseEffect,
   drawItemEffect,
   drawStatusEffect,
+  drawActionPane,
   drawBottomPane,
 };

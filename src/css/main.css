@@ -236,11 +236,11 @@ button:focus-visible {
 
 /******************/
 
-/* .poisoned {
+.poisoned {
   .avatar-img {
     filter: drop-shadow(0 0 0.75rem rgba(25, 216, 38, 0.6));
   }
-} */
+}
 
 /* .poison {
   .avatar-img {
@@ -250,7 +250,13 @@ button:focus-visible {
 
 .poison-status {
   .status-overlay {
-    animation: status 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    animation: bad-status 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+}
+
+.regen-status {
+  .status-overlay {
+    animation: good-status 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
   }
 }
 
@@ -273,7 +279,6 @@ button:focus-visible {
   }
 }
 
-.ranged-attack-receive,
 .melee-attack-receive {
   .avatar-img {
     animation: shake-lr 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
@@ -281,6 +286,17 @@ button:focus-visible {
 
   .efx-overlay {
     animation: slash-tb 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transition: clip-path opacity;
+  }
+}
+
+.ranged-attack-receive {
+  .avatar-img {
+    animation: shake-lr 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+
+  .efx-overlay {
+    animation: pierce 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
     transition: clip-path opacity;
   }
 }

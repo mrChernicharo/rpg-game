@@ -12,6 +12,25 @@ import {
 import { Action, Character, InventoryItem, Status } from "./types";
 import { idMaker } from "./utils";
 
+const STATUS_ICONS: Record<StatusName, string> = {
+  [StatusName.Poison]: "🧪",
+  [StatusName.Regen]: "⭐️",
+  [StatusName.Defense]: "🛡",
+  [StatusName.Silence]: "🤫",
+  [StatusName.Petrify]: "🗿",
+  [StatusName.Slow]: "🕐",
+  [StatusName.Stop]: "🛑",
+  [StatusName.Confuse]: "😖",
+  [StatusName.Sleep]: "💤",
+  [StatusName.Berserk]: "😡",
+  [StatusName.Blind]: "🕶",
+  [StatusName.Mini]: "👶",
+  [StatusName.DeathSentence]: "☠️",
+  [StatusName.Haste]: "🏎",
+  [StatusName.Barrier]: "🧱",
+  [StatusName.MagiBarrier]: "🐚",
+};
+
 const INVENTORY_LIST: InventoryItem[] = [
   {
     id: idMaker(),
@@ -55,8 +74,8 @@ const HERO_LIST: Character[] = [
     statuses: [],
     actions: [ActionName.Attack, ActionName.Steal, ActionName.Defend, ActionName.Magic, ActionName.Item],
     skills: {
-      [ActionName.Attack]: [AttackName.Slash],
-      [ActionName.Magic]: [MagicSpellName.Bio],
+      [ActionName.Attack]: [AttackName.Slash, AttackName.Arrow],
+      [ActionName.Magic]: [MagicSpellName.Bio, MagicSpellName.Regen],
     },
   },
   // {
@@ -128,7 +147,7 @@ const HERO_LIST: Character[] = [
       ActionName.Move,
     ],
     skills: {
-      [ActionName.Attack]: [AttackName.Stab],
+      [ActionName.Attack]: [AttackName.Stab, AttackName.Arrow],
       [ActionName.Magic]: [MagicSpellName.Hydro, MagicSpellName.Bio],
       [ActionName.Invoke]: ["DireWolf"],
     },
@@ -206,7 +225,7 @@ const STATUS_DICT: { [k in StatusName]?: Status } = {
   },
   [StatusName.Regen]: {
     name: StatusName.Regen,
-    speed: 100,
+    speed: 160,
     power: 24,
     turnCount: 20,
     turnsPlayed: 0,
@@ -388,4 +407,4 @@ const SIMPLE_ACTION_DICT: { [actionName in ActionName]?: Action } = {
   },
 };
 
-export { INVENTORY_LIST, ENEMY_LIST, HERO_LIST, STATUS_DICT, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT };
+export { INVENTORY_LIST, ENEMY_LIST, HERO_LIST, STATUS_DICT, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT, STATUS_ICONS };
