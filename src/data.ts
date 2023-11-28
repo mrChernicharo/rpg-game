@@ -74,7 +74,7 @@ const HERO_LIST: Character[] = [
     statuses: [],
     actions: [ActionName.Attack, ActionName.Steal, ActionName.Defend, ActionName.Magic, ActionName.Item],
     skills: {
-      [ActionName.Attack]: [AttackName.Slash, AttackName.Arrow],
+      // [ActionName.Attack]: [AttackName.Slash, AttackName.Arrow],
       [ActionName.Magic]: [
         MagicSpellName.Bio,
         MagicSpellName.Regen,
@@ -100,7 +100,7 @@ const HERO_LIST: Character[] = [
   //   statuses: [],
   //   actions: [ActionName.Attack, ActionName.Defend, ActionName.Magic, ActionName.Item, ActionName.Move],
   //   skills: {
-  //     [ActionName.Attack]: [AttackName.Slash],
+  //  // [ActionName.Attack]: [AttackName.Slash],
   //     [ActionName.Magic]: [MagicSpellName.Quake],
   //   },
   // },
@@ -126,7 +126,7 @@ const HERO_LIST: Character[] = [
       ActionName.Move,
     ],
     skills: {
-      [ActionName.Attack]: [AttackName.Stab, AttackName.Arrow],
+      // [ActionName.Attack]: [AttackName.Stab, AttackName.Arrow],
       [ActionName.Magic]: [MagicSpellName.Thunder, MagicSpellName.Bio, MagicSpellName.Cure],
       [ActionName.Summon]: ["DireWolf"],
     },
@@ -154,7 +154,7 @@ const HERO_LIST: Character[] = [
       ActionName.Move,
     ],
     skills: {
-      [ActionName.Attack]: [AttackName.Stab, AttackName.Arrow],
+      // [ActionName.Attack]: [AttackName.Stab, AttackName.Arrow],
       [ActionName.Magic]: [MagicSpellName.Hydro, MagicSpellName.Bio],
       [ActionName.Invoke]: ["DireWolf"],
     },
@@ -318,19 +318,19 @@ const DETAILED_ACTION_DICT: {
       mpCost: 4,
       targets: "single",
     },
-    [MagicSpellName.Thunder]: {
-      type: "magical",
-      name: MagicSpellName.Thunder,
-      power: 125,
-      element: Element.Lightning,
-      mpCost: 4,
-      targets: "single",
-    },
     [MagicSpellName.Hydro]: {
       type: "magical",
       name: MagicSpellName.Hydro,
       power: 125,
       element: Element.Water,
+      mpCost: 4,
+      targets: "single",
+    },
+    [MagicSpellName.Aero]: {
+      type: "magical",
+      name: MagicSpellName.Aero,
+      power: 125,
+      element: Element.Wind,
       mpCost: 4,
       targets: "single",
     },
@@ -342,6 +342,22 @@ const DETAILED_ACTION_DICT: {
       mpCost: 10,
       targets: "party",
     },
+    [MagicSpellName.Thunder]: {
+      type: "magical",
+      name: MagicSpellName.Thunder,
+      power: 125,
+      element: Element.Lightning,
+      mpCost: 4,
+      targets: "single",
+    },
+    [MagicSpellName.Blizzard]: {
+      type: "magical",
+      name: MagicSpellName.Blizzard,
+      power: 125,
+      element: Element.Ice,
+      mpCost: 4,
+      targets: "single",
+    },
     [MagicSpellName.Bio]: {
       type: "magical",
       name: MagicSpellName.Bio,
@@ -351,6 +367,47 @@ const DETAILED_ACTION_DICT: {
       targets: "single",
       effects: [StatusName.Poison],
     },
+    [MagicSpellName.Meteor]: {
+      type: "magical",
+      name: MagicSpellName.Meteor,
+      power: 1000,
+      mpCost: 42,
+      targets: "party",
+      effects: [StatusName.Poison],
+    },
+    [MagicSpellName.Demi]: {
+      type: "magical",
+      name: MagicSpellName.Demi,
+      mpCost: 16,
+      targets: "single",
+    },
+    [MagicSpellName.Drain]: {
+      type: "magical",
+      name: MagicSpellName.Drain,
+      power: 200,
+      mpCost: 10,
+      targets: "single",
+    },
+    [MagicSpellName.Cure]: {
+      type: "magical",
+      name: MagicSpellName.Cure,
+      power: 150,
+      mpCost: 6,
+      targets: "single",
+    },
+    [MagicSpellName.Haste]: {
+      type: "magical",
+      name: MagicSpellName.Regen,
+      mpCost: 9,
+      targets: "single",
+      effects: [StatusName.Haste],
+    },
+    [MagicSpellName.Detox]: {
+      type: "magical",
+      name: MagicSpellName.Detox,
+      mpCost: 3,
+      targets: "single",
+    },
     [MagicSpellName.Regen]: {
       type: "magical",
       name: MagicSpellName.Regen,
@@ -359,6 +416,60 @@ const DETAILED_ACTION_DICT: {
       mpCost: 14,
       targets: "single",
       effects: [StatusName.Regen],
+    },
+    [MagicSpellName.Remedy]: {
+      type: "magical",
+      name: MagicSpellName.Remedy,
+      mpCost: 8,
+      targets: "single",
+    },
+    [MagicSpellName.Cleanse]: {
+      type: "magical",
+      name: MagicSpellName.Cleanse,
+      mpCost: 12,
+      targets: "single",
+    },
+    [MagicSpellName.Protect]: {
+      type: "magical",
+      name: MagicSpellName.Protect,
+      mpCost: 10,
+      targets: "single",
+    },
+    [MagicSpellName.Shell]: {
+      type: "magical",
+      name: MagicSpellName.Shell,
+      mpCost: 10,
+      targets: "single",
+    },
+    [MagicSpellName.Slow]: {
+      type: "magical",
+      name: MagicSpellName.Slow,
+      mpCost: 7,
+      targets: "single",
+    },
+    [MagicSpellName.Silence]: {
+      type: "magical",
+      name: MagicSpellName.Silence,
+      mpCost: 6,
+      targets: "single",
+    },
+    [MagicSpellName.Confuse]: {
+      type: "magical",
+      name: MagicSpellName.Confuse,
+      mpCost: 8,
+      targets: "single",
+    },
+    [MagicSpellName.Sleep]: {
+      type: "magical",
+      name: MagicSpellName.Sleep,
+      mpCost: 10,
+      targets: "single",
+    },
+    [MagicSpellName.Dispel]: {
+      type: "magical",
+      name: MagicSpellName.Dispel,
+      mpCost: 14,
+      targets: "single",
     },
   },
   // item
@@ -392,24 +503,29 @@ const DETAILED_ACTION_DICT: {
 
 const SIMPLE_ACTION_DICT: { [actionName in ActionName]?: Action } = {
   // other
+  // [ActionName.Attack]: {
+  //   name: ActionName.Attack,
+  //   type: "other",
+  //   targets: "single",
+  // },
   [ActionName.Steal]: {
     name: ActionName.Steal,
-    type: "other",
+    type: "steal",
     targets: "single",
   },
   [ActionName.Move]: {
     name: ActionName.Move,
-    type: "other",
+    type: "move",
     targets: "self",
   },
   [ActionName.Hide]: {
     name: ActionName.Hide,
-    type: "other",
+    type: "hide",
     targets: "self",
   },
   [ActionName.Defend]: {
     name: ActionName.Defend,
-    type: "other",
+    type: "defend",
     targets: "self",
   },
 };

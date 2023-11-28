@@ -27,8 +27,8 @@ export type Character = {
   statuses: Status[];
   actions: ActionName[];
   skills: {
-    [ActionName.Attack]: AttackName[];
     [ActionName.Magic]: MagicSpellName[];
+    [ActionName.Attack]?: AttackName[];
     [ActionName.Invoke]?: string[];
     [ActionName.Summon]?: string[];
   };
@@ -78,9 +78,22 @@ export type Action = (
       speed?: number;
       power?: number;
     }
+  | { name: "_attack"; type: "melee" | "ranged"; power: number }
   | {
-      name: string;
-      type: "other";
+      name: ActionName.Steal;
+      type: "steal";
+    }
+  | {
+      name: ActionName.Defend;
+      type: "defend";
+    }
+  | {
+      name: ActionName.Hide;
+      type: "hide";
+    }
+  | {
+      name: ActionName.Move;
+      type: "move";
     }
 ) & {
   targets: ActionTarget;

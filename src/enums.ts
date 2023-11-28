@@ -1,26 +1,3 @@
-export enum BattleState {
-  Dormant = "dormant",
-  Idle = "idle",
-  Paused = "paused",
-  Ended = "ended",
-
-  HeroAction = "hero-action",
-  AttackTargetSelection = "attack-target-selection",
-  HeroAttack = "hero-attack",
-
-  EnemyAction = "enemy-action",
-  EnemyAttack = "enemy-attack",
-
-  StatusAction = "status-action",
-  StatusExpired = "status-expired",
-
-  CharacterKilled = "character-killed",
-
-  ItemSelection = "item-selection",
-  ItemTargetSelect = "item-target-selection",
-  ItemUse = "item-use",
-}
-
 export enum Lane {
   Front = "front",
   Back = "back",
@@ -193,6 +170,7 @@ export enum InventoryItemDescription {
 }
 
 export enum ActionName {
+  _Attack = "_attack",
   Attack = "attack",
   Magic = "magic",
   Defend = "defend",
@@ -234,7 +212,6 @@ export enum MagicSpellName {
   Meteor = "Meteor",
   Demi = "Demi",
   Drain = "Drain",
-  MagiDrain = "MagiDrain",
   // Aid Spells
   Cure = "Cure",
   Regen = "Regen",
@@ -264,7 +241,7 @@ export enum MagicSpellDescription {
   Meteor = "Summons a meteor shower, dealing massive damage to all enemies.",
   Demi = "Reduces the HP of a single target by a percentage.",
   Drain = "Drains HP from a single target and restores it to the user.",
-  MagiDrain = "Drains MP from a single target and restores it to the user.",
+  // MagiDrain = "Drains MP from a single target and restores it to the user.",
   Cure = "Restores a moderate amount of HP to a single target.",
   Regen = "Gradually restores HP over time to a single target.",
   Haste = "Increases the speed or action frequency of a single target.",

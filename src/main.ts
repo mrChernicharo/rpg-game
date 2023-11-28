@@ -9,6 +9,7 @@ import {
   drawItemEffect,
   drawSelectedCharacterOutline,
   drawStatusEffect,
+  drawStealEffect,
   drawTimeline,
   drawTurnCount,
 } from "./draw";
@@ -28,6 +29,7 @@ import {
   subtractFromInventory,
   getCharacterStatusIdxByName,
 } from "./globals";
+import { panes } from "./infoPane";
 import { CharacterTurn, Character, Turn, Action, Status, StatusTurn } from "./types";
 import { calcTurnDuration, calculateNextTurnTime, idMaker, wait } from "./utils";
 
@@ -176,19 +178,8 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
     }
   }
 
-  if (action.type === "other") {
-    if (action.name === ActionName.Defend) {
-      actor.statuses.push({
-        name: StatusName.Defense,
-        turnCount: 1,
-        turnsPlayed: 0,
-      });
-    }
-
-    // if (action.name === ActionName.Steal) {
-
-    // }
-  }
+  // if (action.type === "other") {
+  // }
 
   if (target.hp < 0) {
     target.hp = 0;
@@ -213,7 +204,18 @@ async function handleActionEfx(action: Action, actor: Character, target: Charact
     case "status":
       await drawStatusEffect(action.name, target.id);
       break;
-    case "other":
+    case "steal":
+      await drawStealEffect(actor, target, action);
+      const itemName = performStealAttempt(actor, target);
+      if (itemName) {
+        addInventoryItem(itemName);
+        drawBottomPane({ type: "text", content: `stolen ${itemName} from ${target.name}!` });
+      } else {
+        drawBottomPane({ type: "text", content: `failed to steal` });
+      }
+      await wait(1000);
+      break;
+    case "defend":
       if (action.name === ActionName.Defend) {
         actor.statuses.push({
           name: StatusName.Defense,
@@ -221,17 +223,11 @@ async function handleActionEfx(action: Action, actor: Character, target: Charact
           turnsPlayed: 0,
         });
         await drawDefenseEffect(actor);
+        drawBottomPane(panes.text(`${actor.name} raised its defenses`));
+        await wait(800);
       }
-      if (action.name === ActionName.Steal) {
-        const itemName = performStealAttempt(actor, target);
-        if (itemName) {
-          addInventoryItem(itemName);
-          drawBottomPane({ type: "text", content: `stolen ${itemName} from ${target.name}` });
-        } else {
-          drawBottomPane({ type: "text", content: `failed to steal` });
-        }
-        await wait(1000);
-      }
+      break;
+    default:
       break;
   }
 

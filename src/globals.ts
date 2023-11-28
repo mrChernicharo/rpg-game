@@ -1,6 +1,6 @@
 import { ENEMY_LIST, HERO_LIST, INVENTORY_LIST, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT } from "./data";
 import { battleUI, enemyBackSlots, enemyFrontSlots, getSlotElementById, slots } from "./dom";
-import { InventoryItemName, StatusName } from "./enums";
+import { ActionName, InventoryItemName, StatusName } from "./enums";
 import { Character, Turn, InventoryItem, CurrentActionData, Status, Action } from "./types";
 import { rowDice } from "./utils";
 
@@ -30,34 +30,49 @@ export function getShouldSelectTarget() {
   return shouldSelectTarget;
 }
 export function getPossibleTargets() {
-  let possibleTargets: Character[] = [];
-  const enemies = getAllEnemies();
   const { actionName, actionDetail, character } = currentActionData;
+
   let action: Action;
+
   if (actionDetail) {
     action = DETAILED_ACTION_DICT[actionName!]![actionDetail];
   } else {
     action = SIMPLE_ACTION_DICT[actionName!]!;
   }
 
-  if (action.type === "melee") {
-    const [enemiesInTheFront, enemiesInTheBack] = [
-      enemies.filter((e) => e.position.lane === "front" && e.hp > 0),
-      enemies.filter((e) => e.position.lane === "back" && e.hp > 0),
-    ];
-    if (enemiesInTheFront.length > 0) {
-      possibleTargets = [...enemiesInTheFront];
-    } else {
-      possibleTargets = [...enemiesInTheBack];
-    }
-  } else if (action.type === "ranged") {
-    possibleTargets = [...enemies].filter((h) => h.hp > 0);
-  } else {
-    possibleTargets = [...enemies].filter((h) => h.hp > 0);
+  const [enemiesInTheFront, enemiesInTheBack, allHeroesButMe] = [
+    getAllEnemies().filter((e) => e.position.lane === "front" && e.hp > 0),
+    getAllEnemies().filter((e) => e.position.lane === "back" && e.hp > 0),
+    getAllHeroes().filter((h) => h.id !== character!.id && h.hp > 0),
+  ];
+
+  console.log("getPossibleTargets", { action });
+
+  switch (action.type) {
+    case "melee":
+      if (enemiesInTheFront.length > 0) {
+        return [...enemiesInTheFront, ...getAllHeroes()];
+      } else {
+        return [...enemiesInTheBack, ...getAllHeroes()];
+      }
+    case "ranged":
+    case "item":
+    case "magical":
+      return [...enemiesInTheFront, ...enemiesInTheBack, ...getAllHeroes()];
+    case "defend":
+    case "move":
+      return [character!];
+    case "steal":
+      if (enemiesInTheFront.length > 0) {
+        return [...enemiesInTheFront];
+      } else {
+        return [...enemiesInTheBack];
+      }
+    // case "invoke":
+    // case "summon":
+    default:
+      return getAllCharacters();
   }
-  return possibleTargets;
-  // const idx = Math.floor(Math.random() * possibleTargets.length);
-  // return possibleTargets[idx];
 }
 
 // function chooseTargetForEnemy(enemy: Character): Character {

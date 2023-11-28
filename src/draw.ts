@@ -101,7 +101,7 @@ async function drawAttackEffect(attacker: Character, target: Character, action: 
 
   if (!["melee", "ranged"].includes(action.type)) return;
 
-  console.log(`:::::${action.type}-attack-receive`);
+  // console.log(`:::::${action.type}-attack-receive`);
 
   attackerSlot.classList.add(`${action.type}-attack-perform`);
   targetSlot.classList.add(`${action.type}-attack-receive`);
@@ -110,6 +110,21 @@ async function drawAttackEffect(attacker: Character, target: Character, action: 
 
   attackerSlot.classList.remove(`${action.type}-attack-perform`);
   targetSlot.classList.remove(`${action.type}-attack-receive`);
+
+  return Promise.resolve();
+}
+
+async function drawStealEffect(attacker: Character, target: Character, action: Action): Promise<void> {
+  const targetSlot = getSlotElementById(target.id);
+  const attackerSlot = getSlotElementById(attacker.id);
+
+  attackerSlot.classList.add(`steal-perform`);
+  targetSlot.classList.add(`steal-receive`);
+
+  await wait(800);
+
+  attackerSlot.classList.remove(`steal-perform`);
+  targetSlot.classList.remove(`steal-receive`);
 
   return Promise.resolve();
 }
@@ -180,47 +195,60 @@ function drawTurnCount(turn: number) {
 async function drawActionPane(action: Action, actor: Character, target: Character) {
   console.log("DRAW ACTION PANE", { actionName: action.name, action, actor, target });
 
-  if (["melee", "ranged"].includes(action.type)) {
-    drawBottomPane({ type: "text", content: `${actor.name} attacks ${target.name}` });
+  switch (action.type) {
+    case "melee":
+    case "ranged":
+      drawBottomPane({ type: "text", content: `${actor.name} attacks ${target.name}` });
+      break;
+    case "magical":
+      drawBottomPane({ type: "text", content: `${actor.name} casts ${action.name} on ${target.name}` });
+      break;
+    case "item":
+      drawBottomPane({ type: "text", content: `${target.name} received ${action.name}` });
+      break;
+    case "status":
+      if (action.name === StatusName.Poison) {
+        drawBottomPane({
+          type: "text",
+          content: `${target.name} received ${action.power!} HP of ${action.name} damage`,
+        });
+      }
+      if (action.name === StatusName.Regen) {
+        drawBottomPane({ type: "text", content: `${target.name} regenerated ${action.power!} HP` });
+      }
+      break;
+    case "steal":
+      drawBottomPane({ type: "text", content: `stealing from ${target.name}` });
+      break;
+    case "defend":
+      drawBottomPane(panes.text(`${actor.name} defends`));
+      break;
+    case "hide":
+      drawBottomPane({ type: "text", content: `${target.name} is hidden` });
+      break;
+    case "move":
+      drawBottomPane({ type: "text", content: `${target.name} is on the move` });
+      break;
   }
-  if (action.type === "magical") {
-    drawBottomPane({ type: "text", content: `${actor.name} casts ${action.name} on ${target.name}` });
-  }
-  if (action.type === "item") {
-    drawBottomPane({ type: "text", content: `${target.name} received ${action.name}` });
-  }
-  if (action.type === "status") {
-    if (action.name === StatusName.Poison) {
-      drawBottomPane({ type: "text", content: `${target.name} received ${action.power!} HP of ${action.name} damage` });
-    }
-    if (action.name === StatusName.Regen) {
-      drawBottomPane({ type: "text", content: `${target.name} regenerated ${action.power!} HP` });
-    }
-  }
-  if (action.type === "other") {
-    switch (action.name) {
-      case ActionName.Defend:
-        drawBottomPane(panes.text(`${actor.name} raised its defenses`));
-        break;
-      case ActionName.Steal:
-        drawBottomPane({ type: "text", content: `stealing from ${target.name}` });
-        break;
-      case ActionName.Summon:
-        drawBottomPane({ type: "text", content: `${actor.name} summoned ${action.name}` });
-        break;
-      case ActionName.Invoke:
-        drawBottomPane({ type: "text", content: `${actor.name} invoked ${action.name}` });
-        break;
-      case ActionName.Move:
-        drawBottomPane({ type: "text", content: `${target.name} is on the move` });
-        break;
-      case ActionName.Hide:
-        drawBottomPane({ type: "text", content: `${target.name} is hidden` });
-        break;
-      default:
-        break;
-    }
-  }
+
+  // switch (action.name) {
+  //   case ActionName.Defend:
+  //     break;
+  //   case ActionName.Steal:
+  //     break;
+  //   case ActionName.Summon:
+  //     drawBottomPane({ type: "text", content: `${actor.name} summoned ${action.name}` });
+  //     break;
+  //   case ActionName.Invoke:
+  //     drawBottomPane({ type: "text", content: `${actor.name} invoked ${action.name}` });
+  //     break;
+  //   case ActionName.Move:
+  //     break;
+  //   case ActionName.Hide:
+  //     break;
+  //   default:
+  //     break;
+  // }
 
   await wait(1000);
 }
@@ -254,9 +282,9 @@ function drawBottomPane(paneInfo: PaneInfo, dismissFn?: () => void) {
         li.append(button);
         bottomSection.list.append(li);
 
-        if (i === 0) {
-          button.focus();
-        }
+        // if (i === 0) {
+        //   button.focus();
+        // }
       });
       break;
     case "none":
@@ -280,6 +308,7 @@ export {
   drawSelectedCharacterOutline,
   drawTurnCount,
   drawAttackEffect,
+  drawStealEffect,
   drawAMagicEffect,
   drawDefenseEffect,
   drawItemEffect,

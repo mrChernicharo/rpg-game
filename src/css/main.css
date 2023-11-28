@@ -1,132 +1,21 @@
-@font-face {
-  font-family: "Game";
-  src: url(/fonts/VT323-Regular.ttf);
-}
-
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: "Game";
-  font-size: 22px;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-ul,
-li {
-  all: unset;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-/* .card {
-  padding: 2em;
-} */
-
-.read-the-docs {
-  color: #888;
-}
-
-/**********************************/
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vanilla:hover {
-  filter: drop-shadow(0 0 2em #3178c6aa);
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto #646cff;
-  /* outline: 4px auto -webkit-focus-ring-color; */
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
-
 /*******************/
 
 #app {
   max-width: 1280px;
   margin: 0 auto;
-  /* padding: 2rem; */
   text-align: center;
   display: flex;
 }
 
 #battle-ui {
-  /* border: 1px solid red; */
   display: flex;
   flex-direction: column;
+  gap: 5px;
+}
+
+#aside {
+  width: 132px;
+  /* border: 1px dashed darkblue; */
 }
 
 #battle-ui.ready-to-act > ul:not(#bottom-pane) {
@@ -134,30 +23,44 @@ button:focus-visible {
   user-select: none;
 }
 
-#aside {
-  width: 132px;
-  border: 1px dashed darkblue;
+/*************** BATTLE LANES & SLOTS *****************/
+
+#middle-pane {
+  padding-top: 3.6rem;
 }
 
 .battle-lane {
-  /* border: 1px solid blue; */
   display: flex;
+  gap: 5px;
 }
 
 .lane-slot {
-  /* border: 1px dashed white; */
+  border: 1px solid #333;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 140px;
   min-width: 120px;
+  transition: 0.2s ease;
+  transition-property: box-shadow, transform;
 }
 
 .lane-slot.selectable-target {
-  /* filter: drop-shadow(0 0 0.75rem rgba(184, 135, 11, 0.9)); */
-  filter: drop-shadow(0 0 0.5rem rgba(255, 255, 255, 0.4));
-  /* box-shadow: 0px 0px 10px 5px rgba(255,255,255,0.5); */
+  border: 1px solid #fff;
+  transition: 0.2s ease;
+  transition-property: box-shadow, transform;
+}
+.lane-slot.selectable-target:hover {
+  box-shadow: 0 0 5px 4px rgba(255, 255, 255, 0.5);
+  transform: scale(1.1);
+  z-index: 10;
+  /* filter: drop-shadow(0 0 0.75rem rgba(255, 255, 255, 0.6)); */
+}
+.lane-slot:not(.selectable-target):hover {
+  transform: scale(1.05);
+  z-index: 10;
+  /* filter: drop-shadow(0 0 0.75rem rgba(255, 255, 255, 0.6)); */
 }
 
 .lane-slot.selected {
@@ -165,7 +68,6 @@ button:focus-visible {
 }
 
 .lane-slot > .top-section {
-  /* border: 1px solid; */
   width: 100%;
   height: 24px;
 }
@@ -184,33 +86,13 @@ button:focus-visible {
   filter: blur(4px);
 }
 
-/* .lane-slot[id]:hover > .avatar > img {
-  filter: drop-shadow(0 0 0.75rem rgba(255, 255, 255, 0.6));
-} */
-
 .lane-slot.dead[id]:hover > .avatar > img {
   filter: none;
 }
 
-.efx-overlay,
-.defense-overlay,
-.status-overlay {
-  position: absolute;
-  inset: 0;
-  background-color: #fff;
-  opacity: 0;
-  pointer-events: none;
-}
-
-/******************/
-
-#middle-pane {
-  padding-top: 3.6rem;
-  /* border: 1px solid green; */
-}
+/********* BOTTOM-PANE *********/
 
 #bottom-pane {
-  width: 358px;
   height: 200px;
   border: 1px solid green;
   position: relative;
@@ -223,39 +105,30 @@ button:focus-visible {
   gap: 8px;
 }
 
-#bottom-pane #dismiss-btn {
+#dismiss-btn {
   position: absolute;
   top: 0;
   right: 0;
   padding-block: 0.5rem;
 }
 
-.list-option > button {
+#bottom-pane > #list-content > .list-option > button {
   padding-block: 0.5rem;
   width: 100%;
-  /* cursor: pointer; */
 }
 
-/* .list-option:hover {
-  color: #646cff;
-  border-bottom: 1px solid #646cff;
-  border-right: 1px solid #646cff;
-} */
-/*****************/
+/********** TIMELINE *******/
 
 #timeline {
   text-align: left;
 }
-
-/* #timeline > .character-name {
-} */
 
 #timeline > .turn-item > .time-to-next-turn {
   font-weight: bold;
   color: goldenrod;
 }
 
-/************/
+/*********** GENERAL ***************/
 
 .hidden {
   display: none;
@@ -265,19 +138,23 @@ button:focus-visible {
   opacity: 0.3;
 }
 
-/******************/
+.efx-overlay,
+.defense-overlay,
+.status-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: #fff;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/********* STATUSES *********/
 
 .poisoned {
   .avatar-img {
     filter: drop-shadow(0 0 0.75rem rgba(25, 216, 38, 0.6));
   }
 }
-
-/* .poison {
-  .avatar-img {
-    filter: blur(4px) drop-shadow(0 0 1.5rem rgba(25, 216, 38, 0.6));
-  }
-} */
 
 .poison-status {
   .status-overlay {
@@ -288,6 +165,31 @@ button:focus-visible {
 .regen-status {
   .status-overlay {
     animation: good-status 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+}
+
+/*********** ACTIONS ************/
+
+.steal-perform {
+  .avatar-img {
+    animation: shake-lr 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+}
+.steal-receive {
+  .avatar-img {
+    animation: shake-lr 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+
+  .efx-overlay {
+    animation: claws 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transition: clip-path opacity;
+  }
+}
+
+.defense-perform {
+  .defense-overlay {
+    animation: shield 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transition: clip-path opacity;
   }
 }
 
@@ -328,13 +230,6 @@ button:focus-visible {
 
   .efx-overlay {
     animation: pierce 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-    transition: clip-path opacity;
-  }
-}
-
-.defense-perform {
-  .defense-overlay {
-    animation: shield 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
     transition: clip-path opacity;
   }
 }
