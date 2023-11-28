@@ -111,7 +111,7 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
   });
 
   if (["melee", "ranged"].includes(action.type)) {
-    if (action.name === "_attack") {
+    if (action.name === "attack") {
       let attackPower = 100;
 
       // if (action.type === "ranged") {

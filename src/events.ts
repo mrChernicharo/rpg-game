@@ -88,7 +88,7 @@ export async function onActionSelected(e: any) {
 
   if (isHeroAction) {
     switch (actionName) {
-      case ActionName.Attack:
+      case ActionName._Attack:
       case ActionName.Magic:
       case ActionName.Invoke:
       case ActionName.Summon:
@@ -101,7 +101,7 @@ export async function onActionSelected(e: any) {
         currentTurnInfo.actionTarget = currentTurnInfo.character;
         onActionTargetSelected();
         break;
-      case ActionName._Attack:
+      case ActionName.Attack:
         currentTurnInfo.actionDetail = "melee";
         setShouldSelectTarget(true);
         // @TODO check hero equipment
@@ -152,25 +152,20 @@ export async function onActionTargetSelected() {
 }
 
 export function createNewAction(actionName: ActionName, actionDetail: string | null) {
-  let action: Action | null = null;
-
-  if (actionDetail && actionName !== ActionName._Attack) {
-    if (actionName === "status") {
-      action = {
-        ...STATUS_DICT[actionDetail as StatusName]!,
-        type: "status",
-        targets: "single",
-        turnsPlayed: 0,
-      };
-    } else {
-      action = DETAILED_ACTION_DICT[actionName]![actionDetail];
-    }
+  if (actionDetail && actionName === ActionName.Attack) {
+    return SIMPLE_ACTION_DICT[actionName]!;
+  } else if (actionDetail && actionName === ActionName.Status) {
+    return {
+      ...STATUS_DICT[actionDetail as StatusName]!,
+      type: "status",
+      targets: "single",
+      turnsPlayed: 0,
+    };
+  } else if (actionDetail) {
+    return DETAILED_ACTION_DICT[actionName]![actionDetail];
   } else {
-    action = SIMPLE_ACTION_DICT[actionName]!;
+    return SIMPLE_ACTION_DICT[actionName]!;
   }
-
-  // console.log(":::createNewAction", { actionName, actionDetail, action: { ...action } });
-  return action;
 }
 
 export function createNewStatus(statusName: StatusName) {

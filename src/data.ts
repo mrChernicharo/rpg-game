@@ -81,7 +81,7 @@ const HERO_LIST: Character[] = [
       ActionName.Item,
     ],
     skills: {
-      [ActionName.Attack]: [AttackName.Slash, AttackName.Arrow],
+      [ActionName._Attack]: [AttackName.Slash, AttackName.Arrow],
       [ActionName.Magic]: [
         MagicSpellName.Bio,
         MagicSpellName.Regen,
@@ -134,7 +134,7 @@ const HERO_LIST: Character[] = [
       ActionName.Move,
     ],
     skills: {
-      [ActionName.Attack]: [AttackName.Arrow],
+      [ActionName._Attack]: [AttackName.Arrow],
       [ActionName.Magic]: [MagicSpellName.Thunder, MagicSpellName.Bio, MagicSpellName.Cure],
       [ActionName.Summon]: ["DireWolf"],
     },
@@ -153,7 +153,7 @@ const HERO_LIST: Character[] = [
     },
     statuses: [],
     actions: [
-      ActionName._Attack,
+      ActionName.Attack,
       ActionName.Steal,
       ActionName.Defend,
       ActionName.Magic,
@@ -183,9 +183,9 @@ const ENEMY_LIST: Character[] = [
       col: Col.Left,
     },
     statuses: [],
-    actions: [ActionName.Attack],
+    actions: [ActionName._Attack],
     skills: {
-      [ActionName.Attack]: [AttackName.Slash],
+      [ActionName._Attack]: [AttackName.Slash],
       [ActionName.Magic]: [MagicSpellName.Bio],
     },
   },
@@ -202,9 +202,9 @@ const ENEMY_LIST: Character[] = [
       col: Col.Center,
     },
     statuses: [],
-    actions: [ActionName.Attack],
+    actions: [ActionName._Attack],
     skills: {
-      [ActionName.Attack]: [AttackName.Bite, AttackName.Claws, AttackName.TailWhip],
+      [ActionName._Attack]: [AttackName.Bite, AttackName.Claws, AttackName.TailWhip],
       [ActionName.Magic]: [MagicSpellName.Fire, MagicSpellName.Bio],
     },
   },
@@ -222,9 +222,9 @@ const ENEMY_LIST: Character[] = [
       col: Col.Left,
     },
     statuses: [],
-    actions: [ActionName.Attack],
+    actions: [ActionName._Attack],
     skills: {
-      [ActionName.Attack]: [AttackName.IceBolt],
+      [ActionName._Attack]: [AttackName.IceBolt],
       [ActionName.Magic]: [MagicSpellName.Blizzard],
     },
   },
@@ -256,7 +256,7 @@ const DETAILED_ACTION_DICT: {
   [actionName in ActionName]?: { [skill: string]: Action };
 } = {
   // attacks
-  [ActionName.Attack]: {
+  [ActionName._Attack]: {
     [AttackName.Punch]: {
       name: AttackName.Punch,
       type: "melee",
@@ -511,8 +511,8 @@ const DETAILED_ACTION_DICT: {
 
 const SIMPLE_ACTION_DICT: { [actionName in ActionName]?: Action } = {
   // other
-  [ActionName._Attack]: {
-    name: ActionName._Attack,
+  [ActionName.Attack]: {
+    name: ActionName.Attack,
     type: "melee",
     targets: "single",
   },

@@ -31,13 +31,14 @@ export function getShouldSelectTarget() {
 }
 export function getPossibleTargets() {
   const { actionName, actionDetail, character } = currentTurnInfo;
+  console.log("getPossibleTargets", { currentTurnInfo });
 
   let action: Action;
 
-  if (actionDetail && actionName !== ActionName._Attack) {
-    action = DETAILED_ACTION_DICT[actionName!]![actionDetail];
-  } else {
+  if (actionName === ActionName.Attack || !actionDetail) {
     action = SIMPLE_ACTION_DICT[actionName!]!;
+  } else {
+    action = DETAILED_ACTION_DICT[actionName!]![actionDetail];
   }
 
   const [enemiesInTheFront, enemiesInTheBack, allHeroesButMe] = [
@@ -45,8 +46,6 @@ export function getPossibleTargets() {
     getAllEnemies().filter((e) => e.position.lane === "back" && e.hp > 0),
     getAllHeroes().filter((h) => h.id !== character!.id && h.hp > 0),
   ];
-
-  console.log("getPossibleTargets", { action });
 
   switch (action.type) {
     case "melee":

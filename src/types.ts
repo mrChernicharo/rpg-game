@@ -28,7 +28,7 @@ export type Character = {
   actions: ActionName[];
   skills: {
     [ActionName.Magic]: MagicSpellName[];
-    [ActionName.Attack]?: AttackName[];
+    [ActionName._Attack]?: AttackName[];
     [ActionName.Invoke]?: string[];
     [ActionName.Summon]?: string[];
   };
@@ -78,7 +78,10 @@ export type Action = (
       name: InventoryItemName;
       type: "item";
     }
-  | { name: "_attack"; type: "melee" | "ranged" }
+  | {
+      name: ActionName.Attack;
+      type: "melee" | "ranged";
+    }
   | {
       name: ActionName.Steal;
       type: "steal";

@@ -15,7 +15,7 @@ const inventoryItems = (itemList: InventoryItem[]) =>
 
 const heroActionDetailItems = (hero: Character, actionName: ActionName) => {
   switch (actionName) {
-    case ActionName.Attack:
+    case ActionName._Attack:
     case ActionName.Magic:
     case ActionName.Summon:
     case ActionName.Invoke:
