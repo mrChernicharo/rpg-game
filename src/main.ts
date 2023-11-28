@@ -251,7 +251,6 @@ async function handleActionEfx(action: Action, actor: Character, target: Charact
 async function startTurn(turn: Turn) {
   if (turn.type === "status") {
     const character = getCharacterById(turn.characterId);
-    await drawSelectedCharacterOutline(character);
 
     console.log("start Status Turn", character.name);
 

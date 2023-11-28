@@ -1,4 +1,5 @@
 import { ENEMY_LIST, HERO_LIST, INVENTORY_LIST } from "./data";
+import { battleUI } from "./dom";
 import { InventoryItemName, StatusName } from "./enums";
 import { Character, Turn, InventoryItem, CurrentActionData, Status } from "./types";
 import { rowDice } from "./utils";
@@ -30,6 +31,12 @@ export function getShouldSelectTarget() {
 }
 export function setShouldSelectTarget(targetSelectionActive: boolean) {
   shouldSelectTarget = targetSelectionActive;
+
+  if (shouldSelectTarget) {
+    battleUI?.classList.add(`action-ready`);
+  } else {
+    battleUI?.classList.remove(`action-ready`);
+  }
 }
 export function setTimeline(turns: Turn[]) {
   timeline = turns;

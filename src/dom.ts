@@ -1,9 +1,9 @@
-const battleUI = document.querySelector("#battle-ui");
+const battleUI = document.querySelector("#battle-ui")!;
 
-const battleLanesUI = Array.from(document.querySelectorAll(".battle-lane"));
+const battleLanesUI = Array.from(document.querySelectorAll(".battle-lane"))!;
 const timelineUI = document.querySelector("#timeline")!;
 
-const turnCountUI = document.querySelector("#turn-count");
+const turnCountUI = document.querySelector("#turn-count")!;
 
 const bottomSection = {
   text: document.querySelector("#bottom-pane > #text-content")!,

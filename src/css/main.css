@@ -1,3 +1,8 @@
+@font-face {
+  font-family: "Game";
+  src: url(/fonts/VT323-Regular.ttf);
+}
+
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
@@ -19,6 +24,11 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+body {
+  font-family: "Game";
+  font-size: 22px;
 }
 
 a {
@@ -86,7 +96,8 @@ button:hover {
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 4px auto #646cff;
+  /* outline: 4px auto -webkit-focus-ring-color; */
 }
 
 @media (prefers-color-scheme: light) {
@@ -116,6 +127,11 @@ button:focus-visible {
   /* border: 1px solid red; */
   display: flex;
   flex-direction: column;
+}
+
+#battle-ui.action-ready > ul:not(#bottom-pane) {
+  cursor: url(/public/icons/sword32.webp), auto;
+  user-select: none;
 }
 
 #aside {
@@ -162,9 +178,9 @@ button:focus-visible {
   filter: blur(4px);
 }
 
-.lane-slot[id]:hover > .avatar > img {
+/* .lane-slot[id]:hover > .avatar > img {
   filter: drop-shadow(0 0 0.75rem rgba(255, 255, 255, 0.6));
-}
+} */
 
 .lane-slot.dead[id]:hover > .avatar > img {
   filter: none;
@@ -183,13 +199,13 @@ button:focus-visible {
 /******************/
 
 #middle-pane {
-  height: 40px;
+  padding-top: 3.6rem;
   /* border: 1px solid green; */
 }
 
 #bottom-pane {
   width: 358px; /* battle-ui max-width */
-  height: 240px;
+  height: 200px;
   border: 1px solid green;
   position: relative;
   padding-top: 2rem;
@@ -198,18 +214,27 @@ button:focus-visible {
 #bottom-pane > #list-content {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-}
-
-#bottom-pane > #list-content > li:hover {
-  border: 1px solid #646cff;
+  gap: 8px;
 }
 
 #bottom-pane #dismiss-btn {
   position: absolute;
-  top: 0;
+  top: -16px;
   right: 0;
+  padding-block: 0.5rem;
 }
 
+.list-option > button {
+  padding-block: 0.5rem;
+  width: 100%;
+  /* cursor: pointer; */
+}
+
+/* .list-option:hover {
+  color: #646cff;
+  border-bottom: 1px solid #646cff;
+  border-right: 1px solid #646cff;
+} */
 /*****************/
 
 #timeline {
@@ -285,7 +310,7 @@ button:focus-visible {
   }
 
   .efx-overlay {
-    animation: slash-tb 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    animation: slash-tb 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
     transition: clip-path opacity;
   }
 }

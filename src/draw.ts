@@ -8,6 +8,7 @@ import {
   bottomSection,
   dismissBtn,
   getSlotDefenseOverlayById,
+  battleUI,
 } from "./dom";
 import { ActionName, StatusName } from "./enums";
 import { getAllCharacters, getTimeline, getCharacterById } from "./globals";
@@ -178,7 +179,8 @@ function drawTurnCount(turn: number) {
 }
 
 async function drawActionPane(action: Action, actor: Character, target: Character) {
-  console.log("ACTION PANE", action.name, action);
+  console.log("DRAW ACTION PANE", { actionName: action.name, action, actor, target });
+
   if (action.type === "physical") {
     drawBottomPane({ type: "text", content: `${actor.name} attacks ${target.name}` });
   }
@@ -241,13 +243,21 @@ function drawBottomPane(paneInfo: PaneInfo, dismissFn?: () => void) {
       bottomSection.list.classList.remove("hidden");
       bottomSection.text.classList.add("hidden");
 
-      paneInfo.content.forEach((item) => {
-        const li = document.createElement("li");
+      paneInfo.content.forEach((item, i) => {
+        const button = document.createElement("button");
+        button.classList.add("list-btn", item.text.replaceAll(" ", "-"));
+        button.textContent = item.text;
+        button.onclick = () => item.action();
 
-        li.textContent = item.text;
+        const li = document.createElement("li");
         li.classList.add("list-option", item.text.replaceAll(" ", "-"));
-        li.onclick = () => item.action();
+
+        li.append(button);
         bottomSection.list.append(li);
+
+        if (i === 0) {
+          button.focus();
+        }
       });
       break;
     case "none":

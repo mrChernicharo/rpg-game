@@ -75,7 +75,14 @@ const HERO_LIST: Character[] = [
     actions: [ActionName.Attack, ActionName.Steal, ActionName.Defend, ActionName.Magic, ActionName.Item],
     skills: {
       [ActionName.Attack]: [AttackName.Slash, AttackName.Arrow],
-      [ActionName.Magic]: [MagicSpellName.Bio, MagicSpellName.Regen],
+      [ActionName.Magic]: [
+        MagicSpellName.Bio,
+        MagicSpellName.Regen,
+        MagicSpellName.Aero,
+        MagicSpellName.Cure,
+        MagicSpellName.Drain,
+        MagicSpellName.Haste,
+      ],
     },
   },
   // {
@@ -97,33 +104,33 @@ const HERO_LIST: Character[] = [
   //     [ActionName.Magic]: [MagicSpellName.Quake],
   //   },
   // },
-  // {
-  //   id: idMaker(),
-  //   name: "Abigail",
-  //   type: "hero",
-  //   hp: 520, // hp: 20,
-  //   mp: 50,
-  //   speed: 54,
-  //   imgUrl: "/sprites/sprite-09.webp",
-  //   position: {
-  //     lane: Lane.Back,
-  //     col: Col.Center,
-  //   },
-  //   statuses: [],
-  //   actions: [
-  //     ActionName.Attack,
-  //     ActionName.Defend,
-  //     ActionName.Magic,
-  //     ActionName.Summon,
-  //     ActionName.Item,
-  //     ActionName.Move,
-  //   ],
-  //   skills: {
-  //     [ActionName.Attack]: [AttackName.Stab, AttackName.Arrow],
-  //     [ActionName.Magic]: [MagicSpellName.Thunder, MagicSpellName.Bio, MagicSpellName.Cure],
-  //     [ActionName.Summon]: ["DireWolf"],
-  //   },
-  // },
+  {
+    id: idMaker(),
+    name: "Abigail",
+    type: "hero",
+    hp: 520, // hp: 20,
+    mp: 50,
+    speed: 54,
+    imgUrl: "/sprites/sprite-09.webp",
+    position: {
+      lane: Lane.Back,
+      col: Col.Right,
+    },
+    statuses: [],
+    actions: [
+      ActionName.Attack,
+      ActionName.Defend,
+      ActionName.Magic,
+      ActionName.Summon,
+      ActionName.Item,
+      ActionName.Move,
+    ],
+    skills: {
+      [ActionName.Attack]: [AttackName.Stab, AttackName.Arrow],
+      [ActionName.Magic]: [MagicSpellName.Thunder, MagicSpellName.Bio, MagicSpellName.Cure],
+      [ActionName.Summon]: ["DireWolf"],
+    },
+  },
   {
     id: idMaker(),
     name: "Savannah",
@@ -155,25 +162,25 @@ const HERO_LIST: Character[] = [
 ];
 
 const ENEMY_LIST: Character[] = [
-  // {
-  //   id: idMaker(),
-  //   name: "Skeleton",
-  //   type: "enemy",
-  //   hp: 120,
-  //   mp: 50,
-  //   speed: 70,
-  //   imgUrl: "/sprites/sprite-70.webp",
-  //   position: {
-  //     lane: Lane.Front,
-  //     col: Col.Left,
-  //   },
-  //   statuses: [],
-  //   actions: [ActionName.Attack],
-  //   skills: {
-  //     [ActionName.Attack]: [AttackName.Slash],
-  //     [ActionName.Magic]: [MagicSpellName.Bio],
-  //   },
-  // },
+  {
+    id: idMaker(),
+    name: "Skeleton",
+    type: "enemy",
+    hp: 120,
+    mp: 50,
+    speed: 70,
+    imgUrl: "/sprites/sprite-70.webp",
+    position: {
+      lane: Lane.Front,
+      col: Col.Left,
+    },
+    statuses: [],
+    actions: [ActionName.Attack],
+    skills: {
+      [ActionName.Attack]: [AttackName.Slash],
+      [ActionName.Magic]: [MagicSpellName.Bio],
+    },
+  },
   {
     id: idMaker(),
     name: "Demon",
