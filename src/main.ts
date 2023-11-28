@@ -7,6 +7,7 @@ import {
   drawCharacters,
   drawDefenseEffect,
   drawItemEffect,
+  drawNumber,
   drawSelectedCharacterOutline,
   drawStatusEffect,
   drawStealEffect,
@@ -111,24 +112,22 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
   });
 
   if (["melee", "ranged"].includes(action.type)) {
+    let attackPower = 0;
+
     if (action.name === "attack") {
-      let attackPower = 100;
-
-      // if (action.type === "ranged") {
-      //   attackPower = action.power; // + dexterity
-      // } else if (action.type === "melee") {
-      //   attackPower = action.power; // + strength
-      // }
-
-      target.hp -= attackPower;
+      if (action.type === "ranged") {
+        attackPower = 100; // + dexterity
+      } else if (action.type === "melee") {
+        attackPower = 100; // + strength
+      }
     } else {
       let attackPower = (action as any).power;
 
       if (getDefenseStatusIdx(target.statuses) > -1) {
         attackPower *= 0.5;
       }
-      target.hp -= attackPower;
     }
+    target.hp -= attackPower;
   }
 
   if (action.type === "magical") {
@@ -183,9 +182,6 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
       target.hp += action.power!;
     }
   }
-
-  // if (action.type === "other") {
-  // }
 
   if (target.hp < 0) {
     target.hp = 0;
@@ -248,6 +244,17 @@ async function handleActionEfx(action: Action, actor: Character, target: Charact
   if (slot.classList.contains("poisoned") && !isPoisoned) {
     console.log("remove poisoned class");
     slot.classList.remove("poisoned");
+  }
+
+  const actionPow = (action as any)?.power;
+  if (actionPow) {
+    if ([MagicSpellName.Cure, MagicSpellName.Regen].includes((action as any).name)) {
+      drawNumber(target.id, actionPow, "lightgreen");
+    } else {
+      drawNumber(target.id, actionPow);
+    }
+  } else {
+    drawNumber(target.id, 100);
   }
 }
 

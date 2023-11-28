@@ -9,6 +9,7 @@ import {
   dismissBtn,
   getSlotDefenseOverlayById,
   battleUI,
+  getNumbersOverlayById,
 } from "./dom";
 import { ActionName, StatusName } from "./enums";
 import { getAllCharacters, getTimeline, getCharacterById } from "./globals";
@@ -184,6 +185,22 @@ async function drawStatusEffect(statusName: StatusName, characterId: string) {
   slot.classList.remove(`${statusName.toLocaleLowerCase()}-status`);
 }
 
+function drawNumber(targetId: string, number: number, color = "white") {
+  const overlay = getNumbersOverlayById(targetId);
+
+  const numSpan = document.createElement("span");
+  numSpan.style.color = color;
+  numSpan.textContent = String(number);
+
+  console.log(":::DRAW NUMBER");
+
+  overlay.append(numSpan);
+
+  setTimeout(() => {
+    overlay.removeChild(numSpan);
+  }, 1000);
+}
+
 function drawTurnCount(turn: number) {
   if (turnCountUI?.classList.contains("hidden")) {
     turnCountUI?.classList.remove("hidden");
@@ -311,6 +328,7 @@ export {
   drawStealEffect,
   drawAMagicEffect,
   drawDefenseEffect,
+  drawNumber,
   drawItemEffect,
   drawStatusEffect,
   drawActionPane,

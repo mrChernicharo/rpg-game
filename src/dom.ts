@@ -39,6 +39,9 @@ const getSlotDefenseOverlayById = (characterId: string) =>
 const getSlotStatusOverlayById = (characterId: string) =>
   Array.from(getSlotElementById(characterId).children).find((child) => child.classList.contains("status-overlay"));
 
+const getNumbersOverlayById = (characterId: string) =>
+  Array.from(getSlotElementById(characterId).children).find((child) => child.classList.contains("numbers-overlay"))!;
+
 export {
   slots,
   battleUI,
@@ -52,6 +55,7 @@ export {
   getSlotElementById,
   getAvatarElementById,
   getAvatarImgElementById,
+  getNumbersOverlayById,
   getSlotEfxOverlayById,
   getSlotDefenseOverlayById,
   getSlotStatusOverlayById,

@@ -52,10 +52,14 @@
   transition-property: box-shadow, transform;
 }
 .lane-slot.selected {
-  border: none;
+  border: 1px solid transparent;
   background: darkgoldenrod;
   transition: 0.2s ease;
   transition-property: transform;
+}
+
+.lane-slot.selectable-target.selected {
+  border: 1px solid #fff;
 }
 
 .lane-slot.selectable-target:hover {
@@ -143,12 +147,28 @@
 
 .efx-overlay,
 .defense-overlay,
+.numbers-overlay,
 .status-overlay {
   position: absolute;
   inset: 0;
   background-color: #fff;
   opacity: 0;
   pointer-events: none;
+}
+
+.numbers-overlay {
+  opacity: 1;
+  font-family: sans-serif;
+  font-weight: bold;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+}
+
+.numbers-overlay > span {
+  animation: number 1s;
+  transition: ease-out;
 }
 
 /********* STATUSES *********/
