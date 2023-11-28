@@ -72,9 +72,16 @@ const HERO_LIST: Character[] = [
       col: Col.Center,
     },
     statuses: [],
-    actions: [ActionName.Attack, ActionName.Steal, ActionName.Defend, ActionName.Magic, ActionName.Item],
+    actions: [
+      ActionName.Attack,
+      ActionName._Attack,
+      ActionName.Steal,
+      ActionName.Defend,
+      ActionName.Magic,
+      ActionName.Item,
+    ],
     skills: {
-      // [ActionName.Attack]: [AttackName.Slash, AttackName.Arrow],
+      [ActionName.Attack]: [AttackName.Slash, AttackName.Arrow],
       [ActionName.Magic]: [
         MagicSpellName.Bio,
         MagicSpellName.Regen,
@@ -98,7 +105,7 @@ const HERO_LIST: Character[] = [
   //     col: Col.Right,
   //   },
   //   statuses: [],
-  //   actions: [ActionName.Attack, ActionName.Defend, ActionName.Magic, ActionName.Item, ActionName.Move],
+  //   actions: [ActionName._Attack, ActionName.Defend, ActionName.Magic, ActionName.Item, ActionName.Move],
   //   skills: {
   //  // [ActionName.Attack]: [AttackName.Slash],
   //     [ActionName.Magic]: [MagicSpellName.Quake],
@@ -118,6 +125,7 @@ const HERO_LIST: Character[] = [
     },
     statuses: [],
     actions: [
+      ActionName._Attack,
       ActionName.Attack,
       ActionName.Defend,
       ActionName.Magic,
@@ -126,7 +134,7 @@ const HERO_LIST: Character[] = [
       ActionName.Move,
     ],
     skills: {
-      // [ActionName.Attack]: [AttackName.Stab, AttackName.Arrow],
+      [ActionName.Attack]: [AttackName.Arrow],
       [ActionName.Magic]: [MagicSpellName.Thunder, MagicSpellName.Bio, MagicSpellName.Cure],
       [ActionName.Summon]: ["DireWolf"],
     },
@@ -145,7 +153,7 @@ const HERO_LIST: Character[] = [
     },
     statuses: [],
     actions: [
-      ActionName.Attack,
+      ActionName._Attack,
       ActionName.Steal,
       ActionName.Defend,
       ActionName.Magic,
@@ -503,11 +511,11 @@ const DETAILED_ACTION_DICT: {
 
 const SIMPLE_ACTION_DICT: { [actionName in ActionName]?: Action } = {
   // other
-  // [ActionName.Attack]: {
-  //   name: ActionName.Attack,
-  //   type: "other",
-  //   targets: "single",
-  // },
+  [ActionName._Attack]: {
+    name: ActionName._Attack,
+    type: "melee",
+    targets: "single",
+  },
   [ActionName.Steal]: {
     name: ActionName.Steal,
     type: "steal",

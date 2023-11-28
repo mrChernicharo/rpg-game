@@ -67,10 +67,6 @@ export type Action = (
       element?: Element;
     }
   | {
-      name: InventoryItemName;
-      type: "item";
-    }
-  | {
       type: "status";
       name: StatusName;
       turnsPlayed: number;
@@ -78,7 +74,11 @@ export type Action = (
       speed?: number;
       power?: number;
     }
-  | { name: "_attack"; type: "melee" | "ranged"; power: number }
+  | {
+      name: InventoryItemName;
+      type: "item";
+    }
+  | { name: "_attack"; type: "melee" | "ranged" }
   | {
       name: ActionName.Steal;
       type: "steal";
@@ -150,7 +150,7 @@ export type PaneInfo =
       }[];
     };
 
-export type CurrentActionData = {
+export type TurnInfo = {
   character: Character | null;
   actionName: ActionName | null;
   actionDetail: string | null;

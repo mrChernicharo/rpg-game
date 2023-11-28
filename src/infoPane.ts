@@ -33,6 +33,7 @@ const heroActionDetailItems = (hero: Character, actionName: ActionName) => {
 };
 
 const heroActionItems = (hero: Character) => {
+  console.log(hero.actions);
   return hero.actions.map((action) => ({
     text: action,
     action: () => {

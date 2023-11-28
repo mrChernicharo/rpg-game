@@ -51,6 +51,13 @@
   transition: 0.2s ease;
   transition-property: box-shadow, transform;
 }
+.lane-slot.selected {
+  border: none;
+  background: darkgoldenrod;
+  transition: 0.2s ease;
+  transition-property: transform;
+}
+
 .lane-slot.selectable-target:hover {
   box-shadow: 0 0 5px 4px rgba(255, 255, 255, 0.5);
   transform: scale(1.1);
@@ -61,10 +68,6 @@
   transform: scale(1.05);
   z-index: 10;
   /* filter: drop-shadow(0 0 0.75rem rgba(255, 255, 255, 0.6)); */
-}
-
-.lane-slot.selected {
-  background: darkgoldenrod;
 }
 
 .lane-slot > .top-section {

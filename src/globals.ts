@@ -1,14 +1,14 @@
 import { ENEMY_LIST, HERO_LIST, INVENTORY_LIST, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT } from "./data";
-import { battleUI, enemyBackSlots, enemyFrontSlots, getSlotElementById, slots } from "./dom";
+import { battleUI, getSlotElementById, slots } from "./dom";
 import { ActionName, InventoryItemName, StatusName } from "./enums";
-import { Character, Turn, InventoryItem, CurrentActionData, Status, Action } from "./types";
+import { Character, Turn, InventoryItem, TurnInfo, Status, Action } from "./types";
 import { rowDice } from "./utils";
 
 export let turnCount = 0;
 export let allCharacters: Character[] = [...ENEMY_LIST, ...HERO_LIST];
 export let timeline: Turn[] = [];
 export let inventory: InventoryItem[] = [...INVENTORY_LIST];
-export let currentActionData: CurrentActionData = {
+export let currentTurnInfo: TurnInfo = {
   character: null,
   actionDetail: null, // stab | fire | potion | poison
   actionName: null, // attack | magic | steal | status
@@ -30,11 +30,11 @@ export function getShouldSelectTarget() {
   return shouldSelectTarget;
 }
 export function getPossibleTargets() {
-  const { actionName, actionDetail, character } = currentActionData;
+  const { actionName, actionDetail, character } = currentTurnInfo;
 
   let action: Action;
 
-  if (actionDetail) {
+  if (actionDetail && actionName !== ActionName._Attack) {
     action = DETAILED_ACTION_DICT[actionName!]![actionDetail];
   } else {
     action = SIMPLE_ACTION_DICT[actionName!]!;

@@ -13,11 +13,11 @@ import {
   drawTimeline,
   drawTurnCount,
 } from "./draw";
-import { ActionName, InventoryItemName, MagicSpellName, StatusName } from "./enums";
+import { ActionName, AttackName, InventoryItemName, MagicSpellName, StatusName } from "./enums";
 import { createNewStatus, onActionTargetSelected } from "./events";
 import {
   getCharacterById,
-  currentActionData,
+  currentTurnInfo,
   allCharacters,
   incrementTurnCount,
   timeline,
@@ -111,18 +111,24 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
   });
 
   if (["melee", "ranged"].includes(action.type)) {
-    let attackPower = 0;
+    if (action.name === "_attack") {
+      let attackPower = 100;
 
-    if (action.type === "ranged") {
-      attackPower = action.power; // + dexterity
-    } else if (action.type === "melee") {
-      attackPower = action.power; // + strength
-    }
+      // if (action.type === "ranged") {
+      //   attackPower = action.power; // + dexterity
+      // } else if (action.type === "melee") {
+      //   attackPower = action.power; // + strength
+      // }
 
-    if (getDefenseStatusIdx(target.statuses) > -1) {
-      attackPower *= 0.5;
+      target.hp -= attackPower;
+    } else {
+      let attackPower = (action as any).power;
+
+      if (getDefenseStatusIdx(target.statuses) > -1) {
+        attackPower *= 0.5;
+      }
+      target.hp -= attackPower;
     }
-    target.hp -= attackPower;
   }
 
   if (action.type === "magical") {
@@ -251,11 +257,11 @@ async function startTurn(turn: Turn) {
 
     console.log("start Status Turn", character.name);
 
-    currentActionData.isStatusAction = true;
-    currentActionData.actionName = ActionName.Status;
-    currentActionData.actionDetail = turn.entity.name;
-    currentActionData.actionTarget = character;
-    currentActionData.character = character;
+    currentTurnInfo.isStatusAction = true;
+    currentTurnInfo.actionName = ActionName.Status;
+    currentTurnInfo.actionDetail = turn.entity.name;
+    currentTurnInfo.actionTarget = character;
+    currentTurnInfo.character = character;
 
     onActionTargetSelected();
   } else {

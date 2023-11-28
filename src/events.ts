@@ -1,15 +1,15 @@
 import { STATUS_DICT, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT } from "./data";
 import { battleUI, slots } from "./dom";
 import { drawBottomPane } from "./draw";
-import { ActionName, StatusName } from "./enums";
-import { getCharacterById, shouldSelectTarget, setShouldSelectTarget, currentActionData, inventory } from "./globals";
+import { ActionName, AttackName, StatusName } from "./enums";
+import { getCharacterById, shouldSelectTarget, setShouldSelectTarget, currentTurnInfo, inventory } from "./globals";
 import { panes } from "./infoPane";
 import { processAction, updateTimeline } from "./main";
 import { Action, Status } from "./types";
 import { wait } from "./utils";
 
 // window.onclick = () => {
-//   console.log(currentActionData);
+//   console.log(TurnInfo);
 // };
 window.addEventListener("character-action", onCharacterAction);
 window.addEventListener("action-selected", onActionSelected);
@@ -28,7 +28,7 @@ export const dismissFn = () => {
       s.classList.remove("selectable-target");
     }
   });
-  drawBottomPane(panes.heroActions(currentActionData.character!));
+  drawBottomPane(panes.heroActions(currentTurnInfo.character!));
   resetActionData("soft");
 };
 
@@ -44,7 +44,7 @@ export function onSlotClick(e: MouseEvent) {
     setShouldSelectTarget(false);
 
     // console.log("Target selected", { slot, targetCharacter });
-    currentActionData.actionTarget = targetCharacter;
+    currentTurnInfo.actionTarget = targetCharacter;
     window.dispatchEvent(new CustomEvent("action-target-selected"));
   }
 }
@@ -52,7 +52,7 @@ export function onSlotClick(e: MouseEvent) {
 export async function onCharacterAction(e: any) {
   const { characterId } = e.detail;
   const character = getCharacterById(characterId);
-  currentActionData.character = character;
+  currentTurnInfo.character = character;
 
   // console.log("onCharacterAction", character.name);
 
@@ -73,13 +73,13 @@ export async function onCharacterAction(e: any) {
 
 export async function onActionSelected(e: any) {
   const actionName = e.detail;
-  // console.log("onActionSelected", actionName);
+  console.log("onActionSelected", { actionName, TurnInfo: currentTurnInfo });
 
-  if (!currentActionData.character) {
-    throw Error("no character data inside currentActionData");
+  if (!currentTurnInfo.character) {
+    throw Error("no character data inside TurnInfo");
   }
-  currentActionData.actionName = actionName;
-  const isHeroAction = currentActionData.character.type === "hero";
+  currentTurnInfo.actionName = actionName;
+  const isHeroAction = currentTurnInfo.character.type === "hero";
 
   if (!isHeroAction) {
     // selectActionDetail
@@ -92,18 +92,24 @@ export async function onActionSelected(e: any) {
       case ActionName.Magic:
       case ActionName.Invoke:
       case ActionName.Summon:
-        drawBottomPane(panes.heroActionDetail(currentActionData.character, actionName), dismissFn);
+        drawBottomPane(panes.heroActionDetail(currentTurnInfo.character, actionName), dismissFn);
         break;
       case ActionName.Item:
         drawBottomPane(panes.itemSelection(inventory), dismissFn);
         break;
       case ActionName.Defend:
-        currentActionData.actionTarget = currentActionData.character;
+        currentTurnInfo.actionTarget = currentTurnInfo.character;
         onActionTargetSelected();
+        break;
+      case ActionName._Attack:
+        currentTurnInfo.actionDetail = "melee";
+        setShouldSelectTarget(true);
+        // @TODO check hero equipment
+        drawBottomPane(panes.text(`Select target`), dismissFn);
         break;
       case ActionName.Steal:
         setShouldSelectTarget(true);
-        drawBottomPane(panes.text(`Select target to Steal`), dismissFn);
+        drawBottomPane(panes.text(`Select target to ${actionName}`), dismissFn);
         break;
       default:
         break;
@@ -113,7 +119,7 @@ export async function onActionSelected(e: any) {
 
 export function onActionDetailSelected(e: any) {
   const detail = e.detail;
-  currentActionData.actionDetail = detail;
+  currentTurnInfo.actionDetail = detail;
 
   setShouldSelectTarget(true);
   drawBottomPane(panes.text("select target"), dismissFn);
@@ -123,36 +129,32 @@ function resetActionData(mode: "soft" | "hard") {
   // RESET CURRENT ACTION DATA
 
   if (mode === "hard") {
-    currentActionData.character = null;
+    currentTurnInfo.character = null;
   }
-  currentActionData.actionDetail = null;
-  currentActionData.actionName = null;
-  currentActionData.actionTarget = null;
-  currentActionData.isStatusAction = false;
+  currentTurnInfo.actionDetail = null;
+  currentTurnInfo.actionName = null;
+  currentTurnInfo.actionTarget = null;
+  currentTurnInfo.isStatusAction = false;
 }
 
 export async function onActionTargetSelected() {
   const actionData = {
-    actorId: currentActionData.character!.id,
-    targetId: currentActionData.actionTarget!.id,
-    action: createNewAction(
-      currentActionData.actionName as ActionName,
-      currentActionData.actionDetail || null
-    ) as Action,
+    actorId: currentTurnInfo.character!.id,
+    targetId: currentTurnInfo.actionTarget!.id,
+    action: createNewAction(currentTurnInfo.actionName as ActionName, currentTurnInfo.actionDetail || null) as Action,
   };
 
   // RESET CURRENT ACTION DATA
   resetActionData("hard");
 
-  // console.log("onActionTargetSelected", actionData);
-
+  console.log("onActionTargetSelected", actionData);
   await processAction(actionData);
 }
 
 export function createNewAction(actionName: ActionName, actionDetail: string | null) {
   let action: Action | null = null;
 
-  if (actionDetail) {
+  if (actionDetail && actionName !== ActionName._Attack) {
     if (actionName === "status") {
       action = {
         ...STATUS_DICT[actionDetail as StatusName]!,
@@ -167,7 +169,7 @@ export function createNewAction(actionName: ActionName, actionDetail: string | n
     action = SIMPLE_ACTION_DICT[actionName]!;
   }
 
-  console.log(":::createNewAction", { actionName, actionDetail, action: { ...action } });
+  // console.log(":::createNewAction", { actionName, actionDetail, action: { ...action } });
   return action;
 }
 
