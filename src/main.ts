@@ -108,12 +108,12 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
     // targetStatuses: target.statuses[getCharacterStatusIdxByName(target.id, StatusName.Poison)],
   });
 
-  if (action.type === "physical") {
+  if (["melee", "ranged"].includes(action.type)) {
     let attackPower = 0;
 
-    if (action.ranged) {
+    if (action.type === "ranged") {
       attackPower = action.power; // + dexterity
-    } else {
+    } else if (action.type === "melee") {
       attackPower = action.power; // + strength
     }
 
@@ -200,7 +200,8 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
 
 async function handleActionEfx(action: Action, actor: Character, target: Character) {
   switch (action.type) {
-    case "physical":
+    case "melee":
+    case "ranged":
       await drawAttackEffect(actor, target, action);
       break;
     case "item":

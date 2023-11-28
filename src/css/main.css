@@ -129,7 +129,7 @@ button:focus-visible {
   flex-direction: column;
 }
 
-#battle-ui.action-ready > ul:not(#bottom-pane) {
+#battle-ui.ready-to-act > ul:not(#bottom-pane) {
   cursor: url(/public/icons/sword32.webp), auto;
   user-select: none;
 }
@@ -152,6 +152,12 @@ button:focus-visible {
   align-items: center;
   min-height: 140px;
   min-width: 120px;
+}
+
+.lane-slot.selectable-target {
+  /* filter: drop-shadow(0 0 0.75rem rgba(184, 135, 11, 0.9)); */
+  filter: drop-shadow(0 0 0.5rem rgba(255, 255, 255, 0.4));
+  /* box-shadow: 0px 0px 10px 5px rgba(255,255,255,0.5); */
 }
 
 .lane-slot.selected {
@@ -204,11 +210,11 @@ button:focus-visible {
 }
 
 #bottom-pane {
-  width: 358px; /* battle-ui max-width */
+  width: 358px;
   height: 200px;
   border: 1px solid green;
   position: relative;
-  padding-top: 2rem;
+  padding-top: 3rem;
 }
 
 #bottom-pane > #list-content {
@@ -219,7 +225,7 @@ button:focus-visible {
 
 #bottom-pane #dismiss-btn {
   position: absolute;
-  top: -16px;
+  top: 0;
   right: 0;
   padding-block: 0.5rem;
 }

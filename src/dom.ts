@@ -16,7 +16,7 @@ const testBtn = document.querySelector("#test-btn") as HTMLButtonElement;
 const testBtn2 = document.querySelector("#test-btn-2") as HTMLButtonElement;
 const dismissBtn = document.querySelector("#dismiss-btn") as HTMLButtonElement;
 
-const [enemyBackSlots, enemyFrontSlots, heroFrontSlots, heroBackSlots] = [
+export const [enemyBackSlots, enemyFrontSlots, heroFrontSlots, heroBackSlots] = [
   battleLanesUI[0].children,
   battleLanesUI[1].children,
   battleLanesUI[2].children,

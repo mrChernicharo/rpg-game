@@ -1,7 +1,7 @@
-import { ENEMY_LIST, HERO_LIST, INVENTORY_LIST } from "./data";
-import { battleUI } from "./dom";
+import { ENEMY_LIST, HERO_LIST, INVENTORY_LIST, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT } from "./data";
+import { battleUI, enemyBackSlots, enemyFrontSlots, getSlotElementById, slots } from "./dom";
 import { InventoryItemName, StatusName } from "./enums";
-import { Character, Turn, InventoryItem, CurrentActionData, Status } from "./types";
+import { Character, Turn, InventoryItem, CurrentActionData, Status, Action } from "./types";
 import { rowDice } from "./utils";
 
 export let turnCount = 0;
@@ -29,13 +29,79 @@ export function incrementTurnCount() {
 export function getShouldSelectTarget() {
   return shouldSelectTarget;
 }
+export function getPossibleTargets() {
+  let possibleTargets: Character[] = [];
+  const enemies = getAllEnemies();
+  const { actionName, actionDetail, character } = currentActionData;
+  let action: Action;
+  if (actionDetail) {
+    action = DETAILED_ACTION_DICT[actionName!]![actionDetail];
+  } else {
+    action = SIMPLE_ACTION_DICT[actionName!]!;
+  }
+
+  if (action.type === "melee") {
+    const [enemiesInTheFront, enemiesInTheBack] = [
+      enemies.filter((e) => e.position.lane === "front" && e.hp > 0),
+      enemies.filter((e) => e.position.lane === "back" && e.hp > 0),
+    ];
+    if (enemiesInTheFront.length > 0) {
+      possibleTargets = [...enemiesInTheFront];
+    } else {
+      possibleTargets = [...enemiesInTheBack];
+    }
+  } else if (action.type === "ranged") {
+    possibleTargets = [...enemies].filter((h) => h.hp > 0);
+  } else {
+    possibleTargets = [...enemies].filter((h) => h.hp > 0);
+  }
+  return possibleTargets;
+  // const idx = Math.floor(Math.random() * possibleTargets.length);
+  // return possibleTargets[idx];
+}
+
+// function chooseTargetForEnemy(enemy: Character): Character {
+//   let possibleTargets: Character[];
+//   const heroes = getAllHeroes();
+
+//   if (enemy.actions.attack.type === "ranged") {
+//     possibleTargets = [...heroes].filter((h) => h.hp > 0);
+//   } else if (enemy.actions.attack.type === "melee") {
+//     const [heroesInTheFront, heroesInTheBack] = [
+//       heroes.filter((h) => h.position.lane === "front" && h.hp > 0),
+//       heroes.filter((h) => h.position.lane === "back" && h.hp > 0),
+//     ];
+//     if (heroesInTheFront.length > 0) {
+//       possibleTargets = [...heroesInTheFront];
+//     } else {
+//       possibleTargets = [...heroesInTheBack];
+//     }
+//   } else {
+//     possibleTargets = [...heroes].filter((h) => h.hp > 0);
+//   }
+
+//   const idx = Math.floor(Math.random() * possibleTargets.length);
+//   return possibleTargets[idx];
+// }
+
 export function setShouldSelectTarget(targetSelectionActive: boolean) {
   shouldSelectTarget = targetSelectionActive;
 
   if (shouldSelectTarget) {
-    battleUI?.classList.add(`action-ready`);
+    battleUI?.classList.add(`ready-to-act`);
+    const possibleTargets = getPossibleTargets();
+
+    possibleTargets.forEach((char) => {
+      const slot = getSlotElementById(char.id);
+      slot.classList.add("selectable-target");
+    });
   } else {
-    battleUI?.classList.remove(`action-ready`);
+    battleUI?.classList.remove(`ready-to-act`);
+    slots.forEach((s) => {
+      if (s.classList.contains("selectable-target")) {
+        s.classList.remove("selectable-target");
+      }
+    });
   }
 }
 export function setTimeline(turns: Turn[]) {
@@ -103,27 +169,3 @@ export function getDefenseStatusIdx(statusList: Status[]) {
   const defenseStatusIdx = statusList.findIndex((s) => s.name === StatusName.Defense);
   return defenseStatusIdx;
 }
-
-// function chooseTargetForEnemy(enemy: Character): Character {
-//   let possibleTargets: Character[];
-//   const heroes = getAllHeroes();
-
-//   if (enemy.actions.attack.type === "ranged") {
-//     possibleTargets = [...heroes].filter((h) => h.hp > 0);
-//   } else if (enemy.actions.attack.type === "melee") {
-//     const [heroesInTheFront, heroesInTheBack] = [
-//       heroes.filter((h) => h.position.lane === "front" && h.hp > 0),
-//       heroes.filter((h) => h.position.lane === "back" && h.hp > 0),
-//     ];
-//     if (heroesInTheFront.length > 0) {
-//       possibleTargets = [...heroesInTheFront];
-//     } else {
-//       possibleTargets = [...heroesInTheBack];
-//     }
-//   } else {
-//     possibleTargets = [...heroes].filter((h) => h.hp > 0);
-//   }
-
-//   const idx = Math.floor(Math.random() * possibleTargets.length);
-//   return possibleTargets[idx];
-// }

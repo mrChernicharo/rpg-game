@@ -99,18 +99,17 @@ async function drawAttackEffect(attacker: Character, target: Character, action: 
   const targetSlot = getSlotElementById(target.id);
   const attackerSlot = getSlotElementById(attacker.id);
 
-  if (action.type !== "physical") return;
+  if (!["melee", "ranged"].includes(action.type)) return;
 
-  const attackType = action.ranged ? "ranged" : "melee";
-  console.log(`:::::${attackType}-attack-receive`);
+  console.log(`:::::${action.type}-attack-receive`);
 
-  attackerSlot.classList.add(`${attackType}-attack-perform`);
-  targetSlot.classList.add(`${attackType}-attack-receive`);
+  attackerSlot.classList.add(`${action.type}-attack-perform`);
+  targetSlot.classList.add(`${action.type}-attack-receive`);
 
   await wait(1000);
 
-  attackerSlot.classList.remove(`${attackType}-attack-perform`);
-  targetSlot.classList.remove(`${attackType}-attack-receive`);
+  attackerSlot.classList.remove(`${action.type}-attack-perform`);
+  targetSlot.classList.remove(`${action.type}-attack-receive`);
 
   return Promise.resolve();
 }
@@ -181,7 +180,7 @@ function drawTurnCount(turn: number) {
 async function drawActionPane(action: Action, actor: Character, target: Character) {
   console.log("DRAW ACTION PANE", { actionName: action.name, action, actor, target });
 
-  if (action.type === "physical") {
+  if (["melee", "ranged"].includes(action.type)) {
     drawBottomPane({ type: "text", content: `${actor.name} attacks ${target.name}` });
   }
   if (action.type === "magical") {

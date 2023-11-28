@@ -53,7 +53,7 @@ export type ActionTarget = "self" | "single" | "vert" | "horiz" | "party" | "all
 export type Action = (
   | {
       name: AttackName;
-      type: "physical";
+      type: "melee" | "ranged";
       power: number;
       ranged?: boolean;
       element?: Element;

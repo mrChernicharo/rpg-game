@@ -22,7 +22,12 @@ for (const slot of slots) {
 
 export const dismissFn = () => {
   console.log("dismiss");
-  battleUI?.classList.remove(`action-ready`);
+  battleUI?.classList.remove(`ready-to-act`);
+  slots.forEach((s) => {
+    if (s.classList.contains("selectable-target")) {
+      s.classList.remove("selectable-target");
+    }
+  });
   drawBottomPane(panes.heroActions(currentActionData.character!));
   resetActionData("soft");
 };
@@ -69,13 +74,6 @@ export async function onCharacterAction(e: any) {
 export async function onActionSelected(e: any) {
   const actionName = e.detail;
   // console.log("onActionSelected", actionName);
-
-  // update battleUI className
-  // battleUI.classList.forEach((className) => {
-  //   console.log(className);
-  //   if (className.includes("action-")) battleUI?.classList.remove(className);
-  // });
-  // battleUI?.classList.add(`action-${actionName}`);
 
   if (!currentActionData.character) {
     throw Error("no character data inside currentActionData");
