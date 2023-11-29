@@ -1,20 +1,23 @@
-const battleUI = document.querySelector("#battle-ui")!;
+export const battleUI = document.querySelector("#battle-ui")!;
 
-const battleLanesUI = Array.from(document.querySelectorAll(".battle-lane"))!;
-const timelineUI = document.querySelector("#timeline")!;
+export const battleLanesUI = Array.from(document.querySelectorAll(".battle-lane"))!;
+export const timelineUI = document.querySelector("#timeline")!;
 
-const turnCountUI = document.querySelector("#turn-count")!;
+export const turnCountUI = document.querySelector("#turn-count")!;
 
-const bottomSection = {
+export const bottomSection = {
   text: document.querySelector("#bottom-pane > #text-content")!,
   list: document.querySelector("#bottom-pane > #list-content")!,
 };
 
-const slots = Array.from(document.querySelectorAll(".lane-slot")) as HTMLLIElement[];
+export const slots = Array.from(document.querySelectorAll(".lane-slot")) as HTMLLIElement[];
 
-const testBtn = document.querySelector("#test-btn") as HTMLButtonElement;
-const testBtn2 = document.querySelector("#test-btn-2") as HTMLButtonElement;
-const dismissBtn = document.querySelector("#dismiss-btn") as HTMLButtonElement;
+export const getBattleScreenBtn = () => document.querySelector("#battle-screen-btn") as HTMLButtonElement;
+export const getMenuScreenBtn = () => document.querySelector("#menu-screen-btn") as HTMLButtonElement;
+export const getDungeonScreenBtn = () => document.querySelector("#dungeon-screen-btn") as HTMLButtonElement;
+export const getHomeScreenBtn = () => document.querySelector("#home-screen-btn") as HTMLButtonElement;
+
+export const dismissBtn = document.querySelector("#dismiss-btn") as HTMLButtonElement;
 
 export const [enemyBackSlots, enemyFrontSlots, heroFrontSlots, heroBackSlots] = [
   battleLanesUI[0].children,
@@ -23,40 +26,24 @@ export const [enemyBackSlots, enemyFrontSlots, heroFrontSlots, heroBackSlots] = 
   battleLanesUI[3].children,
 ].map((HTMLels) => Array.from(HTMLels));
 
-const getSlotElementById = (characterId: string) => document.querySelector(`#${characterId}`)!;
+export const getSlotElementById = (characterId: string) => document.querySelector(`#${characterId}`)!;
 
-const getAvatarElementById = (characterId: string) =>
+export const getAvatarElementById = (characterId: string) =>
   Array.from(getSlotElementById(characterId)?.children || []).find((el) => el.classList.contains("avatar"))!;
 
-const getAvatarImgElementById = (characterId: string) => Array.from(getAvatarElementById(characterId).children)[0];
+export const getAvatarImgElementById = (characterId: string) =>
+  Array.from(getAvatarElementById(characterId).children)[0];
 
-const getSlotEfxOverlayById = (characterId: string) =>
+export const getSlotEfxOverlayById = (characterId: string) =>
   Array.from(getSlotElementById(characterId).children).find((child) => child.classList.contains("efx-overlay"));
 
-const getSlotDefenseOverlayById = (characterId: string) =>
+export const getSlotDefenseOverlayById = (characterId: string) =>
   Array.from(getSlotElementById(characterId).children).find((child) => child.classList.contains("defense-overlay"));
 
-const getSlotStatusOverlayById = (characterId: string) =>
+export const getSlotStatusOverlayById = (characterId: string) =>
   Array.from(getSlotElementById(characterId).children).find((child) => child.classList.contains("status-overlay"));
 
-const getNumbersOverlayById = (characterId: string) =>
+export const getNumbersOverlayById = (characterId: string) =>
   Array.from(getSlotElementById(characterId).children).find((child) => child.classList.contains("numbers-overlay"))!;
 
-export {
-  slots,
-  battleUI,
-  battleLanesUI,
-  testBtn,
-  testBtn2,
-  dismissBtn,
-  timelineUI,
-  turnCountUI,
-  bottomSection,
-  getSlotElementById,
-  getAvatarElementById,
-  getAvatarImgElementById,
-  getNumbersOverlayById,
-  getSlotEfxOverlayById,
-  getSlotDefenseOverlayById,
-  getSlotStatusOverlayById,
-};
+export const getAllScreens = () => Array.from(document.querySelectorAll('section[id$="screen"]'));

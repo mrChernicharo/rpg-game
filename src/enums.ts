@@ -1,3 +1,10 @@
+export enum GameScreen {
+  Home = "home",
+  Battle = "battle",
+  Dungeon = "dungeon",
+  Menu = "menu",
+}
+
 export enum Lane {
   Front = "front",
   Back = "back",
@@ -16,13 +23,13 @@ export enum InventoryItemType {
 }
 
 export enum EquipmentSlot {
-  head = "head",
-  body = "body",
-  leftArm = "leftArm",
-  rightArm = "rightArm",
-  feet = "feet",
-  leftAmulet = "leftAmulet",
-  rightAmulet = "rightAmulet",
+  Head = "head",
+  Body = "body",
+  Shield = "shield",
+  Weapon = "weapon",
+  Feet = "feet",
+  Accessory = "accessory",
+  // Accessory2 = "Accessory2",
 }
 
 export enum InventoryItemName {
@@ -46,6 +53,8 @@ export enum InventoryItemName {
   // Weapons
   ShortSword = "ShortSword",
   LongSword = "LongSword",
+  HunterBow = "HunterBow",
+  CompositeBow = "CompositeBow",
   Revolver = "Revolver",
   DiamondSword = "DiamondSword",
   RuneBlade = "RuneBlade",
@@ -65,6 +74,21 @@ export enum InventoryItemName {
   HeavenSword = "HeavenSword",
   ApocalypseEdge = "ApocalypseEdge",
   BraveBlade = "BraveBlade",
+  RuneStaff = "RuneStaff",
+  WizardRod = "WizardRod",
+  Nirvana = "Nirvana",
+  HolyLance = "HolyLance",
+  Orichalcum = "Orichalcum",
+  Godhand = "Godhand",
+  PoisonKnuckles = "PoisonKnuckles",
+  DeathSickle = "DeathSickle",
+  WingedSword = "WingedSword",
+  SaveTheQueen = "SaveTheQueen",
+  Masamune = "Masamune",
+  ZodiacSpear = "ZodiacSpear",
+
+  YoichiBow = "YoichiBow",
+  ArtemisBow = "ArtemisBow",
 
   // Armor
   LeatherArmor = "LeatherArmor",
@@ -76,30 +100,16 @@ export enum InventoryItemName {
   CrystalShield = "CrystalShield",
   MythrilHelm = "MythrilHelm",
   WizardHat = "WizardHat",
-  DiamondBracelet = "DiamondBracelet",
-  GoldenGauntlet = "GoldenGauntlet",
   DarkCloak = "DarkCloak",
   BlackRobe = "BlackRobe",
   WhiteCape = "WhiteCape",
 
   // Magic Items
-  Materia = "Materia",
+  SoulPendant = "SoulPendant",
   Grimoire = "Grimoire",
+  DiamondBracelet = "DiamondBracelet",
   AngelWing = "AngelWing",
-  RuneStaff = "RuneStaff",
-  WizardRod = "WizardRod",
-  Nirvana = "Nirvana",
-  HolyLance = "HolyLance",
-  Orichalcum = "Orichalcum",
-  YoichiBow = "YoichiBow",
-  ArtemisBow = "ArtemisBow",
-  Godhand = "Godhand",
-  PoisonKnuckles = "PoisonKnuckles",
-  DeathSickle = "DeathSickle",
-  WingedSword = "WingedSword",
-  SaveTheQueen = "SaveTheQueen",
-  Masamune = "Masamune",
-  ZodiacSpear = "ZodiacSpear",
+  GoldenGauntlet = "GoldenGauntlet",
 }
 
 export enum ActionName {
@@ -279,6 +289,8 @@ export enum InventoryItemDescription {
   // Weapon
   ShortSword = "Basic sword for close-range combat.",
   LongSword = "A longer sword for more powerful strikes.",
+  HunterBow = "Basic ranged weapon, allows to shoot arrows",
+  CompositeBow = "Advanced bow, deals reasonable damage",
   Revolver = "A handgun for ranged attacks.",
   DiamondSword = "A sword made of diamond, offering enhanced cutting ability.",
   RuneBlade = "A blade infused with magical runes, granting mystical properties.",
@@ -316,7 +328,7 @@ export enum InventoryItemDescription {
   WhiteCape = "Cape infused with light, providing protection against holy magic.",
 
   // Magic Items
-  Materia = "Essential orbs granting access to various magical abilities.",
+  SoulPendant = "Golden pendant, enhances magical abilities.",
   Grimoire = "A book containing powerful spells.",
   AngelWing = "Allows the user to cast divine magic.",
   RuneStaff = "Staff imbued with ancient runes, enhancing magical prowess.",

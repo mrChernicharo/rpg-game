@@ -10,7 +10,7 @@ import {
   StatusName,
   EquipmentSlot,
 } from "./enums";
-import { Action, Character, InventoryItem, Status } from "./types";
+import { Action, Character, EquipmentItem, InventoryItem, Status } from "./types";
 import { idMaker } from "./utils";
 
 const STATUS_ICONS: Record<StatusName, string> = {
@@ -32,34 +32,6 @@ const STATUS_ICONS: Record<StatusName, string> = {
   [StatusName.MagiBarrier]: "🐚",
 };
 
-const INVENTORY_LIST: InventoryItem[] = [
-  {
-    id: idMaker(),
-    name: InventoryItemName.Potion,
-    type: InventoryItemType.Consumable,
-    quantity: 3,
-  },
-  {
-    id: idMaker(),
-    name: InventoryItemName.Ether,
-    type: InventoryItemType.Consumable,
-    quantity: 2,
-  },
-  {
-    id: idMaker(),
-    name: InventoryItemName.PhoenixDown,
-    type: InventoryItemType.Consumable,
-    quantity: 4,
-  },
-  {
-    id: idMaker(),
-    name: InventoryItemName.ShortSword,
-    type: InventoryItemType.Equipment,
-    slot: EquipmentSlot.rightArm,
-    quantity: 1,
-  },
-];
-
 const HERO_LIST: Character[] = [
   {
     id: idMaker(),
@@ -70,6 +42,24 @@ const HERO_LIST: Character[] = [
     speed: 62,
     level: 7,
     imgUrl: "/sprites/sprite-01.webp",
+    attributes: {
+      strength: 20,
+      intelligence: 20,
+      dexterity: 20,
+      agility: 20,
+      vigor: 20,
+      wisdom: 20,
+      luck: 20,
+    },
+    equipment: {
+      head: null,
+      body: null,
+      leftArm: null,
+      rightArm: null,
+      feet: null,
+      leftAmulet: null,
+      rightAmulet: null,
+    },
     position: {
       lane: Lane.Front,
       col: Col.Center,
@@ -93,24 +83,6 @@ const HERO_LIST: Character[] = [
         MagicSpellName.Drain,
         MagicSpellName.Haste,
       ],
-    },
-    attributes: {
-      strength: 20,
-      intelligence: 20,
-      dexterity: 20,
-      agility: 20,
-      vigor: 20,
-      wisdom: 20,
-      luck: 20,
-    },
-    equipment: {
-      head: null,
-      body: null,
-      leftArm: null,
-      rightArm: null,
-      feet: null,
-      leftAmulet: null,
-      rightAmulet: null,
     },
   },
   {
@@ -364,7 +336,7 @@ const DETAILED_ACTION_DICT: {
     },
     [_AttackName.StoneThrow]: {
       name: _AttackName.StoneThrow,
-      type: "melee",
+      type: "ranged",
       power: 15,
       targets: "single",
     },
@@ -616,4 +588,375 @@ const SIMPLE_ACTION_DICT: { [actionName in ActionName]?: Action } = {
   },
 };
 
-export { INVENTORY_LIST, ENEMY_LIST, HERO_LIST, STATUS_DICT, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT, STATUS_ICONS };
+const EQUIPMENT_ITEM_DICT: { [itemName in InventoryItemName]?: EquipmentItem } = {
+  // weapon
+  ShortSword: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.ShortSword,
+  },
+  LongSword: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.LongSword,
+  },
+  HunterBow: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.HunterBow,
+  },
+  CompositeBow: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.CompositeBow,
+  },
+  Revolver: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.Revolver,
+  },
+  DiamondSword: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.DiamondSword,
+  },
+  RuneBlade: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.RuneBlade,
+  },
+  MasamuneBlade: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.MasamuneBlade,
+  },
+  Deathbringer: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.Deathbringer,
+  },
+  UltimaWeapon: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.UltimaWeapon,
+  },
+  Apocalypse: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.Apocalypse,
+  },
+  Ragnarok: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.Ragnarok,
+  },
+  Excalibur: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.Excalibur,
+  },
+  CrystalSword: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.CrystalSword,
+  },
+  Excalipoor: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.Excalipoor,
+  },
+  ApocalypseBlade: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.ApocalypseBlade,
+  },
+  Lionheart: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.Lionheart,
+  },
+  Outsider: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.Outsider,
+  },
+  Organics: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.Organics,
+  },
+  ChaosBlade: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.ChaosBlade,
+  },
+  HeavenSword: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.HeavenSword,
+  },
+  ApocalypseEdge: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.ApocalypseEdge,
+  },
+  BraveBlade: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.BraveBlade,
+  },
+  RuneStaff: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.RuneStaff,
+  },
+  WizardRod: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.WizardRod,
+  },
+  Nirvana: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.Nirvana,
+  },
+  HolyLance: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.HolyLance,
+  },
+  Orichalcum: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.Orichalcum,
+  },
+  Godhand: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.Godhand,
+  },
+  PoisonKnuckles: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.PoisonKnuckles,
+  },
+  DeathSickle: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.DeathSickle,
+  },
+  WingedSword: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.WingedSword,
+  },
+  SaveTheQueen: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.SaveTheQueen,
+  },
+  Masamune: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.Masamune,
+  },
+  ZodiacSpear: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.ZodiacSpear,
+  },
+  YoichiBow: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.YoichiBow,
+  },
+  ArtemisBow: {
+    id: idMaker(),
+    slot: EquipmentSlot.Weapon,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.ArtemisBow,
+  },
+
+  // body
+  LeatherArmor: {
+    id: idMaker(),
+    slot: EquipmentSlot.Body,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.LeatherArmor,
+  },
+  Chainmail: {
+    id: idMaker(),
+    slot: EquipmentSlot.Body,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.Chainmail,
+  },
+  PlateArmor: {
+    id: idMaker(),
+    slot: EquipmentSlot.Body,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.PlateArmor,
+  },
+  MysticRobe: {
+    id: idMaker(),
+    slot: EquipmentSlot.Body,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.MysticRobe,
+  },
+  PowerSuit: {
+    id: idMaker(),
+    slot: EquipmentSlot.Body,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.PowerSuit,
+  },
+  DragonScaleArmor: {
+    id: idMaker(),
+    slot: EquipmentSlot.Body,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.DragonScaleArmor,
+  },
+  DarkCloak: {
+    id: idMaker(),
+    slot: EquipmentSlot.Body,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.DarkCloak,
+  },
+  BlackRobe: {
+    id: idMaker(),
+    slot: EquipmentSlot.Body,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.BlackRobe,
+  },
+  WhiteCape: {
+    id: idMaker(),
+    slot: EquipmentSlot.Body,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.WhiteCape,
+  },
+  CrystalShield: {
+    id: idMaker(),
+    slot: EquipmentSlot.Shield,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.CrystalShield,
+  },
+
+  // head
+  MythrilHelm: {
+    id: idMaker(),
+    slot: EquipmentSlot.Head,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.MythrilHelm,
+  },
+  WizardHat: {
+    id: idMaker(),
+    slot: EquipmentSlot.Head,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.WizardHat,
+  },
+
+  // accessory
+  SoulPendant: {
+    id: idMaker(),
+    slot: EquipmentSlot.Accessory,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.SoulPendant,
+  },
+  Grimoire: {
+    id: idMaker(),
+    slot: EquipmentSlot.Accessory,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.Grimoire,
+  },
+  DiamondBracelet: {
+    id: idMaker(),
+    slot: EquipmentSlot.Accessory,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.DiamondBracelet,
+  },
+  GoldenGauntlet: {
+    id: idMaker(),
+    slot: EquipmentSlot.Accessory,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.GoldenGauntlet,
+  },
+  AngelWing: {
+    id: idMaker(),
+    slot: EquipmentSlot.Accessory,
+    type: InventoryItemType.Equipment,
+    name: InventoryItemName.AngelWing,
+  },
+};
+
+const INVENTORY_LIST: InventoryItem[] = [
+  {
+    id: idMaker(),
+    name: InventoryItemName.Potion,
+    type: InventoryItemType.Consumable,
+    quantity: 3,
+  },
+  {
+    id: idMaker(),
+    name: InventoryItemName.Ether,
+    type: InventoryItemType.Consumable,
+    quantity: 2,
+  },
+  {
+    id: idMaker(),
+    name: InventoryItemName.PhoenixDown,
+    type: InventoryItemType.Consumable,
+    quantity: 4,
+  },
+  { ...EQUIPMENT_ITEM_DICT[InventoryItemName.ShortSword]!, quantity: 2 },
+  { ...EQUIPMENT_ITEM_DICT[InventoryItemName.ChaosBlade]!, quantity: 1 },
+  { ...EQUIPMENT_ITEM_DICT[InventoryItemName.HunterBow]!, quantity: 1 },
+  { ...EQUIPMENT_ITEM_DICT[InventoryItemName.CrystalShield]!, quantity: 2 },
+  { ...EQUIPMENT_ITEM_DICT[InventoryItemName.LeatherArmor]!, quantity: 2 },
+  { ...EQUIPMENT_ITEM_DICT[InventoryItemName.MythrilHelm]!, quantity: 2 },
+  { ...EQUIPMENT_ITEM_DICT[InventoryItemName.SoulPendant]!, quantity: 3 },
+];
+
+export {
+  INVENTORY_LIST,
+  ENEMY_LIST,
+  HERO_LIST,
+  STATUS_DICT,
+  DETAILED_ACTION_DICT,
+  SIMPLE_ACTION_DICT,
+  STATUS_ICONS,
+  EQUIPMENT_ITEM_DICT,
+};

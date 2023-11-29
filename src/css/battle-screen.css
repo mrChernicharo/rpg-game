@@ -1,0 +1,262 @@
+#battle-screen {
+  /* border: 1px solid red; */
+  display: flex;
+}
+
+#battle-ui {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+#aside {
+  width: 132px;
+  /* border: 1px dashed darkblue; */
+}
+
+#battle-ui.ready-to-act > ul:not(#bottom-pane) {
+  cursor: url(/public/icons/sword32.webp), auto;
+  user-select: none;
+}
+
+/*************** BATTLE LANES & SLOTS *****************/
+
+#middle-pane {
+  padding-top: 3.6rem;
+}
+
+.battle-lane {
+  display: flex;
+  gap: 5px;
+}
+
+.lane-slot {
+  border: 1px solid #333;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 140px;
+  min-width: 120px;
+  transition: 0.2s ease;
+  transition-property: box-shadow, transform;
+}
+
+.lane-slot.selectable-target {
+  border: 1px solid #fff;
+  transition: 0.2s ease;
+  transition-property: box-shadow, transform;
+}
+.lane-slot.selected {
+  border: 1px solid transparent;
+  background: darkgoldenrod;
+  transition: 0.2s ease;
+  transition-property: transform;
+}
+
+.lane-slot.selectable-target.selected {
+  border: 1px solid #fff;
+}
+
+.lane-slot.selectable-target:hover {
+  box-shadow: 0 0 5px 4px rgba(255, 255, 255, 0.5);
+  transform: scale(1.1);
+  z-index: 10;
+  /* filter: drop-shadow(0 0 0.75rem rgba(255, 255, 255, 0.6)); */
+}
+.lane-slot:not(.selectable-target):hover {
+  transform: scale(1.05);
+  z-index: 10;
+  /* filter: drop-shadow(0 0 0.75rem rgba(255, 255, 255, 0.6)); */
+}
+
+.lane-slot > .top-section {
+  width: 100%;
+  height: 24px;
+}
+
+.lane-slot > .avatar {
+  width: 96px;
+  height: 96px;
+}
+
+.lane-slot.dead {
+  opacity: 0.6;
+  background-color: rgba(189, 0, 40);
+}
+
+.lane-slot.dead > .avatar {
+  filter: blur(4px);
+}
+
+.lane-slot.dead[id]:hover > .avatar > img {
+  filter: none;
+}
+
+/********* BOTTOM-PANE *********/
+
+#bottom-pane {
+  height: 200px;
+  border: 1px solid green;
+  position: relative;
+  padding-top: 3rem;
+}
+
+#bottom-pane > #list-content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+#dismiss-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding-block: 0.5rem;
+}
+
+#bottom-pane > #list-content > .list-option > button {
+  padding-block: 0.5rem;
+  width: 100%;
+}
+
+/********** TIMELINE *******/
+
+#timeline {
+  text-align: left;
+}
+
+#timeline > .turn-item > .time-to-next-turn {
+  font-weight: bold;
+  color: goldenrod;
+}
+
+/*************** OVERLAY ***************/
+.defense-overlay.defending {
+  opacity: 0.3;
+}
+
+.efx-overlay,
+.defense-overlay,
+.numbers-overlay,
+.status-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: #fff;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.numbers-overlay {
+  opacity: 1;
+  font-family: sans-serif;
+  font-weight: bold;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+}
+
+.numbers-overlay > span {
+  animation: number 1s;
+  transition: ease-out;
+}
+
+/********* STATUSES *********/
+
+.poisoned {
+  .avatar-img {
+    filter: drop-shadow(0 0 0.75rem rgba(25, 216, 38, 0.6));
+  }
+}
+
+.poison-status {
+  .status-overlay {
+    animation: bad-status 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+}
+
+.regen-status {
+  .status-overlay {
+    animation: good-status 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+}
+
+/*********** ACTIONS ************/
+
+.steal-perform {
+  .avatar-img {
+    animation: shake-lr 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+}
+.steal-receive {
+  .avatar-img {
+    animation: shake-lr 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+
+  .efx-overlay {
+    animation: claws 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transition: clip-path opacity;
+  }
+}
+
+.defense-perform {
+  .defense-overlay {
+    animation: shield 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transition: clip-path opacity;
+  }
+}
+
+.magic-perform {
+  .avatar-img {
+    animation: shake-lr 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+}
+
+.magic-receive {
+  .efx-overlay {
+    animation: magic 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+}
+
+.ranged-attack-perform,
+.melee-attack-perform {
+  .avatar-img {
+    animation: shake-lr 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+}
+
+.melee-attack-receive {
+  .avatar-img {
+    animation: shake-lr 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+
+  .efx-overlay {
+    animation: slash-tb 1s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transition: clip-path opacity;
+  }
+}
+
+.ranged-attack-receive {
+  .avatar-img {
+    animation: shake-lr 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+
+  .efx-overlay {
+    animation: pierce 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transition: clip-path opacity;
+  }
+}
+
+.item-send {
+  .avatar-img {
+    animation: shake-lr 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+}
+
+.item-receive {
+  .efx-overlay {
+    animation: cross 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) 0.7 both;
+    transition: clip-path opacity;
+  }
+}

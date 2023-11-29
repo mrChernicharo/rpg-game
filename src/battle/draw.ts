@@ -1,21 +1,19 @@
-import { STATUS_ICONS } from "./data";
+import { STATUS_ICONS } from "../data";
 import {
   battleLanesUI,
-  getSlotEfxOverlayById,
   getSlotElementById,
   timelineUI,
   turnCountUI,
   bottomSection,
   dismissBtn,
   getSlotDefenseOverlayById,
-  battleUI,
   getNumbersOverlayById,
-} from "./dom";
-import { ActionName, StatusName } from "./enums";
+} from "../dom";
+import { StatusName } from "../enums";
 import { getAllCharacters, getTimeline, getCharacterById } from "./globals";
 import { panes } from "./infoPane";
-import { Action, Character, InventoryItem, PaneInfo, Status } from "./types";
-import { wait } from "./utils";
+import { Action, Character, PaneInfo } from "../types";
+import { wait } from "../utils";
 
 function drawCharacters(): void {
   getAllCharacters().forEach((entity) => {

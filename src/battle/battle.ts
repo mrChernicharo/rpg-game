@@ -1,4 +1,4 @@
-import { getSlotDefenseOverlayById, getSlotElementById } from "./dom";
+import { getSlotDefenseOverlayById, getSlotElementById } from "../dom";
 import {
   drawAMagicEffect,
   drawActionPane,
@@ -14,7 +14,7 @@ import {
   drawTimeline,
   drawTurnCount,
 } from "./draw";
-import { ActionName, _AttackName, InventoryItemName, MagicSpellName, StatusName } from "./enums";
+import { ActionName, _AttackName, InventoryItemName, MagicSpellName, StatusName } from "../enums";
 import { createNewStatus, onActionTargetSelected } from "./events";
 import {
   getCharacterById,
@@ -29,10 +29,11 @@ import {
   performStealAttempt,
   subtractFromInventory,
   getCharacterStatusIdxByName,
+  inventory,
 } from "./globals";
 import { panes } from "./infoPane";
-import { CharacterTurn, Character, Turn, Action, Status, StatusTurn } from "./types";
-import { calcTurnDuration, calculateNextTurnTime, idMaker, wait } from "./utils";
+import { CharacterTurn, Character, Turn, Action, Status, StatusTurn } from "../types";
+import { calcTurnDuration, calculateNextTurnTime, idMaker, wait } from "../utils";
 
 export async function processAction(actionData: { actorId: string; targetId: string; action: Action }) {
   const { action, actorId, targetId } = actionData;
@@ -237,12 +238,10 @@ async function handleActionEfx(action: Action, actor: Character, target: Charact
   const isPoisoned = target.statuses.some((s) => s.name === StatusName.Poison);
 
   if (isPoisoned && !slot.classList.contains("poisoned")) {
-    console.log("add poisoned class");
     slot.classList.add("poisoned");
   }
 
   if (slot.classList.contains("poisoned") && !isPoisoned) {
-    console.log("remove poisoned class");
     slot.classList.remove("poisoned");
   }
 
@@ -261,8 +260,7 @@ async function handleActionEfx(action: Action, actor: Character, target: Charact
 async function startTurn(turn: Turn) {
   if (turn.type === "status") {
     const character = getCharacterById(turn.characterId);
-
-    console.log("start Status Turn", character.name);
+    console.log("start Status Turn", character.name, { inventory });
 
     currentTurnInfo.isStatusAction = true;
     currentTurnInfo.actionName = ActionName.Status;
@@ -385,11 +383,9 @@ async function initializeTimeline() {
   });
 }
 
-async function main() {
+export async function startBattle() {
   drawCharacters();
   await initializeTimeline();
   await wait(1000);
   await updateTimeline();
 }
-
-main();

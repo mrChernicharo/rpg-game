@@ -7,184 +7,205 @@
     <title>Vite + TS</title>
     <link rel="stylesheet" href="src/css/globals.css" />
     <link rel="stylesheet" href="src/css/main.css" />
+    <link rel="stylesheet" href="src/css/battle-screen.css" />
     <link rel="stylesheet" href="src/css/animations.css" />
   </head>
   <body>
     <div id="app">
-      <!-- <h1>RPG Game</h1> -->
-
-      <section id="battle-ui">
-        <ul class="battle-lane enemy-lane back-row">
-          <li class="lane-slot">
-            <div class="top-section"></div>
-            <div class="avatar">
-              <img class="avatar-img" />
-            </div>
-            <div class="bottom-section"></div>
-            <div class="efx-overlay"></div>
-            <div class="defense-overlay"></div>
-            <div class="status-overlay"></div>
-            <div class="numbers-overlay"></div>
-          </li>
-
-          <li class="lane-slot">
-            <div class="top-section"></div>
-            <div class="avatar">
-              <img class="avatar-img" />
-            </div>
-            <div class="bottom-section"></div>
-            <div class="efx-overlay"></div>
-            <div class="defense-overlay"></div>
-            <div class="status-overlay"></div>
-            <div class="numbers-overlay"></div>
-          </li>
-
-          <li class="lane-slot">
-            <div class="top-section"></div>
-            <div class="avatar">
-              <img class="avatar-img" />
-            </div>
-            <div class="bottom-section"></div>
-            <div class="efx-overlay"></div>
-            <div class="defense-overlay"></div>
-            <div class="status-overlay"></div>
-            <div class="numbers-overlay"></div>
-          </li>
-        </ul>
-
-        <ul class="battle-lane enemy-lane front-row">
-          <li class="lane-slot">
-            <div class="top-section"></div>
-            <div class="avatar">
-              <img class="avatar-img" />
-            </div>
-            <div class="bottom-section"></div>
-            <div class="efx-overlay"></div>
-            <div class="defense-overlay"></div>
-            <div class="status-overlay"></div>
-            <div class="numbers-overlay"></div>
-          </li>
-
-          <li class="lane-slot">
-            <div class="top-section"></div>
-            <div class="avatar">
-              <img class="avatar-img" />
-            </div>
-            <div class="bottom-section"></div>
-            <div class="efx-overlay"></div>
-            <div class="defense-overlay"></div>
-            <div class="status-overlay"></div>
-            <div class="numbers-overlay"></div>
-          </li>
-
-          <li class="lane-slot">
-            <div class="top-section"></div>
-            <div class="avatar">
-              <img class="avatar-img" />
-            </div>
-            <div class="bottom-section"></div>
-            <div class="efx-overlay"></div>
-            <div class="defense-overlay"></div>
-            <div class="status-overlay"></div>
-            <div class="numbers-overlay"></div>
-          </li>
-        </ul>
-
-        <!-- MIDDLE SCREEN -->
-        <ul id="middle-pane"></ul>
-
-        <ul class="battle-lane hero-lane front-row">
-          <li class="lane-slot">
-            <div class="top-section"></div>
-            <div class="avatar">
-              <img class="avatar-img" />
-            </div>
-            <div class="bottom-section"></div>
-            <div class="efx-overlay"></div>
-            <div class="defense-overlay"></div>
-            <div class="status-overlay"></div>
-            <div class="numbers-overlay"></div>
-          </li>
-
-          <li class="lane-slot">
-            <div class="top-section"></div>
-            <div class="avatar">
-              <img class="avatar-img" />
-            </div>
-            <div class="bottom-section"></div>
-            <div class="efx-overlay"></div>
-            <div class="defense-overlay"></div>
-            <div class="status-overlay"></div>
-            <div class="numbers-overlay"></div>
-          </li>
-
-          <li class="lane-slot">
-            <div class="top-section"></div>
-            <div class="avatar">
-              <img class="avatar-img" />
-            </div>
-            <div class="bottom-section"></div>
-            <div class="efx-overlay"></div>
-            <div class="defense-overlay"></div>
-            <div class="status-overlay"></div>
-            <div class="numbers-overlay"></div>
-          </li>
-        </ul>
-
-        <ul class="battle-lane hero-lane back-row">
-          <li class="lane-slot">
-            <div class="top-section"></div>
-            <div class="avatar">
-              <img class="avatar-img" />
-            </div>
-            <div class="bottom-section"></div>
-            <div class="efx-overlay"></div>
-            <div class="defense-overlay"></div>
-            <div class="status-overlay"></div>
-            <div class="numbers-overlay"></div>
-          </li>
-
-          <li class="lane-slot">
-            <div class="top-section"></div>
-            <div class="avatar">
-              <img class="avatar-img" />
-            </div>
-            <div class="bottom-section"></div>
-            <div class="efx-overlay"></div>
-            <div class="defense-overlay"></div>
-            <div class="status-overlay"></div>
-            <div class="numbers-overlay"></div>
-          </li>
-          <li class="lane-slot">
-            <div class="top-section"></div>
-            <div class="avatar">
-              <img class="avatar-img" />
-            </div>
-            <div class="bottom-section"></div>
-            <div class="efx-overlay"></div>
-            <div class="defense-overlay"></div>
-            <div class="status-overlay"></div>
-            <div class="numbers-overlay"></div>
-          </li>
-        </ul>
-
-        <!-- BOTTOM SCREEN -->
-        <ul id="bottom-pane">
-          <button id="dismiss-btn" class="hidden">x</button>
-          <div id="text-content" class="hidden"></div>
-          <ul id="list-content" class="hidden"></ul>
-        </ul>
+      <section id="home-screen">
+        <h1>RPG Game</h1>
+        <button id="home-screen-btn">HOME</button>
+        <button id="menu-screen-btn">MENU</button>
+        <button id="battle-screen-btn">BATTLE</button>
+        <button id="dungeon-screen-btn">DUNGEON</button>
       </section>
 
-      <section id="aside">
-        <div id="turn-count" class="hidden">Turn <output></output></div>
-        <div id="timeline"></div>
+      <section id="menu-screen" class="hidden">
+        <a id="back-to-home"></a>
+        <h1>menu Screen</h1>
+      </section>
 
-        <!-- <button type="button" id="test-btn">Next Turn</button> -->
-        <!-- <button type="button" id="test-btn-2">Toggle Pane</button> -->
+      <section id="battle-screen" class="hidden">
+        <section id="battle-ui">
+          <ul class="battle-lane enemy-lane back-row">
+            <li class="lane-slot">
+              <div class="top-section"></div>
+              <div class="avatar">
+                <img class="avatar-img" />
+              </div>
+              <div class="bottom-section"></div>
+              <div class="efx-overlay"></div>
+              <div class="defense-overlay"></div>
+              <div class="status-overlay"></div>
+              <div class="numbers-overlay"></div>
+            </li>
+
+            <li class="lane-slot">
+              <div class="top-section"></div>
+              <div class="avatar">
+                <img class="avatar-img" />
+              </div>
+              <div class="bottom-section"></div>
+              <div class="efx-overlay"></div>
+              <div class="defense-overlay"></div>
+              <div class="status-overlay"></div>
+              <div class="numbers-overlay"></div>
+            </li>
+
+            <li class="lane-slot">
+              <div class="top-section"></div>
+              <div class="avatar">
+                <img class="avatar-img" />
+              </div>
+              <div class="bottom-section"></div>
+              <div class="efx-overlay"></div>
+              <div class="defense-overlay"></div>
+              <div class="status-overlay"></div>
+              <div class="numbers-overlay"></div>
+            </li>
+          </ul>
+
+          <ul class="battle-lane enemy-lane front-row">
+            <li class="lane-slot">
+              <div class="top-section"></div>
+              <div class="avatar">
+                <img class="avatar-img" />
+              </div>
+              <div class="bottom-section"></div>
+              <div class="efx-overlay"></div>
+              <div class="defense-overlay"></div>
+              <div class="status-overlay"></div>
+              <div class="numbers-overlay"></div>
+            </li>
+
+            <li class="lane-slot">
+              <div class="top-section"></div>
+              <div class="avatar">
+                <img class="avatar-img" />
+              </div>
+              <div class="bottom-section"></div>
+              <div class="efx-overlay"></div>
+              <div class="defense-overlay"></div>
+              <div class="status-overlay"></div>
+              <div class="numbers-overlay"></div>
+            </li>
+
+            <li class="lane-slot">
+              <div class="top-section"></div>
+              <div class="avatar">
+                <img class="avatar-img" />
+              </div>
+              <div class="bottom-section"></div>
+              <div class="efx-overlay"></div>
+              <div class="defense-overlay"></div>
+              <div class="status-overlay"></div>
+              <div class="numbers-overlay"></div>
+            </li>
+          </ul>
+
+          <!-- MIDDLE SCREEN -->
+          <ul id="middle-pane"></ul>
+
+          <ul class="battle-lane hero-lane front-row">
+            <li class="lane-slot">
+              <div class="top-section"></div>
+              <div class="avatar">
+                <img class="avatar-img" />
+              </div>
+              <div class="bottom-section"></div>
+              <div class="efx-overlay"></div>
+              <div class="defense-overlay"></div>
+              <div class="status-overlay"></div>
+              <div class="numbers-overlay"></div>
+            </li>
+
+            <li class="lane-slot">
+              <div class="top-section"></div>
+              <div class="avatar">
+                <img class="avatar-img" />
+              </div>
+              <div class="bottom-section"></div>
+              <div class="efx-overlay"></div>
+              <div class="defense-overlay"></div>
+              <div class="status-overlay"></div>
+              <div class="numbers-overlay"></div>
+            </li>
+
+            <li class="lane-slot">
+              <div class="top-section"></div>
+              <div class="avatar">
+                <img class="avatar-img" />
+              </div>
+              <div class="bottom-section"></div>
+              <div class="efx-overlay"></div>
+              <div class="defense-overlay"></div>
+              <div class="status-overlay"></div>
+              <div class="numbers-overlay"></div>
+            </li>
+          </ul>
+
+          <ul class="battle-lane hero-lane back-row">
+            <li class="lane-slot">
+              <div class="top-section"></div>
+              <div class="avatar">
+                <img class="avatar-img" />
+              </div>
+              <div class="bottom-section"></div>
+              <div class="efx-overlay"></div>
+              <div class="defense-overlay"></div>
+              <div class="status-overlay"></div>
+              <div class="numbers-overlay"></div>
+            </li>
+
+            <li class="lane-slot">
+              <div class="top-section"></div>
+              <div class="avatar">
+                <img class="avatar-img" />
+              </div>
+              <div class="bottom-section"></div>
+              <div class="efx-overlay"></div>
+              <div class="defense-overlay"></div>
+              <div class="status-overlay"></div>
+              <div class="numbers-overlay"></div>
+            </li>
+            <li class="lane-slot">
+              <div class="top-section"></div>
+              <div class="avatar">
+                <img class="avatar-img" />
+              </div>
+              <div class="bottom-section"></div>
+              <div class="efx-overlay"></div>
+              <div class="defense-overlay"></div>
+              <div class="status-overlay"></div>
+              <div class="numbers-overlay"></div>
+            </li>
+          </ul>
+
+          <!-- BOTTOM SCREEN -->
+          <ul id="bottom-pane">
+            <button id="dismiss-btn" class="hidden">x</button>
+            <div id="text-content" class="hidden"></div>
+            <ul id="list-content" class="hidden"></ul>
+          </ul>
+        </section>
+
+        <aside id="aside">
+          <a id="back-to-home"></a>
+          <div id="turn-count" class="hidden">Turn <output></output></div>
+          <div id="timeline"></div>
+
+          <!-- <button type="button" id="test-btn">Next Turn</button> -->
+          <!-- <button type="button" id="test-btn-2">Toggle Pane</button> -->
+        </aside>
+      </section>
+
+      <section id="dungeon-screen" class="hidden">
+        <a id="back-to-home"></a>
+        <h1>Dungeon Screen</h1>
       </section>
     </div>
 
-    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/home/home.ts"></script>
+    <script type="module" src="/src/battle/battle.ts"></script>
   </body>
 </html>

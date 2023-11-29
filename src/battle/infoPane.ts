@@ -1,5 +1,5 @@
-import { ActionName, InventoryItemType } from "./enums";
-import { Character, InventoryItem, PaneInfo } from "./types";
+import { ActionName, InventoryItemType } from "../enums";
+import { Character, InventoryItem, PaneInfo } from "../types";
 
 const inventoryItems = (itemList: InventoryItem[]) =>
   itemList

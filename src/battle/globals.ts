@@ -1,8 +1,8 @@
-import { ENEMY_LIST, HERO_LIST, INVENTORY_LIST, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT } from "./data";
-import { battleUI, getSlotElementById, slots } from "./dom";
-import { ActionName, InventoryItemName, StatusName } from "./enums";
-import { Character, Turn, InventoryItem, TurnInfo, Status, Action } from "./types";
-import { rowDice } from "./utils";
+import { ENEMY_LIST, HERO_LIST, INVENTORY_LIST, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT } from "../data";
+import { battleUI, getSlotElementById, slots } from "../dom";
+import { ActionName, InventoryItemName, StatusName } from "../enums";
+import { Character, Turn, InventoryItem, TurnInfo, Status, Action } from "../types";
+import { rowDice } from "../utils";
 
 export let turnCount = 0;
 export let allCharacters: Character[] = [...ENEMY_LIST, ...HERO_LIST];
