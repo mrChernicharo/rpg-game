@@ -1,7 +1,7 @@
 import { STATUS_DICT, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT } from "./data";
 import { battleUI, slots } from "./dom";
 import { drawBottomPane } from "./draw";
-import { ActionName, AttackName, StatusName } from "./enums";
+import { ActionName, _AttackName, StatusName } from "./enums";
 import { getCharacterById, shouldSelectTarget, setShouldSelectTarget, currentTurnInfo, inventory } from "./globals";
 import { panes } from "./infoPane";
 import { processAction, updateTimeline } from "./main";

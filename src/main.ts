@@ -14,7 +14,7 @@ import {
   drawTimeline,
   drawTurnCount,
 } from "./draw";
-import { ActionName, AttackName, InventoryItemName, MagicSpellName, StatusName } from "./enums";
+import { ActionName, _AttackName, InventoryItemName, MagicSpellName, StatusName } from "./enums";
 import { createNewStatus, onActionTargetSelected } from "./events";
 import {
   getCharacterById,

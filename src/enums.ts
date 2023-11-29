@@ -15,6 +15,16 @@ export enum InventoryItemType {
   Key = "key",
 }
 
+export enum EquipmentSlot {
+  head = "head",
+  body = "body",
+  leftArm = "leftArm",
+  rightArm = "rightArm",
+  feet = "feet",
+  leftAmulet = "leftAmulet",
+  rightAmulet = "rightAmulet",
+}
+
 export enum InventoryItemName {
   // Consumable Items
   Potion = "Potion",
@@ -106,7 +116,7 @@ export enum ActionName {
   Status = "status",
 }
 
-export enum AttackName {
+export enum _AttackName {
   Punch = "punch",
   Stab = "stab",
   Slash = "slash",
@@ -314,7 +324,7 @@ export enum InventoryItemDescription {
   Nirvana = "An ultimate staff with unparalleled magical power.",
   HolyLance = "Lance infused with holy energy, dealing divine damage.",
   Orichalcum = "Rare and powerful material used in creating legendary items.",
-  YoichiBow = "Bow favored by skilled archers, increasing accuracy and range.",
+  YoichiBow = "Bow favored by abilityed archers, increasing accuracy and range.",
   ArtemisBow = "Bow dedicated to the goddess of the hunt, enhancing hunting abilities.",
   Godhand = "Handgear infused with godly energy, amplifying melee and magical abilities.",
   PoisonKnuckles = "Knuckles coated with deadly poison, inflicting poison status.",

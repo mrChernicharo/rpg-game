@@ -13,18 +13,17 @@ const inventoryItems = (itemList: InventoryItem[]) =>
       },
     }));
 
-const heroActionDetailItems = (hero: Character, actionName: ActionName) => {
+const heroActionAbilityItems = (hero: Character, actionName: ActionName) => {
   switch (actionName) {
     case ActionName._Attack:
     case ActionName.Magic:
     case ActionName.Summon:
     case ActionName.Invoke:
-      return hero.skills[actionName]!.map((skill) => ({
-        text: skill,
+      return hero.abilities[actionName]!.map((ability) => ({
+        text: ability,
         action: () => {
-          console.log("action detail selected", skill);
-
-          window.dispatchEvent(new CustomEvent("action-detail-selected", { detail: skill }));
+          console.log("action detail selected", ability);
+          window.dispatchEvent(new CustomEvent("action-detail-selected", { detail: ability }));
         },
       }));
     default:
@@ -53,7 +52,7 @@ export type Panes = {
 const panes: Panes = {
   text: (message: string) => ({ type: 'text', content: message}),
   heroActions: (hero: Character) => ({ type: "list", content: heroActionItems(hero) }),
-  heroActionDetail: (hero: Character, actionName: ActionName) => ({ type: "list", content: heroActionDetailItems(hero, actionName) }),
+  heroActionDetail: (hero: Character, actionName: ActionName) => ({ type: "list", content: heroActionAbilityItems(hero, actionName) }),
   itemSelection: (itemList: InventoryItem[]) => ({ type: "list", content: inventoryItems(itemList) }),
 };
 

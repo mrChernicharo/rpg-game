@@ -1,6 +1,6 @@
 import {
   ActionName,
-  AttackName,
+  _AttackName,
   Col,
   Element,
   InventoryItemName,
@@ -8,6 +8,7 @@ import {
   Lane,
   MagicSpellName,
   StatusName,
+  EquipmentSlot,
 } from "./enums";
 import { Action, Character, InventoryItem, Status } from "./types";
 import { idMaker } from "./utils";
@@ -54,6 +55,7 @@ const INVENTORY_LIST: InventoryItem[] = [
     id: idMaker(),
     name: InventoryItemName.ShortSword,
     type: InventoryItemType.Equipment,
+    slot: EquipmentSlot.rightArm,
     quantity: 1,
   },
 ];
@@ -66,6 +68,7 @@ const HERO_LIST: Character[] = [
     hp: 490, // hp: 40,
     mp: 65,
     speed: 62,
+    level: 7,
     imgUrl: "/sprites/sprite-01.webp",
     position: {
       lane: Lane.Front,
@@ -80,8 +83,8 @@ const HERO_LIST: Character[] = [
       ActionName.Defend,
       ActionName._Attack,
     ],
-    skills: {
-      [ActionName._Attack]: [AttackName.Slash, AttackName.Arrow],
+    abilities: {
+      [ActionName._Attack]: [_AttackName.Slash, _AttackName.Arrow],
       [ActionName.Magic]: [
         MagicSpellName.Bio,
         MagicSpellName.Regen,
@@ -91,6 +94,24 @@ const HERO_LIST: Character[] = [
         MagicSpellName.Haste,
       ],
     },
+    attributes: {
+      strength: 20,
+      intelligence: 20,
+      dexterity: 20,
+      agility: 20,
+      vigor: 20,
+      wisdom: 20,
+      luck: 20,
+    },
+    equipment: {
+      head: null,
+      body: null,
+      leftArm: null,
+      rightArm: null,
+      feet: null,
+      leftAmulet: null,
+      rightAmulet: null,
+    },
   },
   {
     id: idMaker(),
@@ -99,6 +120,7 @@ const HERO_LIST: Character[] = [
     hp: 640, // hp: 40,
     mp: 29,
     speed: 45,
+    level: 7,
     imgUrl: "/sprites/sprite-27.webp",
     position: {
       lane: Lane.Front,
@@ -106,9 +128,27 @@ const HERO_LIST: Character[] = [
     },
     statuses: [],
     actions: [ActionName.Attack, ActionName.Magic, ActionName.Item, ActionName.Defend, ActionName.Move],
-    skills: {
-      // [ActionName._Attack]: [AttackName.Slash],
+    abilities: {
+      // [ActionName._Attack]: [_AttackName.Slash],
       [ActionName.Magic]: [MagicSpellName.Quake],
+    },
+    attributes: {
+      strength: 20,
+      intelligence: 20,
+      dexterity: 20,
+      agility: 20,
+      vigor: 20,
+      wisdom: 20,
+      luck: 20,
+    },
+    equipment: {
+      head: null,
+      body: null,
+      leftArm: null,
+      rightArm: null,
+      feet: null,
+      leftAmulet: null,
+      rightAmulet: null,
     },
   },
   {
@@ -118,6 +158,7 @@ const HERO_LIST: Character[] = [
     hp: 520, // hp: 20,
     mp: 50,
     speed: 54,
+    level: 7,
     imgUrl: "/sprites/sprite-09.webp",
     position: {
       lane: Lane.Back,
@@ -133,10 +174,28 @@ const HERO_LIST: Character[] = [
       ActionName.Move,
       ActionName._Attack,
     ],
-    skills: {
-      [ActionName._Attack]: [AttackName.Arrow, AttackName.StoneThrow],
+    abilities: {
+      [ActionName._Attack]: [_AttackName.Arrow, _AttackName.StoneThrow],
       [ActionName.Magic]: [MagicSpellName.Thunder, MagicSpellName.Bio, MagicSpellName.Cure],
       [ActionName.Summon]: ["DireWolf"],
+    },
+    attributes: {
+      strength: 20,
+      intelligence: 20,
+      dexterity: 20,
+      agility: 20,
+      vigor: 20,
+      wisdom: 20,
+      luck: 20,
+    },
+    equipment: {
+      head: null,
+      body: null,
+      leftArm: null,
+      rightArm: null,
+      feet: null,
+      leftAmulet: null,
+      rightAmulet: null,
     },
   },
   {
@@ -146,6 +205,7 @@ const HERO_LIST: Character[] = [
     hp: 570,
     mp: 70,
     speed: 62,
+    level: 7,
     imgUrl: "/sprites/sprite-04.webp",
     position: {
       lane: Lane.Front,
@@ -161,10 +221,28 @@ const HERO_LIST: Character[] = [
       ActionName.Item,
       ActionName.Move,
     ],
-    skills: {
-      // [ActionName.Attack]: [AttackName.Stab, AttackName.Arrow],
+    abilities: {
+      // [ActionName.Attack]: [_AttackName.Stab, _AttackName.Arrow],
       [ActionName.Magic]: [MagicSpellName.Hydro, MagicSpellName.Bio],
       [ActionName.Invoke]: ["DireWolf"],
+    },
+    attributes: {
+      strength: 20,
+      intelligence: 20,
+      dexterity: 20,
+      agility: 20,
+      vigor: 20,
+      wisdom: 20,
+      luck: 20,
+    },
+    equipment: {
+      head: null,
+      body: null,
+      leftArm: null,
+      rightArm: null,
+      feet: null,
+      leftAmulet: null,
+      rightAmulet: null,
     },
   },
 ];
@@ -177,6 +255,7 @@ const ENEMY_LIST: Character[] = [
     hp: 120,
     mp: 50,
     speed: 70,
+    level: 7,
     imgUrl: "/sprites/sprite-70.webp",
     position: {
       lane: Lane.Front,
@@ -184,8 +263,8 @@ const ENEMY_LIST: Character[] = [
     },
     statuses: [],
     actions: [ActionName._Attack],
-    skills: {
-      [ActionName._Attack]: [AttackName.Slash],
+    abilities: {
+      [ActionName._Attack]: [_AttackName.Slash],
       [ActionName.Magic]: [MagicSpellName.Bio],
     },
   },
@@ -196,6 +275,7 @@ const ENEMY_LIST: Character[] = [
     hp: 1450,
     mp: 50,
     speed: 58,
+    level: 7,
     imgUrl: "/sprites/sprite-77.webp",
     position: {
       lane: Lane.Front,
@@ -203,8 +283,8 @@ const ENEMY_LIST: Character[] = [
     },
     statuses: [],
     actions: [ActionName._Attack],
-    skills: {
-      [ActionName._Attack]: [AttackName.Bite, AttackName.Claws, AttackName.TailWhip],
+    abilities: {
+      [ActionName._Attack]: [_AttackName.Bite, _AttackName.Claws, _AttackName.TailWhip],
       [ActionName.Magic]: [MagicSpellName.Fire, MagicSpellName.Bio],
     },
   },
@@ -216,6 +296,7 @@ const ENEMY_LIST: Character[] = [
     // hp: 320,
     mp: 50,
     speed: 52,
+    level: 7,
     imgUrl: "/sprites/sprite-78.webp",
     position: {
       lane: Lane.Back,
@@ -223,8 +304,8 @@ const ENEMY_LIST: Character[] = [
     },
     statuses: [],
     actions: [ActionName._Attack],
-    skills: {
-      [ActionName._Attack]: [AttackName.IceBolt],
+    abilities: {
+      [ActionName._Attack]: [_AttackName.IceBolt],
       [ActionName.Magic]: [MagicSpellName.Blizzard],
     },
   },
@@ -253,65 +334,62 @@ const STATUS_DICT: { [k in StatusName]?: Status } = {
 };
 
 const DETAILED_ACTION_DICT: {
-  [actionName in ActionName]?: { [skill: string]: Action };
+  [actionName in ActionName]?: { [ability: string]: Action };
 } = {
   // attacks
   [ActionName._Attack]: {
-    [AttackName.Punch]: {
-      name: AttackName.Punch,
+    [_AttackName.Punch]: {
+      name: _AttackName.Punch,
       type: "melee",
       power: 10,
       targets: "single",
     },
-    [AttackName.Stab]: {
-      name: AttackName.Stab,
+    [_AttackName.Stab]: {
+      name: _AttackName.Stab,
       type: "melee",
       power: 28,
       targets: "single",
     },
-    [AttackName.Slash]: {
-      name: AttackName.Slash,
+    [_AttackName.Slash]: {
+      name: _AttackName.Slash,
       type: "melee",
       power: 32,
       targets: "single",
     },
-    [AttackName.Arrow]: {
-      name: AttackName.Arrow,
+    [_AttackName.Arrow]: {
+      name: _AttackName.Arrow,
       type: "ranged",
       power: 21,
-      ranged: true,
       targets: "single",
     },
-    [AttackName.StoneThrow]: {
-      name: AttackName.StoneThrow,
+    [_AttackName.StoneThrow]: {
+      name: _AttackName.StoneThrow,
       type: "melee",
       power: 15,
-      ranged: true,
       targets: "single",
     },
-    [AttackName.Claws]: {
-      name: AttackName.Claws,
+    [_AttackName.Claws]: {
+      name: _AttackName.Claws,
       type: "melee",
       power: 30,
       targets: "single",
     },
-    [AttackName.Bite]: {
-      name: AttackName.Bite,
+    [_AttackName.Bite]: {
+      name: _AttackName.Bite,
       type: "melee",
       power: 24,
       targets: "single",
     },
-    [AttackName.TailWhip]: {
-      name: AttackName.TailWhip,
+    [_AttackName.TailWhip]: {
+      name: _AttackName.TailWhip,
       type: "melee",
       power: 19,
       targets: "horiz",
     },
-    [AttackName.IceBolt]: {
-      name: AttackName.IceBolt,
+    [_AttackName.IceBolt]: {
+      name: _AttackName.IceBolt,
       type: "ranged",
       power: 27,
-      ranged: true,
       element: Element.Ice,
       targets: "vert",
     },

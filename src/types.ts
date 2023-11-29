@@ -1,6 +1,6 @@
 import {
   ActionName,
-  AttackName,
+  _AttackName,
   Col,
   Element,
   InventoryItemName,
@@ -8,6 +8,7 @@ import {
   Lane,
   MagicSpellName,
   StatusName,
+  EquipmentSlot,
 } from "./enums";
 
 export type Position = {
@@ -15,10 +16,30 @@ export type Position = {
   col: Col;
 };
 
+export type HeroAttributes = {
+  strength: number; // melee attack
+  dexterity: number; // ranged attack
+  intelligence: number; // magic attack
+  agility: number; // speed
+  vigor: number; // physical defense
+  wisdom: number; // magic defense
+  luck: number;
+};
+
+export type HeroEquipment = {
+  head: EquipmentItem | null;
+  leftArm: EquipmentItem | null;
+  rightArm: EquipmentItem | null;
+  body: EquipmentItem | null;
+  feet: EquipmentItem | null;
+  leftAmulet: EquipmentItem | null;
+  rightAmulet: EquipmentItem | null;
+};
+
 export type Character = {
   id: string;
   name: string;
-  type: "hero" | "enemy" | "npc";
+  level: number;
   hp: number;
   mp: number;
   speed: number;
@@ -26,38 +47,17 @@ export type Character = {
   position: Position;
   statuses: Status[];
   actions: ActionName[];
-  skills: {
-    [ActionName.Magic]: MagicSpellName[];
-    [ActionName._Attack]?: AttackName[];
+  abilities: {
+    [ActionName.Magic]?: MagicSpellName[];
+    [ActionName._Attack]?: _AttackName[];
     [ActionName.Invoke]?: string[];
     [ActionName.Summon]?: string[];
   };
-};
+} & ({ type: "hero"; attributes: HeroAttributes; equipment: HeroEquipment } | { type: "enemy" } | { type: "npc" });
 
 export type ActionTarget = "self" | "single" | "vert" | "horiz" | "party" | "all";
 
-// export type Spell = {
-//   name: MagicSpellName;
-//   power: number;
-//   mpCost: number;
-//   element?: Element;
-// };
-
-// export type Attack = {
-//   name: AttackName;
-//   power: number;
-//   ranged?: boolean;
-//   element?: Element;
-// };
-
 export type Action = (
-  | {
-      name: AttackName;
-      type: "melee" | "ranged";
-      power: number;
-      ranged?: boolean;
-      element?: Element;
-    }
   | {
       name: MagicSpellName;
       type: "magical";
@@ -98,6 +98,12 @@ export type Action = (
       name: ActionName.Move;
       type: "move";
     }
+  | {
+      name: _AttackName;
+      type: "melee" | "ranged";
+      power: number;
+      element?: Element;
+    }
 ) & {
   targets: ActionTarget;
 };
@@ -115,6 +121,7 @@ export type TurnEntity = {
   name: string;
   type: "hero" | "enemy" | "npc" | "status";
 };
+
 export type TurnBase = {
   entity: TurnEntity;
   turnDuration: number;
@@ -132,13 +139,28 @@ export type StatusTurnBase = {
 
 export type CharacterTurn = TurnBase & CharacterTurnBase;
 export type StatusTurn = TurnBase & StatusTurnBase;
-
 export type Turn = CharacterTurn | StatusTurn;
 
-export type InventoryItem = {
+export type ConsumableItem = {
   id: string;
   name: InventoryItemName;
-  type: InventoryItemType;
+  type: InventoryItemType.Consumable;
+};
+
+export type EquipmentItem = {
+  id: string;
+  name: InventoryItemName;
+  type: InventoryItemType.Equipment;
+  slot: EquipmentSlot;
+};
+
+export type KeyItem = {
+  id: string;
+  name: InventoryItemName;
+  type: InventoryItemType.Key;
+};
+
+export type InventoryItem = (ConsumableItem | EquipmentItem | KeyItem) & {
   quantity: number;
 };
 
