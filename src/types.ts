@@ -153,12 +153,14 @@ export type ConsumableItem = {
   id: string;
   name: InventoryItemName;
   type: InventoryItemType.Consumable;
+  imgURL: string;
 };
 
 export type EquipmentItem = {
   id: string;
   name: InventoryItemName;
   type: InventoryItemType.Equipment;
+  imgURL: string;
   slot: EquipmentSlot;
 };
 
@@ -168,6 +170,7 @@ export type KeyItem = {
   id: string;
   name: InventoryItemName;
   type: InventoryItemType.Key;
+  imgURL: string;
 };
 
 export type InventoryItem = (ConsumableItem | EquipmentItem | KeyItem) & {

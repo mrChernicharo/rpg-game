@@ -11,7 +11,7 @@ import {
   mainMenuBtns,
 } from "./dom";
 import { EquipmentSlot, GameScreen, InventoryItemName, InventoryItemType } from "./enums";
-import { Character, EquipmentItem, EquipmentItemWithQuantity, MenuState } from "./types";
+import { Character, EquipmentItem, EquipmentItemWithQuantity, InventoryItem, MenuState } from "./types";
 
 export const menuState: MenuState = {
   selectedHero: null,
@@ -172,65 +172,31 @@ function drawEquipmentWidget(hero: Character) {
   if (hero.type !== "hero") throw Error("cannot draw widget");
 
   const equipmentWidget = document.querySelector("#hero-equipment-widget")!;
-  equipmentWidget.innerHTML = `
-      <div id=${EquipmentSlot.Head} class="equipment-slot">
+
+  const equipmentSlotNames = [
+    EquipmentSlot.Head,
+    EquipmentSlot.Body,
+    EquipmentSlot.Feet,
+    EquipmentSlot.Weapon,
+    EquipmentSlot.Shield,
+    EquipmentSlot.Accessory,
+    EquipmentSlot.Accessory2,
+  ];
+
+  const slotTemplates = equipmentSlotNames.map(
+    (slotName) => `
+        <div id=${slotName} class="equipment-slot">
           ${
-            hero.equipment.head
-              ? `<img src=${"public/icons/sprite-01.webp"} class="equipment-sprite ${hero.equipment.head
-                  .name!}" width="48" height="48"/>`
+            hero.equipment[slotName]
+              ? `<img src=${hero.equipment[slotName]?.imgURL} width="48" height="48" class="equipment-sprite ${
+                  hero.equipment[slotName]!.name
+                }" />`
               : ``
           }
-      </div>
-      <div id=${EquipmentSlot.Weapon} class="equipment-slot">
-          ${
-            hero.equipment.weapon
-              ? `<img src=${"public/icons/sprite-01.webp"} class="equipment-sprite ${hero.equipment.weapon
-                  .name!}" width="48" height="48"/>`
-              : ``
-          }
-      </div>
-      <div id=${EquipmentSlot.Body} class="equipment-slot">
-          ${
-            hero.equipment.body
-              ? `<img src=${"public/icons/sprite-01.webp"} class="equipment-sprite ${hero.equipment.body
-                  .name!}" width="48" height="48"/>`
-              : ``
-          }
-      </div>
-      <div id=${EquipmentSlot.Shield} class="equipment-slot">
-          ${
-            hero.equipment.shield
-              ? `<img src=${"public/icons/sprite-01.webp"} class="equipment-sprite ${hero.equipment.shield
-                  .name!}" width="48" height="48"/>`
-              : ``
-          }
-      </div>
-      <div id=${EquipmentSlot.Feet} class="equipment-slot">
-          ${
-            hero.equipment.feet
-              ? `<img src=${"public/icons/sprite-01.webp"} class="equipment-sprite ${hero.equipment.feet
-                  .name!}" width="48" height="48"/>`
-              : ``
-          }
-      </div>
-      <div id=${EquipmentSlot.Accessory} class="equipment-slot">
-          ${
-            hero.equipment.accessory
-              ? `<img src=${"public/icons/sprite-01.webp"} class="equipment-sprite ${hero.equipment.accessory
-                  .name!}" width="48" height="48"/>`
-              : ``
-          }
-      </div>
-      <div id="${EquipmentSlot.Accessory}2" class="equipment-slot">
-          ${
-            hero.equipment.accessory2
-              ? `<img src=${"public/icons/sprite-01.webp"} class="equipment-sprite ${hero.equipment.accessory2
-                  .name!}" width="48" height="48"/>`
-              : ``
-          }
-      </div>
-    </div>
-  `;
+      </div>`
+  );
+
+  equipmentWidget.innerHTML = slotTemplates.join("");
 
   const slots = Array.from(equipmentWidget.children) as HTMLDivElement[];
   slots.forEach((slot) => {
@@ -251,7 +217,6 @@ function drawEquipmentWidget(hero: Character) {
 
 function isEquipmentAvailableToEquip(item: EquipmentItemWithQuantity) {
   // console.log("isEquipmentAvailableToEquip", item);
-  // if (item.quantity > 0 && getAllHeroes().every((h) => h.equipment[item.slot]?.id !== item.id)) return true;
   if (item.quantity > 0) return true;
   else return false;
 }
@@ -259,7 +224,10 @@ function isEquipmentAvailableToEquip(item: EquipmentItemWithQuantity) {
 function equipEquipment(hero: Character, slot: EquipmentSlot, itemName: InventoryItemName) {
   if (hero.type !== "hero") throw Error("cannot equip");
 
-  hero.equipment[slot] = INVENTORY_LIST.find((eq) => eq.name === itemName) as EquipmentItem;
+  const item = INVENTORY_LIST.find((eq) => eq.name === itemName) as EquipmentItemWithQuantity;
+  const { quantity, ...equipmentItem } = item;
+
+  hero.equipment[slot] = equipmentItem;
 
   console.log("equip!");
 

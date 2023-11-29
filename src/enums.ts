@@ -109,6 +109,9 @@ export enum InventoryItemName {
   BlackRobe = "BlackRobe",
   WhiteCape = "WhiteCape",
 
+  // feet
+  HunterBoots = "HunterBoots",
+
   // Magic Items
   SoulPendant = "SoulPendant",
   Grimoire = "Grimoire",
