@@ -330,5 +330,5 @@ function closeEquipmentSelectionWindow() {
 }
 
 drawMainMenu();
-showScreen(GameScreen.ItemsMenu);
+showScreen(GameScreen.Dungeon);
 // showScreen(GameScreen.MainMenu);

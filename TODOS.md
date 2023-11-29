@@ -6,14 +6,15 @@ statuses (poison, slow, )
 
 =============
 
+small-hero-selection-list
+equip the goddamn heroes
+
 Party {
 heroes: Character[],
 formation: { [charId]: Position }
 }
 
 ALL_HEROES VS Party.heroes
-small-hero-selection-list
-equip the goddamn heroes
 
 # ffmpeg
 

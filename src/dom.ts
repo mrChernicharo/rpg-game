@@ -7,6 +7,14 @@ export const getMainMenuScreenBtn = () => document.querySelector("#main-menu-scr
 
 //////////////////////////////////////////////////////
 
+export const canvas = document.querySelector("canvas#dungeon") as HTMLCanvasElement;
+export const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+
+canvas.width = Math.min(window.innerWidth, 500);
+canvas.height = Math.min(window.innerHeight, 500);
+
+///////////////////////////////////////////////////////
+
 export const getMainMenuHeroesUL = () => document.querySelector("#main-menu-screen > #heroes");
 
 export const equipmentMenuBtn = document.querySelector("#equipment-menu-btn") as HTMLButtonElement;

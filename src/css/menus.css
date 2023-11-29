@@ -108,14 +108,20 @@
 }
 
 #hero-equipment-selection-window {
-  border: 1px solid green;
-  height: 400px;
+  border: 1px solid #333;
+  height: 300px;
 }
 
 #hero-equipment-selection-window-list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
 }
+
 #hero-equipment-selection-window-list > li {
+  padding: 0.5rem;
+  border-radius: 8px;
   cursor: pointer;
+}
+#hero-equipment-selection-window-list > li:hover {
+  outline: 1px solid #646cff;
 }
