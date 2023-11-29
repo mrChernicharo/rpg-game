@@ -1,3 +1,18 @@
+export const getAllScreens = () => Array.from(document.querySelectorAll('section[id$="screen"]'));
+export const getCurrentScreen = () => getAllScreens().find((s) => !s.classList.contains("hidden"));
+
+export const getBattleScreenBtn = () => document.querySelector("#battle-screen-btn") as HTMLButtonElement;
+export const getDungeonScreenBtn = () => document.querySelector("#dungeon-screen-btn") as HTMLButtonElement;
+export const getMainMenuScreenBtn = () => document.querySelector("#main-menu-screen-btn") as HTMLButtonElement;
+
+// export const getBackLink = () => document.querySelector('')
+
+//////////////////////////////////////////////////////
+
+export const getMainMenuHeroesUL = () => document.querySelector("#main-menu-screen > #heroes");
+
+//////////////////////////////////////////////////////
+
 export const battleUI = document.querySelector("#battle-ui")!;
 
 export const battleLanesUI = Array.from(document.querySelectorAll(".battle-lane"))!;
@@ -11,11 +26,6 @@ export const bottomSection = {
 };
 
 export const slots = Array.from(document.querySelectorAll(".lane-slot")) as HTMLLIElement[];
-
-export const getBattleScreenBtn = () => document.querySelector("#battle-screen-btn") as HTMLButtonElement;
-export const getMenuScreenBtn = () => document.querySelector("#menu-screen-btn") as HTMLButtonElement;
-export const getDungeonScreenBtn = () => document.querySelector("#dungeon-screen-btn") as HTMLButtonElement;
-export const getHomeScreenBtn = () => document.querySelector("#home-screen-btn") as HTMLButtonElement;
 
 export const dismissBtn = document.querySelector("#dismiss-btn") as HTMLButtonElement;
 
@@ -45,5 +55,3 @@ export const getSlotStatusOverlayById = (characterId: string) =>
 
 export const getNumbersOverlayById = (characterId: string) =>
   Array.from(getSlotElementById(characterId).children).find((child) => child.classList.contains("numbers-overlay"))!;
-
-export const getAllScreens = () => Array.from(document.querySelectorAll('section[id$="screen"]'));

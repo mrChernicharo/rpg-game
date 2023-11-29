@@ -2,7 +2,7 @@ export enum GameScreen {
   Home = "home",
   Battle = "battle",
   Dungeon = "dungeon",
-  Menu = "menu",
+  MainMenu = "main-menu",
 }
 
 export enum Lane {

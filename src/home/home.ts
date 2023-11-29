@@ -1,14 +1,13 @@
 import { startBattle } from "../battle/battle";
-import { getAllScreens, getBattleScreenBtn, getDungeonScreenBtn, getHomeScreenBtn, getMenuScreenBtn } from "../dom";
+import { getAllScreens, getBattleScreenBtn, getCurrentScreen, getDungeonScreenBtn, getMainMenuScreenBtn } from "../dom";
 import { GameScreen } from "../enums";
 
-getHomeScreenBtn().onclick = () => showScreen(GameScreen.Home);
+getDungeonScreenBtn().onclick = () => showScreen(GameScreen.Dungeon);
+getMainMenuScreenBtn().onclick = () => showScreen(GameScreen.MainMenu);
 getBattleScreenBtn().onclick = () => {
   showScreen(GameScreen.Battle);
   startBattle();
 };
-getDungeonScreenBtn().onclick = () => showScreen(GameScreen.Dungeon);
-getMenuScreenBtn().onclick = () => showScreen(GameScreen.Menu);
 
 function showScreen(screen: GameScreen) {
   const screens = getAllScreens();
@@ -20,5 +19,14 @@ function showScreen(screen: GameScreen) {
     }
   });
 
-  console.log({ screen, screens });
+  const backLinks = Array.from(document.querySelectorAll(".back-to-home")) as HTMLAnchorElement[];
+  backLinks.forEach((bl) => {
+    if (bl.id.startsWith(screen)) {
+      bl.onclick = () => {
+        showScreen(GameScreen.Home);
+      };
+    }
+  });
+
+  console.log({ screen, screens, backLinks, currScreen: getCurrentScreen() });
 }

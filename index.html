@@ -14,15 +14,20 @@
     <div id="app">
       <section id="home-screen">
         <h1>RPG Game</h1>
-        <button id="home-screen-btn">HOME</button>
-        <button id="menu-screen-btn">MENU</button>
+        <button id="main-menu-screen-btn">MENU</button>
         <button id="battle-screen-btn">BATTLE</button>
         <button id="dungeon-screen-btn">DUNGEON</button>
       </section>
 
-      <section id="menu-screen" class="hidden">
-        <a id="back-to-home"></a>
-        <h1>menu Screen</h1>
+      <section id="main-menu-screen" class="hidden">
+        <a id="main-menu-screen-back-link" class="back-to-home">←</a>
+        <h1>Main Menu Screen</h1>
+
+        <ul id="heroes"></ul>
+
+        <aside>
+          <ul id="menu"></ul>
+        </aside>
       </section>
 
       <section id="battle-screen" class="hidden">
@@ -190,22 +195,20 @@
         </section>
 
         <aside id="aside">
-          <a id="back-to-home"></a>
+          <a id="battle-screen-back-link" class="back-to-home">←</a>
           <div id="turn-count" class="hidden">Turn <output></output></div>
           <div id="timeline"></div>
-
-          <!-- <button type="button" id="test-btn">Next Turn</button> -->
-          <!-- <button type="button" id="test-btn-2">Toggle Pane</button> -->
         </aside>
       </section>
 
       <section id="dungeon-screen" class="hidden">
-        <a id="back-to-home"></a>
+        <a id="dungeon-screen-back-link" class="back-to-home">←</a>
         <h1>Dungeon Screen</h1>
       </section>
     </div>
 
     <script type="module" src="/src/home/home.ts"></script>
+    <script type="module" src="/src/menu/menu.ts"></script>
     <script type="module" src="/src/battle/battle.ts"></script>
   </body>
 </html>
