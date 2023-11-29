@@ -9,6 +9,7 @@ import {
   MagicSpellName,
   StatusName,
   EquipmentSlot,
+  AttributeName,
 } from "./enums";
 
 export type Position = {
@@ -21,13 +22,13 @@ export type MenuState = {
 };
 
 export type HeroAttributes = {
-  strength: number; // melee attack
-  dexterity: number; // ranged attack
-  intelligence: number; // magic attack
-  agility: number; // speed
-  vigor: number; // physical defense
-  wisdom: number; // magic defense
-  luck: number;
+  [AttributeName.Strength]: number;
+  [AttributeName.Intelligence]: number;
+  [AttributeName.Agility]: number;
+  [AttributeName.Dexterity]: number;
+  [AttributeName.Vigor]: number;
+  [AttributeName.Wisdom]: number;
+  [AttributeName.Luck]: number;
 };
 
 export type HeroEquipment = {
@@ -156,12 +157,36 @@ export type ConsumableItem = {
   imgURL: string;
 };
 
+export type EquipmentAttributeEffect = {
+  type: "attribute";
+  attribute: AttributeName;
+  power: number;
+};
+
+export type EquipmentElementalEffect = {
+  type: "element";
+  element: Element;
+  power: number;
+  nature: "absorb" | "resist" | "weakness" | "damage";
+};
+
+export type EquipmentNonElementalEffect = {
+  type: "non-elemental";
+  power: number;
+  nature: "absorb" | "resist" | "weakness" | "damage" | "magiDamage";
+  value: string; // melee attack | magic attack | overall defense etc..
+};
+
+export type EquipmentEffect = EquipmentAttributeEffect | EquipmentElementalEffect | EquipmentNonElementalEffect;
+
 export type EquipmentItem = {
   id: string;
   name: InventoryItemName;
   type: InventoryItemType.Equipment;
   imgURL: string;
   slot: EquipmentSlot;
+  power?: number;
+  effects?: EquipmentEffect[];
 };
 
 export type EquipmentItemWithQuantity = EquipmentItem & { quantity: number };
