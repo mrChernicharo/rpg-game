@@ -34,7 +34,7 @@ export enum EquipmentSlot {
   Weapon = "weapon",
   Feet = "feet",
   Accessory = "accessory",
-  // Accessory2 = "Accessory2",
+  Accessory2 = "accessory2",
 }
 
 export enum InventoryItemName {

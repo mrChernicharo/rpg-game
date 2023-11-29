@@ -151,13 +151,13 @@ export function subtractFromInventory(itemName: InventoryItemName) {
   const itemIdx = inventory.findIndex((obj) => obj.name === itemName)!;
   const inventoryItem = inventory[itemIdx];
 
+  console.log("subtractFromInventory", inventoryItem, inventory);
+
   if (inventoryItem?.quantity === 1) {
     inventory.splice(itemIdx, 1);
   } else {
     inventoryItem.quantity--;
   }
-
-  console.log("inventory", inventory);
 }
 export function addInventoryItem(itemName: InventoryItemName) {
   const itemIdx = inventory.findIndex((obj) => obj.name === itemName)!;

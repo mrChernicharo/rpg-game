@@ -162,6 +162,8 @@ export type EquipmentItem = {
   slot: EquipmentSlot;
 };
 
+export type EquipmentItemWithQuantity = EquipmentItem & { quantity: number };
+
 export type KeyItem = {
   id: string;
   name: InventoryItemName;

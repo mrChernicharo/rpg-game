@@ -34,7 +34,7 @@
 }
 
 #hero-equipment-sub-menu > #hero-equipment-widget {
-  border: 2px solid red;
+  /* border: 2px solid red; */
   height: 350px;
   position: relative;
 }
@@ -87,10 +87,21 @@
     transform-origin: top center;
     transform: translateY(-75%);
   }
-  &#accessory-2 {
+  &#accessory2 {
     right: 10px;
     top: 75%;
     transform-origin: top center;
     transform: translateY(-75%);
   }
+}
+
+#hero-equipment-selection-window {
+  border: 1px solid green;
+  height: 400px;
+}
+
+#hero-equipment-selection-window-list {
+  background-color: red;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
 }

@@ -1,5 +1,6 @@
 import { startBattle } from "./battle/battle";
-import { getAllHeroes } from "./battle/globals";
+import { addInventoryItem, getAllHeroes, inventory, subtractFromInventory } from "./battle/globals";
+import { INVENTORY_LIST } from "./data";
 import {
   getAllScreens,
   getBattleScreenBtn,
@@ -9,8 +10,8 @@ import {
   getMainMenuScreenBtn,
   mainMenuBtns,
 } from "./dom";
-import { EquipmentSlot, GameScreen } from "./enums";
-import { Character, MenuState } from "./types";
+import { EquipmentSlot, GameScreen, InventoryItemName, InventoryItemType } from "./enums";
+import { Character, EquipmentItem, EquipmentItemWithQuantity, MenuState } from "./types";
 
 export const menuState: MenuState = {
   selectedHero: null,
@@ -173,28 +174,144 @@ function drawEquipmentWidget(hero: Character) {
   const equipmentWidget = document.querySelector("#hero-equipment-widget")!;
   equipmentWidget.innerHTML = `
       <div id=${EquipmentSlot.Head} class="equipment-slot">
-          ${hero.equipment.head ? `<img src=${"public/icons/sprite-01.webp"} width="48" height="48"/>` : ``}
+          ${
+            hero.equipment.head
+              ? `<img src=${"public/icons/sprite-01.webp"} class="equipment-sprite ${hero.equipment.head
+                  .name!}" width="48" height="48"/>`
+              : ``
+          }
       </div>
       <div id=${EquipmentSlot.Weapon} class="equipment-slot">
-          ${hero.equipment.weapon ? `<img src=${"public/icons/sprite-01.webp"} width="48" height="48"/>` : ``}
+          ${
+            hero.equipment.weapon
+              ? `<img src=${"public/icons/sprite-01.webp"} class="equipment-sprite ${hero.equipment.weapon
+                  .name!}" width="48" height="48"/>`
+              : ``
+          }
       </div>
       <div id=${EquipmentSlot.Body} class="equipment-slot">
-          ${hero.equipment.body ? `<img src=${"public/icons/sprite-01.webp"} width="48" height="48"/>` : ``}
+          ${
+            hero.equipment.body
+              ? `<img src=${"public/icons/sprite-01.webp"} class="equipment-sprite ${hero.equipment.body
+                  .name!}" width="48" height="48"/>`
+              : ``
+          }
       </div>
       <div id=${EquipmentSlot.Shield} class="equipment-slot">
-          ${hero.equipment.shield ? `<img src=${"public/icons/sprite-01.webp"} width="48" height="48"/>` : ``}
+          ${
+            hero.equipment.shield
+              ? `<img src=${"public/icons/sprite-01.webp"} class="equipment-sprite ${hero.equipment.shield
+                  .name!}" width="48" height="48"/>`
+              : ``
+          }
       </div>
       <div id=${EquipmentSlot.Feet} class="equipment-slot">
-          ${hero.equipment.feet ? `<img src=${"public/icons/sprite-01.webp"} width="48" height="48"/>` : ``}
+          ${
+            hero.equipment.feet
+              ? `<img src=${"public/icons/sprite-01.webp"} class="equipment-sprite ${hero.equipment.feet
+                  .name!}" width="48" height="48"/>`
+              : ``
+          }
       </div>
       <div id=${EquipmentSlot.Accessory} class="equipment-slot">
-          ${hero.equipment.accessory ? `<img src=${"public/icons/sprite-01.webp"} width="48" height="48"/>` : ``}
+          ${
+            hero.equipment.accessory
+              ? `<img src=${"public/icons/sprite-01.webp"} class="equipment-sprite ${hero.equipment.accessory
+                  .name!}" width="48" height="48"/>`
+              : ``
+          }
       </div>
-      <div id="${EquipmentSlot.Accessory}-2" class="equipment-slot">
-          ${hero.equipment.accessory2 ? `<img src=${"public/icons/sprite-01.webp"} width="48" height="48"/>` : ``}
+      <div id="${EquipmentSlot.Accessory}2" class="equipment-slot">
+          ${
+            hero.equipment.accessory2
+              ? `<img src=${"public/icons/sprite-01.webp"} class="equipment-sprite ${hero.equipment.accessory2
+                  .name!}" width="48" height="48"/>`
+              : ``
+          }
       </div>
     </div>
   `;
+
+  const slots = Array.from(equipmentWidget.children) as HTMLDivElement[];
+  slots.forEach((slot) => {
+    slot.onclick = () => {
+      const equipSpriteImg = Array.from(slot.children).find((child) => child.className.includes("equipment-sprite"));
+      console.log({ equipSpriteImg, slot, hero });
+
+      if (equipSpriteImg) {
+        const itemName = equipSpriteImg.classList.toString().split(" ")[1] as InventoryItemName;
+        console.log(itemName);
+        unequipEquipment(hero, slot.id as EquipmentSlot, itemName);
+      } else {
+        drawEquipmentSelectionWindow(hero, slot.id as EquipmentSlot);
+      }
+    };
+  });
+}
+
+function isEquipmentAvailableToEquip(item: EquipmentItemWithQuantity) {
+  // console.log("isEquipmentAvailableToEquip", item);
+  // if (item.quantity > 0 && getAllHeroes().every((h) => h.equipment[item.slot]?.id !== item.id)) return true;
+  if (item.quantity > 0) return true;
+  else return false;
+}
+
+function equipEquipment(hero: Character, slot: EquipmentSlot, itemName: InventoryItemName) {
+  if (hero.type !== "hero") throw Error("cannot equip");
+
+  hero.equipment[slot] = INVENTORY_LIST.find((eq) => eq.name === itemName) as EquipmentItem;
+
+  console.log("equip!");
+
+  subtractFromInventory(itemName);
+
+  drawHeroEquipmentSubMenu(hero);
+  closeEquipmentSelectionWindow();
+}
+function unequipEquipment(hero: Character, slot: EquipmentSlot, itemName: InventoryItemName) {
+  if (hero.type !== "hero") throw Error("cannot unequip");
+  hero.equipment[slot] = null;
+  addInventoryItem(itemName);
+
+  drawHeroEquipmentSubMenu(hero);
+}
+
+function drawEquipmentSelectionWindow(hero: Character, slotName: EquipmentSlot) {
+  if (hero.type !== "hero") throw Error("cannot draw window");
+
+  // console.log("drawEquipmentSelectionWindow", hero, slotName);
+
+  // const selectionWindow = document.querySelector("#hero-equipment-selection-window")!;
+  const selectionHeading = document.getElementById("hero-equipment-selection-window-heading")!;
+  const selectionWindowUL = document.querySelector("#hero-equipment-selection-window-list")!;
+
+  const equipmentItems = inventory.filter(
+    (item) => item.type === InventoryItemType.Equipment
+  ) as EquipmentItemWithQuantity[];
+
+  const slotItems = equipmentItems.filter((item) => slotName.includes(item.slot));
+  const availableItems = slotItems.filter(isEquipmentAvailableToEquip);
+
+  selectionHeading.textContent = slotName;
+  selectionWindowUL.innerHTML = "";
+  availableItems.forEach((item) => {
+    const li = document.createElement("li");
+    li.textContent = `${item.name} x${item.quantity}`;
+    li.onclick = () => {
+      equipEquipment(hero, slotName, item.name);
+    };
+    selectionWindowUL.append(li);
+  });
+
+  // console.log(hero, { slotName, equipmentItems, availableItems, slotItems, selectionWindow });
+}
+
+function closeEquipmentSelectionWindow() {
+  const selectionHeading = document.getElementById("hero-equipment-selection-window-heading")!;
+  const selectionWindowUL = document.querySelector("#hero-equipment-selection-window-list")!;
+
+  selectionHeading.textContent = "";
+  selectionWindowUL.innerHTML = "";
 }
 
 drawMainMenu();
