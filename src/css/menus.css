@@ -105,3 +105,11 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
 }
+
+.context-popover {
+  position: absolute;
+  /* top: 0; */
+  background: #333;
+  padding: 1rem;
+  z-index: 100;
+}
