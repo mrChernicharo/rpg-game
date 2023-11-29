@@ -15,6 +15,18 @@
   padding-left: 1rem;
 }
 
+/* ITEMS MENU */
+#items-menu-list {
+  display: grid;
+  grid-template-columns: repeat(2, 2fr);
+}
+
+#items-menu-list > li {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
 /* EQUIPMENT MENU */
 
 #equipment-menu-hero-selection-list {
@@ -101,15 +113,9 @@
 }
 
 #hero-equipment-selection-window-list {
-  background-color: red;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
 }
-
-.context-popover {
-  position: absolute;
-  /* top: 0; */
-  background: #333;
-  padding: 1rem;
-  z-index: 100;
+#hero-equipment-selection-window-list > li {
+  cursor: pointer;
 }

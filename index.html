@@ -64,12 +64,12 @@
 
       <section id="skills-menu-screen" class="hidden">
         <a id="skills-menu-screen-back-link" class="back-to-main-menu">←</a>
-        Skills
       </section>
 
       <section id="items-menu-screen" class="hidden">
-        <a id="magic-menu-screen-back-link" class="back-to-main-menu">←</a>
+        <a id="items-menu-screen-back-link" class="back-to-main-menu">←</a>
         Items
+        <ul id="items-menu-list"></ul>
       </section>
 
       <section id="settings-menu-screen" class="hidden">
@@ -252,6 +252,10 @@
         <a id="dungeon-screen-back-link" class="back-to-home">←</a>
         <h1>Dungeon Screen</h1>
       </section>
+    </div>
+
+    <div id="modal-overlay" class="hidden">
+      <div id="modal"></div>
     </div>
 
     <script type="module" src="/src/screens.ts"></script>

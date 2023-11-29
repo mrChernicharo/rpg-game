@@ -1,6 +1,6 @@
 import { startBattle } from "./battle/battle";
 import { addInventoryItem, getAllHeroes, inventory, subtractFromInventory } from "./battle/globals";
-import { INVENTORY_LIST } from "./data";
+import { EQUIPMENT_ITEM_DICT, INVENTORY_LIST } from "./data";
 import {
   getAllScreens,
   getBattleScreenBtn,
@@ -9,6 +9,7 @@ import {
   getMainMenuHeroesUL,
   getMainMenuScreenBtn,
   mainMenuBtns,
+  showModal,
 } from "./dom";
 import { EquipmentSlot, GameScreen, InventoryItemName, InventoryItemType } from "./enums";
 import { Character, EquipmentItem, EquipmentItemWithQuantity, InventoryItem, MenuState } from "./types";
@@ -80,6 +81,10 @@ export function showScreen(screen: GameScreen) {
   if (screen === GameScreen.EquipmentMenu) {
     drawEquipmentMenu();
   }
+
+  if (screen === GameScreen.ItemsMenu) {
+    drawItemsMenu();
+  }
 }
 
 export function drawMainMenu() {
@@ -121,6 +126,29 @@ export function drawMainMenu() {
   setMainMenuBtns();
   updateBackToMenuLinks();
   updateBackToHomeLinks();
+}
+
+export function drawItemsMenu() {
+  const itemsUL = document.querySelector("#items-menu-list") as HTMLUListElement;
+
+  const inventoryItemTemplates: string[] = [];
+  inventory.forEach((item) => {
+    inventoryItemTemplates.push(`
+      <li id="${item.name}-item">
+        <img src=${item.imgURL} width="36" height="36"/>  
+        <span>${item.name} x${item.quantity}</span>
+      </li>
+    `);
+  });
+
+  itemsUL.innerHTML = inventoryItemTemplates.join(" ");
+
+  const lis = Array.from(document.querySelectorAll(`#items-menu-list > li`)) as HTMLLIElement[];
+  lis.forEach((li) => {
+    li.onclick = () => {
+      console.log(`CLICKED  ${li.id}`);
+    };
+  });
 }
 
 export function drawEquipmentMenu() {
@@ -194,7 +222,6 @@ function drawEquipmentWidget(hero: Character) {
               : ``
           }
         </div>
-        <div class="context-popover hidden">popover</div>
       `
   );
 
@@ -203,58 +230,35 @@ function drawEquipmentWidget(hero: Character) {
   const slots = Array.from(equipmentWidget.children) as HTMLDivElement[];
   slots.forEach((slot) => {
     const equipmentSpriteImg = Array.from(slot.children).find((child) => child.className.includes("equipment-sprite"));
-    const contextPopover = slot.nextElementSibling as HTMLDivElement;
-    // const contextPopover = Array.from(slot.children).find((child) => child.className.includes("context-popover"));
     const slotName = slot.id as EquipmentSlot;
-    console.log(slot, slotName);
 
     const slotClick = () => {
-      console.log({ equipmentSpriteImg, slot, hero });
-
       if (equipmentSpriteImg) {
         const itemName = equipmentSpriteImg.classList.toString().split(" ")[1] as InventoryItemName;
+        const itemInfo = EQUIPMENT_ITEM_DICT[itemName]!;
+
+        console.log({ equipmentSpriteImg, slot, hero, itemInfo });
+
+        // prettier-ignore
+        const modalTemplate = `
+            <span>${itemInfo.name}</span>
+            ${itemInfo.power ? `<span>Pow ${itemInfo.power}</span>` : ``}
+            <img src=${itemInfo.imgURL} width="48" height="48" class="equipment-sprite ${itemInfo.slot}" />
+            <button id="remove-${itemInfo.name}">remove</button>
+        `;
+        showModal(modalTemplate);
+
+        const removeEquipmentButton = document.querySelector(`button#remove-${itemName}`) as HTMLButtonElement;
+        const onRemoveBtnClick = () => {
+          unequipEquipment(hero, slotName, itemName);
+        };
+        removeEquipmentButton.onclick = onRemoveBtnClick;
       } else {
         drawEquipmentSelectionWindow(hero, slotName);
       }
     };
 
-    const onMouseLeave = () => {
-      if (equipmentSpriteImg && contextPopover) {
-        const itemName = equipmentSpriteImg.classList.toString().split(" ")[1] as InventoryItemName;
-
-        console.log(contextPopover, itemName);
-        contextPopover.classList.add("hidden");
-        contextPopover.innerHTML = "";
-      }
-    };
-
-    const onMouseEnter = () => {
-      console.log({ contextPopover, slot });
-
-      if (equipmentSpriteImg && contextPopover) {
-        const itemName = equipmentSpriteImg.classList.toString().split(" ")[1] as InventoryItemName;
-
-        console.log(contextPopover, itemName);
-        contextPopover?.classList.remove("hidden");
-
-        // prettier-ignore
-        contextPopover.innerHTML = `
-            <span>${itemName}</span>
-            <img src=${hero.equipment[slotName]?.imgURL} width="48" height="48" class="equipment-sprite ${hero.equipment[slotName]!.name}" />
-            <button id="remove-${itemName}">🗑</button>
-        `;
-
-        contextPopover.onmouseleave = onMouseLeave;
-
-        const removeEquipmentButton = document.querySelector(`button#remove-${itemName}`) as HTMLButtonElement;
-        removeEquipmentButton.onclick = () => {
-          unequipEquipment(hero, slotName, itemName);
-        };
-      }
-    };
-
     slot.onclick = slotClick;
-    slot.onmouseenter = onMouseEnter;
   });
 }
 
@@ -326,5 +330,5 @@ function closeEquipmentSelectionWindow() {
 }
 
 drawMainMenu();
-showScreen(GameScreen.EquipmentMenu);
+showScreen(GameScreen.ItemsMenu);
 // showScreen(GameScreen.MainMenu);

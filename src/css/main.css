@@ -10,3 +10,39 @@
 .hidden {
   display: none !important;
 }
+
+#modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 10000px;
+  width: 10000px;
+  background-color: rgba(0, 125, 0, 0.1);
+}
+
+#modal {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  width: 145px;
+  align-items: center;
+  justify-content: center;
+  background: #333;
+  padding: 1.25rem;
+  border-radius: 16px;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#modal > img {
+  margin-block: 1rem;
+}
+
+#modal > button {
+}
+
+.back-to-main-menu,
+.back-to-home {
+  cursor: pointer;
+}

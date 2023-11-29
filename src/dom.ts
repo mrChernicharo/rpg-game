@@ -63,3 +63,29 @@ export const getSlotStatusOverlayById = (characterId: string) =>
 
 export const getNumbersOverlayById = (characterId: string) =>
   Array.from(getSlotElementById(characterId).children).find((child) => child.classList.contains("numbers-overlay"))!;
+
+//////////////////////////////////////////////////
+
+export const getModalOverlay = () => document.querySelector("#modal-overlay") as HTMLDivElement;
+export const getModal = () => document.querySelector("#modal") as HTMLDivElement;
+
+const modalOverlay = getModalOverlay();
+modalOverlay.onclick = () => {
+  hideModal();
+};
+
+export function showModal(html: string) {
+  const overlay = getModalOverlay();
+  const modal = getModal();
+
+  overlay?.classList.remove("hidden");
+  modal.innerHTML = html;
+}
+
+export function hideModal() {
+  const overlay = getModalOverlay();
+  const modal = getModal();
+
+  overlay?.classList.add("hidden");
+  modal.innerHTML = "";
+}
