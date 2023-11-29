@@ -16,6 +16,10 @@ export type Position = {
   col: Col;
 };
 
+export type MenuState = {
+  selectedHero: Character | null;
+};
+
 export type HeroAttributes = {
   strength: number; // melee attack
   dexterity: number; // ranged attack
@@ -28,12 +32,12 @@ export type HeroAttributes = {
 
 export type HeroEquipment = {
   head: EquipmentItem | null;
-  leftArm: EquipmentItem | null;
-  rightArm: EquipmentItem | null;
+  weapon: EquipmentItem | null;
+  shield: EquipmentItem | null;
   body: EquipmentItem | null;
   feet: EquipmentItem | null;
-  leftAmulet: EquipmentItem | null;
-  rightAmulet: EquipmentItem | null;
+  accessory: EquipmentItem | null;
+  accessory2: EquipmentItem | null;
 };
 
 export type Character = {
@@ -53,7 +57,11 @@ export type Character = {
     [ActionName.Invoke]?: string[];
     [ActionName.Summon]?: string[];
   };
-} & ({ type: "hero"; attributes: HeroAttributes; equipment: HeroEquipment } | { type: "enemy" } | { type: "npc" });
+} & (
+  | { type: "hero"; xp: number; attributes: HeroAttributes; equipment: HeroEquipment }
+  | { type: "enemy" }
+  | { type: "npc" }
+);
 
 export type ActionTarget = "self" | "single" | "vert" | "horiz" | "party" | "all";
 

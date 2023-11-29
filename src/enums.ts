@@ -3,6 +3,11 @@ export enum GameScreen {
   Battle = "battle",
   Dungeon = "dungeon",
   MainMenu = "main-menu",
+  EquipmentMenu = "equipment-menu",
+  MagicMenu = "magic-menu",
+  ItemsMenu = "items-menu",
+  SkillsMenu = "skills-menu",
+  settingsMenu = "settings-menu",
 }
 
 export enum Lane {

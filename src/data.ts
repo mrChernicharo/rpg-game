@@ -41,6 +41,7 @@ const HERO_LIST: Character[] = [
     mp: 65,
     speed: 62,
     level: 7,
+    xp: 4600,
     imgUrl: "/sprites/sprite-01.webp",
     attributes: {
       strength: 23,
@@ -54,11 +55,11 @@ const HERO_LIST: Character[] = [
     equipment: {
       head: null,
       body: null,
-      leftArm: null,
-      rightArm: null,
+      shield: null,
+      weapon: null,
       feet: null,
-      leftAmulet: null,
-      rightAmulet: null,
+      accessory: null,
+      accessory2: null,
     },
     position: {
       lane: Lane.Front,
@@ -93,6 +94,7 @@ const HERO_LIST: Character[] = [
     mp: 29,
     speed: 45,
     level: 7,
+    xp: 4600,
     imgUrl: "/sprites/sprite-27.webp",
     position: {
       lane: Lane.Front,
@@ -116,11 +118,11 @@ const HERO_LIST: Character[] = [
     equipment: {
       head: null,
       body: null,
-      leftArm: null,
-      rightArm: null,
+      shield: null,
+      weapon: null,
       feet: null,
-      leftAmulet: null,
-      rightAmulet: null,
+      accessory: null,
+      accessory2: null,
     },
   },
   {
@@ -131,6 +133,7 @@ const HERO_LIST: Character[] = [
     mp: 50,
     speed: 54,
     level: 7,
+    xp: 4600,
     imgUrl: "/sprites/sprite-09.webp",
     position: {
       lane: Lane.Back,
@@ -163,11 +166,11 @@ const HERO_LIST: Character[] = [
     equipment: {
       head: null,
       body: null,
-      leftArm: null,
-      rightArm: null,
+      shield: null,
+      weapon: null,
       feet: null,
-      leftAmulet: null,
-      rightAmulet: null,
+      accessory: null,
+      accessory2: null,
     },
   },
   {
@@ -178,6 +181,7 @@ const HERO_LIST: Character[] = [
     mp: 70,
     speed: 62,
     level: 7,
+    xp: 4600,
     imgUrl: "/sprites/sprite-04.webp",
     position: {
       lane: Lane.Front,
@@ -210,11 +214,11 @@ const HERO_LIST: Character[] = [
     equipment: {
       head: null,
       body: null,
-      leftArm: null,
-      rightArm: null,
+      shield: null,
+      weapon: null,
       feet: null,
-      leftAmulet: null,
-      rightAmulet: null,
+      accessory: null,
+      accessory2: null,
     },
   },
 ];

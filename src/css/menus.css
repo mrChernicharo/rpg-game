@@ -1,0 +1,96 @@
+/* MAIN MENU */
+
+.main-menu-hero {
+  display: flex;
+  width: 100%;
+  border: 1px solid;
+}
+
+.hero-info {
+  /* border: 1px solid red; */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  padding-left: 1rem;
+}
+
+/* EQUIPMENT MENU */
+
+#equipment-menu-hero-selection-list {
+  display: flex;
+}
+
+.hero-selection-list-item {
+  /* border: 1px solid; */
+  padding: 1rem;
+}
+
+.hero-selection-list-item button.hero-img-small {
+  padding: 1rem;
+}
+
+#hero-equipment-sub-menu {
+}
+
+#hero-equipment-sub-menu > #hero-equipment-widget {
+  border: 2px solid red;
+  height: 350px;
+  position: relative;
+}
+
+#hero-equipment-sub-menu > #hero-equipment-widget .equipment-slot:hover {
+  scale: 1.1;
+}
+
+#hero-equipment-sub-menu > #hero-equipment-widget .equipment-slot {
+  background-color: #111;
+  width: 60px;
+  height: 60px;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: scale 0.3s;
+
+  &#head {
+    left: 50%;
+    top: 10px;
+    transform-origin: center left;
+    transform: translateX(-50%);
+  }
+  &#body {
+    left: 50%;
+    top: 50%;
+    transform-origin: top left;
+    transform: translate(-50%, -50%);
+  }
+  &#feet {
+    left: 50%;
+    bottom: 10px;
+    transform-origin: center left;
+    transform: translateX(-50%);
+  }
+  &#weapon {
+    left: 10px;
+    top: 25%;
+    transform: translateY(-25%);
+  }
+  &#shield {
+    right: 10px;
+    top: 25%;
+    transform: translateY(-25%);
+  }
+  &#accessory {
+    left: 10px;
+    top: 75%;
+    transform-origin: top center;
+    transform: translateY(-75%);
+  }
+  &#accessory-2 {
+    right: 10px;
+    top: 75%;
+    transform-origin: top center;
+    transform: translateY(-75%);
+  }
+}

@@ -5,11 +5,19 @@ export const getBattleScreenBtn = () => document.querySelector("#battle-screen-b
 export const getDungeonScreenBtn = () => document.querySelector("#dungeon-screen-btn") as HTMLButtonElement;
 export const getMainMenuScreenBtn = () => document.querySelector("#main-menu-screen-btn") as HTMLButtonElement;
 
-// export const getBackLink = () => document.querySelector('')
-
 //////////////////////////////////////////////////////
 
 export const getMainMenuHeroesUL = () => document.querySelector("#main-menu-screen > #heroes");
+
+export const equipmentMenuBtn = document.querySelector("#equipment-menu-btn") as HTMLButtonElement;
+export const magicMenuBtn = document.querySelector("#magic-menu-btn") as HTMLButtonElement;
+export const skillsMenuBtn = document.querySelector("#skills-menu-btn") as HTMLButtonElement;
+export const itemsMenuBtn = document.querySelector("#items-menu-btn") as HTMLButtonElement;
+export const settingsMenuBtn = document.querySelector("#settings-menu-btn") as HTMLButtonElement;
+
+export const mainMenuBtns = [equipmentMenuBtn, magicMenuBtn, skillsMenuBtn, itemsMenuBtn, settingsMenuBtn];
+
+export const getEquipmentMenuHeroSelectionUL = () => document.querySelector("#equipment-menu-hero-selection-list")!;
 
 //////////////////////////////////////////////////////
 

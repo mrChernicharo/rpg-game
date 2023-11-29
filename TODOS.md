@@ -4,6 +4,17 @@ item effects
 defense effect
 statuses (poison, slow, )
 
+=============
+
+Party {
+heroes: Character[],
+formation: { [charId]: Position }
+}
+
+ALL_HEROES VS Party.heroes
+small-hero-selection-list
+equip the goddamn heroes
+
 # ffmpeg
 
 ### Flip image

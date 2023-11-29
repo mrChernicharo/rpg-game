@@ -7,27 +7,69 @@
     <title>Vite + TS</title>
     <link rel="stylesheet" href="src/css/globals.css" />
     <link rel="stylesheet" href="src/css/main.css" />
+    <link rel="stylesheet" href="src/css/menus.css" />
     <link rel="stylesheet" href="src/css/battle-screen.css" />
     <link rel="stylesheet" href="src/css/animations.css" />
   </head>
   <body>
     <div id="app">
-      <section id="home-screen">
+      <section id="home-screen" class="hidden">
         <h1>RPG Game</h1>
         <button id="main-menu-screen-btn">MENU</button>
         <button id="battle-screen-btn">BATTLE</button>
         <button id="dungeon-screen-btn">DUNGEON</button>
       </section>
 
-      <section id="main-menu-screen" class="hidden">
+      <section id="main-menu-screen">
         <a id="main-menu-screen-back-link" class="back-to-home">←</a>
         <h1>Main Menu Screen</h1>
 
         <ul id="heroes"></ul>
 
         <aside>
-          <ul id="menu"></ul>
+          <ul id="menu">
+            <li>
+              <button id="equipment-menu-btn">Equipment</button>
+            </li>
+            <li><button id="magic-menu-btn">Magic</button></li>
+            <li><button id="skills-menu-btn">Skills</button></li>
+            <li><button id="items-menu-btn">Items</button></li>
+            <li><button id="settings-menu-btn">Settings</button></li>
+          </ul>
         </aside>
+      </section>
+
+      <section id="equipment-menu-screen" class="hidden">
+        Equipment
+        <a id="equipment-menu-screen-back-link" class="back-to-main-menu">←</a>
+
+        <ul id="equipment-menu-hero-selection-list"></ul>
+
+        <section id="hero-equipment-sub-menu">
+          <h3 class="hero-equipment-sub-menu-heading"></h3>
+
+          <div id="hero-equipment-widget"></div>
+        </section>
+      </section>
+
+      <section id="magic-menu-screen" class="hidden">
+        <a id="magic-menu-screen-back-link" class="back-to-main-menu">←</a>
+        Magic
+      </section>
+
+      <section id="skills-menu-screen" class="hidden">
+        <a id="skills-menu-screen-back-link" class="back-to-main-menu">←</a>
+        Skills
+      </section>
+
+      <section id="items-menu-screen" class="hidden">
+        <a id="magic-menu-screen-back-link" class="back-to-main-menu">←</a>
+        Items
+      </section>
+
+      <section id="settings-menu-screen" class="hidden">
+        <a id="magic-menu-screen-back-link" class="back-to-main-menu">←</a>
+        Settings
       </section>
 
       <section id="battle-screen" class="hidden">
@@ -207,8 +249,7 @@
       </section>
     </div>
 
-    <script type="module" src="/src/home/home.ts"></script>
-    <script type="module" src="/src/menu/menu.ts"></script>
+    <script type="module" src="/src/screens.ts"></script>
     <script type="module" src="/src/battle/battle.ts"></script>
   </body>
 </html>
