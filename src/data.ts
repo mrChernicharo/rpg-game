@@ -1048,6 +1048,19 @@ const INVENTORY_LIST: InventoryItem[] = [
   { ...EQUIPMENT_ITEM_DICT[InventoryItemName.HunterBoots]!, quantity: 2 },
 ];
 
+const DUNGEON_MAPS = [
+  {
+    name: "sandbox",
+    map: [
+      [1, 1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 0, 1],
+      [1, 0, 1, 1, 0, 1],
+      [1, 0, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1, 1],
+    ],
+  },
+];
+
 export {
   INVENTORY_LIST,
   ENEMY_LIST,
@@ -1057,4 +1070,5 @@ export {
   SIMPLE_ACTION_DICT,
   STATUS_ICONS,
   EQUIPMENT_ITEM_DICT,
+  DUNGEON_MAPS,
 };

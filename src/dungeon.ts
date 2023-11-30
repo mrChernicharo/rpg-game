@@ -1,3 +1,4 @@
+import { DUNGEON_MAPS } from "./data";
 import { ctx, canvas } from "./dom";
 
 let frameID;
@@ -13,6 +14,9 @@ const keyMap: { [k: string]: boolean } = {
   ArrowRight: false,
 };
 
+const CELL_SIZE = 100;
+const map = DUNGEON_MAPS[0].map;
+const [cols, rows] = [map[0].length, map.length];
 // ctx.save();
 
 let px = 100;
@@ -47,6 +51,8 @@ function handlePlayerMovement() {
   }
 }
 
+const CELL_COLORS = ["yellow", "brown"];
+
 function drawDungeon() {
   handlePlayerMovement();
   //   console.log("draw");
@@ -55,6 +61,18 @@ function drawDungeon() {
   const lineVert = { ax: MID_W - px, ay: 0 - py, bx: MID_W - px, by: FUL_H - py };
   const lineHoriz = { ax: 0 - px, ay: MID_H - py, bx: FUL_W - px, by: MID_H - py };
   const circle = { cx: MID_W, cy: MID_H, r: 40 };
+
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const cell = map[row][col];
+
+      ctx.beginPath();
+      ctx.rect(col * CELL_SIZE - px, row * CELL_SIZE - py, CELL_SIZE, CELL_SIZE);
+      ctx.fillStyle = CELL_COLORS[cell];
+      ctx.fill();
+      ctx.closePath();
+    }
+  }
 
   // player
   ctx.beginPath();
@@ -69,15 +87,14 @@ function drawDungeon() {
   ctx.fillStyle = "blue";
   ctx.stroke();
   ctx.closePath();
-
-  // lines
-  ctx.beginPath();
-  ctx.moveTo(lineVert.ax, lineVert.ay);
-  ctx.lineTo(lineVert.bx, lineVert.by);
-  ctx.moveTo(lineHoriz.ax, lineHoriz.ay);
-  ctx.lineTo(lineHoriz.bx, lineHoriz.by);
-  ctx.stroke();
-  ctx.closePath();
+  //   // lines
+  //   ctx.beginPath();
+  //   ctx.moveTo(lineVert.ax, lineVert.ay);
+  //   ctx.lineTo(lineVert.bx, lineVert.by);
+  //   ctx.moveTo(lineHoriz.ax, lineHoriz.ay);
+  //   ctx.lineTo(lineHoriz.bx, lineHoriz.by);
+  //   ctx.stroke();
+  //   ctx.closePath();
 
   console.log(
     "horiz:",
