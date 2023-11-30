@@ -1,7 +1,7 @@
 import { DUNGEON_MAPS } from "./data";
 import { ctx, canvas } from "./dom";
 
-let frameID;
+let frameID = -1;
 
 const keyMap: { [k: string]: boolean } = {
   w: false,
@@ -61,20 +61,16 @@ function handlePlayerMovement() {
 }
 
 const CELL_COLORS = ["orange", "brown"];
-const pCircle = { cx: MID_W, cy: MID_H, r: 40 };
+const pCircle = { cx: MID_W, cy: MID_H, r: 20 };
+const pOuterCircle = { cx: MID_W, cy: MID_H, r: 40 };
 
 function drawDungeon() {
   handlePlayerMovement();
   ctx.clearRect(0, 0, 1000, 1000);
 
-  //   const lineVert = { ax: MID_W - px, ay: 0 - py, bx: MID_W - px, by: FUL_H - py };
-  //   const lineHoriz = { ax: 0 - px, ay: MID_H - py, bx: FUL_W - px, by: MID_H - py };
-  //   let collision = false;
-  //   let neighbors = [];
-
   // let closestX, closestY
   let smallestDist = Infinity;
-  let currentCell = { x: 0, y: 0 };
+  let currentCell = { row: 0, col: 0, x: 0, y: 0 };
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
       const cell = map[row][col];
@@ -93,11 +89,12 @@ function drawDungeon() {
       const distToPlayer = getDistance(cellCenterX, cellCenterY, pCircle.cx, pCircle.cy);
       if (distToPlayer <= smallestDist) {
         smallestDist = distToPlayer;
-        currentCell = { x: col * CELL_SIZE, y: row * CELL_SIZE };
+        currentCell = { row, col, x: col * CELL_SIZE, y: row * CELL_SIZE };
       }
     }
   }
 
+  // draw vertical lines
   for (let col = 0; col < cols + 1; col++) {
     ctx.beginPath();
     ctx.moveTo(col * CELL_SIZE - px, 0 - py);
@@ -105,7 +102,7 @@ function drawDungeon() {
     ctx.stroke();
     ctx.closePath();
   }
-
+  // draw horizontal lines
   for (let row = 0; row < rows + 1; row++) {
     ctx.beginPath();
     ctx.moveTo(0 - px, row * CELL_SIZE - py);
@@ -113,9 +110,6 @@ function drawDungeon() {
     ctx.stroke();
     ctx.closePath();
   }
-  //   console.log(neighbors);
-
-  //   console.log("smallest distance", smallestDist, currentCell);
 
   const topLine = {
     ax: currentCell.x - px,
@@ -123,12 +117,6 @@ function drawDungeon() {
     bx: currentCell.x + CELL_SIZE - px,
     by: currentCell.y - py,
   };
-  ctx.beginPath();
-  ctx.moveTo(topLine.ax, topLine.ay);
-  ctx.lineTo(topLine.bx, topLine.by);
-  ctx.strokeStyle = "red";
-  ctx.stroke();
-  ctx.closePath();
 
   const bottomLine = {
     ax: currentCell.x - px,
@@ -136,12 +124,6 @@ function drawDungeon() {
     bx: currentCell.x + CELL_SIZE - px,
     by: currentCell.y + CELL_SIZE - py,
   };
-  ctx.beginPath();
-  ctx.moveTo(bottomLine.ax, bottomLine.ay);
-  ctx.lineTo(bottomLine.bx, bottomLine.by);
-  ctx.strokeStyle = "lightgreen";
-  ctx.stroke();
-  ctx.closePath();
 
   const leftLine = {
     ax: currentCell.x - px,
@@ -149,12 +131,6 @@ function drawDungeon() {
     bx: currentCell.x - px,
     by: currentCell.y + CELL_SIZE - py,
   };
-  ctx.beginPath();
-  ctx.moveTo(leftLine.ax, leftLine.ay);
-  ctx.lineTo(leftLine.bx, leftLine.by);
-  ctx.strokeStyle = "lightblue";
-  ctx.stroke();
-  ctx.closePath();
 
   const rightLine = {
     ax: currentCell.x + CELL_SIZE - px,
@@ -162,6 +138,28 @@ function drawDungeon() {
     bx: currentCell.x + CELL_SIZE - px,
     by: currentCell.y + CELL_SIZE - py,
   };
+
+  ctx.beginPath();
+  ctx.moveTo(topLine.ax, topLine.ay);
+  ctx.lineTo(topLine.bx, topLine.by);
+  ctx.strokeStyle = "red";
+  ctx.stroke();
+  ctx.closePath();
+
+  ctx.beginPath();
+  ctx.moveTo(bottomLine.ax, bottomLine.ay);
+  ctx.lineTo(bottomLine.bx, bottomLine.by);
+  ctx.strokeStyle = "lightgreen";
+  ctx.stroke();
+  ctx.closePath();
+
+  ctx.beginPath();
+  ctx.moveTo(leftLine.ax, leftLine.ay);
+  ctx.lineTo(leftLine.bx, leftLine.by);
+  ctx.strokeStyle = "lightblue";
+  ctx.stroke();
+  ctx.closePath();
+
   ctx.beginPath();
   ctx.moveTo(rightLine.ax, rightLine.ay);
   ctx.lineTo(rightLine.bx, rightLine.by);
@@ -173,26 +171,68 @@ function drawDungeon() {
 
   // player
   ctx.beginPath();
-  ctx.arc(pCircle.cx, pCircle.cy, 20, 0, Math.PI * 2);
+  ctx.arc(pCircle.cx, pCircle.cy, pCircle.r, 0, Math.PI * 2);
   ctx.fillStyle = "blue";
   ctx.fill();
   ctx.closePath();
 
   // player outline
   ctx.beginPath();
-  ctx.arc(pCircle.cx, pCircle.cy, pCircle.r, 0, Math.PI * 2);
+  ctx.arc(pCircle.cx, pCircle.cy, pCircle.r * 2, 0, Math.PI * 2);
   ctx.fillStyle = "blue";
   ctx.stroke();
   ctx.closePath();
 
-  //   console.log(
-  //     "horiz:",
-  //     checkLineIntersectsCircle(lineHoriz, circle),
-  //     "vert:",
-  //     checkLineIntersectsCircle(lineVert, circle)
-  //   );
+  const hasTopNeighbor = currentCell.row > 0;
+  if (hasTopNeighbor) {
+    const topNeighbor = map[currentCell.row - 1][currentCell.col];
+    const topNeighborIsWall = topNeighbor === 1;
 
-  requestAnimationFrame(drawDungeon);
+    if (topNeighborIsWall && checkLineIntersectsCircle(topLine, pOuterCircle)) {
+      console.log("top collision");
+    }
+  }
+
+  const hasBottomNeighbor = currentCell.row < rows - 1;
+  if (hasBottomNeighbor) {
+    const bottomNeighbor = map[currentCell.row + 1][currentCell.col];
+    const bottomNeighborIsWall = bottomNeighbor === 1;
+
+    if (bottomNeighborIsWall && checkLineIntersectsCircle(bottomLine, pOuterCircle)) {
+      console.log("bottom collision");
+      if (!wallCollision.bottom) {
+        wallCollision.bottom = true;
+      }
+    }
+  }
+
+  const hasLeftNeighbor = currentCell.col > 0;
+  if (hasLeftNeighbor) {
+    const leftNeighbor = map[currentCell.row][currentCell.col - 1];
+    const leftNeighborIsWall = leftNeighbor === 1;
+
+    if (leftNeighborIsWall && checkLineIntersectsCircle(leftLine, pOuterCircle)) {
+      console.log("left collision");
+      if (!wallCollision.left) {
+        wallCollision.left = true;
+      }
+    }
+  }
+
+  const hasRightNeighbor = currentCell.col < cols - 1;
+  if (hasRightNeighbor) {
+    const rightNeighbor = map[currentCell.row][currentCell.col + 1];
+    const rightNeighborIsWall = rightNeighbor === 1;
+
+    if (rightNeighborIsWall && checkLineIntersectsCircle(rightLine, pOuterCircle)) {
+      console.log("right collision");
+      if (!wallCollision.right) {
+        wallCollision.right = true;
+      }
+    }
+  }
+
+  frameID = requestAnimationFrame(drawDungeon);
 }
 
 function checkLineIntersectsCircle(
