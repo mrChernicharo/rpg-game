@@ -15,7 +15,7 @@
 }
 
 #battle-ui.ready-to-act > ul:not(#bottom-pane) {
-  cursor: url(/public/icons/sword32.webp), auto;
+  cursor: url(/icons/sword32.webp), auto;
   user-select: none;
 }
 

@@ -62,6 +62,26 @@ function handlePlayerMovement() {
   if (!wallCollision.right && (keyMap.d || keyMap.ArrowRight)) {
     px += speed;
   }
+
+  if (wallCollision.tr && (keyMap.w || keyMap.ArrowUp || keyMap.d || keyMap.ArrowRight)) {
+    px -= speed;
+    py += speed;
+  }
+
+  if (wallCollision.tl && (keyMap.w || keyMap.ArrowUp || keyMap.a || keyMap.ArrowLeft)) {
+    px += speed;
+    py += speed;
+  }
+
+  if (wallCollision.br && (keyMap.s || keyMap.ArrowDown || keyMap.d || keyMap.ArrowRight)) {
+    px -= speed;
+    py -= speed;
+  }
+
+  if (wallCollision.bl && (keyMap.s || keyMap.ArrowDown || keyMap.a || keyMap.ArrowLeft)) {
+    px += speed;
+    py -= speed;
+  }
 }
 
 const CELL_COLORS = ["orange", "brown"];
@@ -198,21 +218,15 @@ function drawDungeon() {
 
     if (checkLineIntersectsCircle(topLine, pOuterCircle)) {
       if (topNeighborIsWall) {
-        if (!wallCollision.top) {
-          // console.log("wall collision");
-          wallCollision.top = true;
-        }
+        // console.log("wall collision");
+        if (!wallCollision.top) wallCollision.top = true;
       } else {
         // console.log("intersection, but no collision");
-        if (wallCollision.top) {
-          wallCollision.top = false;
-        }
+        if (wallCollision.top) wallCollision.top = false;
       }
     } else {
       //   console.log("no top intersection");
-      if (wallCollision.top) {
-        wallCollision.top = false;
-      }
+      if (wallCollision.top) wallCollision.top = false;
     }
   }
 
@@ -223,21 +237,12 @@ function drawDungeon() {
 
     if (checkLineIntersectsCircle(bottomLine, pOuterCircle)) {
       if (bottomNeighborIsWall) {
-        if (!wallCollision.bottom) {
-          //   console.log("bottom collision");
-          wallCollision.bottom = true;
-        }
+        if (!wallCollision.bottom) wallCollision.bottom = true;
       } else {
-        //   console.log("intersection, but no collision");
-        if (wallCollision.bottom) {
-          wallCollision.bottom = false;
-        }
+        if (wallCollision.bottom) wallCollision.bottom = false;
       }
     } else {
-      //   console.log("no bottom intersection");
-      if (wallCollision.bottom) {
-        wallCollision.bottom = false;
-      }
+      if (wallCollision.bottom) wallCollision.bottom = false;
     }
   }
 
@@ -248,21 +253,12 @@ function drawDungeon() {
 
     if (checkLineIntersectsCircle(leftLine, pOuterCircle)) {
       if (leftNeighborIsWall) {
-        if (!wallCollision.left) {
-          //   console.log("left collision");
-          wallCollision.left = true;
-        }
+        if (!wallCollision.left) wallCollision.left = true;
       } else {
-        //   console.log("intersection, but no collision");
-        if (wallCollision.left) {
-          wallCollision.left = false;
-        }
+        if (wallCollision.left) wallCollision.left = false;
       }
     } else {
-      //   console.log("no left intersection");
-      if (wallCollision.left) {
-        wallCollision.left = false;
-      }
+      if (wallCollision.left) wallCollision.left = false;
     }
   }
 
@@ -273,33 +269,33 @@ function drawDungeon() {
 
     if (checkLineIntersectsCircle(rightLine, pOuterCircle)) {
       if (rightNeighborIsWall) {
-        if (!wallCollision.right) {
-          //   console.log("right collision");
-          wallCollision.right = true;
-        }
+        if (!wallCollision.right) wallCollision.right = true;
       } else {
-        //   console.log("intersection, but no collision");
-        if (wallCollision.right) {
-          wallCollision.right = false;
-        }
+        if (wallCollision.right) wallCollision.right = false;
       }
     } else {
-      //   console.log("no right intersection");
-      if (wallCollision.right) {
-        wallCollision.right = false;
-      }
+      if (wallCollision.right) wallCollision.right = false;
     }
   }
+
+  /* TL, TR, BL, BR */
 
   const hasTLNeighbor = hasTopNeighbor && hasLeftNeighbor;
   if (hasTLNeighbor) {
     const [nRow, nCol] = [currentCell.row - 1, currentCell.col - 1];
     const TLNeighbor = map[nRow][nCol];
 
-    if (TLNeighbor === 1 && ctx.isPointInPath(nCol * CELL_SIZE + CELL_SIZE - px, nRow * CELL_SIZE + CELL_SIZE - py)) {
-      if (!wallCollision.tl) {
-        wallCollision.tl = true;
+    const isTLNeighborWall = TLNeighbor === 1;
+    const isInPath = ctx.isPointInPath(nCol * CELL_SIZE + CELL_SIZE - px, nRow * CELL_SIZE + CELL_SIZE - py);
+
+    if (isInPath) {
+      if (isTLNeighborWall) {
+        if (!wallCollision.tl) wallCollision.tl = true;
+      } else {
+        if (wallCollision.tl) wallCollision.tl = false;
       }
+    } else {
+      if (wallCollision.tl) wallCollision.tl = false;
     }
   }
 
@@ -308,10 +304,17 @@ function drawDungeon() {
     const [nRow, nCol] = [currentCell.row - 1, currentCell.col + 1];
     const TRNeighbor = map[nRow][nCol];
 
-    if (TRNeighbor === 1 && ctx.isPointInPath(nCol * CELL_SIZE - px, nRow * CELL_SIZE + CELL_SIZE - py)) {
-      if (!wallCollision.tr) {
-        wallCollision.tr = true;
+    const isTRNeighborWall = TRNeighbor === 1;
+    const isInPath = ctx.isPointInPath(nCol * CELL_SIZE - px, nRow * CELL_SIZE + CELL_SIZE - py);
+
+    if (isInPath) {
+      if (isTRNeighborWall) {
+        if (!wallCollision.tr) wallCollision.tr = true;
+      } else {
+        if (wallCollision.tr) wallCollision.tr = false;
       }
+    } else {
+      if (wallCollision.tr) wallCollision.tr = false;
     }
   }
 
@@ -320,10 +323,17 @@ function drawDungeon() {
     const [nRow, nCol] = [currentCell.row + 1, currentCell.col - 1];
     const BLNeighbor = map[nRow][nCol];
 
-    if (BLNeighbor === 1 && ctx.isPointInPath(nCol * CELL_SIZE + CELL_SIZE - px, nRow * CELL_SIZE - py)) {
-      if (!wallCollision.bl) {
-        wallCollision.bl = true;
+    const isBLNeighborWall = BLNeighbor === 1;
+    const isInPath = ctx.isPointInPath(nCol * CELL_SIZE + CELL_SIZE - px, nRow * CELL_SIZE - py);
+
+    if (isInPath) {
+      if (isBLNeighborWall) {
+        if (!wallCollision.bl) wallCollision.bl = true;
+      } else {
+        if (wallCollision.bl) wallCollision.bl = false;
       }
+    } else {
+      if (wallCollision.bl) wallCollision.bl = false;
     }
   }
 
@@ -332,12 +342,23 @@ function drawDungeon() {
     const [nRow, nCol] = [currentCell.row + 1, currentCell.col + 1];
     const BRNeighbor = map[nRow][nCol];
 
-    if (BRNeighbor === 1 && ctx.isPointInPath(nCol * CELL_SIZE - px, nRow * CELL_SIZE - py)) {
-      if (!wallCollision.br) {
-        wallCollision.br = true;
+    const isNeighborWall = BRNeighbor === 1;
+    const isInPath = ctx.isPointInPath(nCol * CELL_SIZE - px, nRow * CELL_SIZE - py);
+
+    if (isInPath) {
+      if (isNeighborWall) {
+        if (!wallCollision.br) wallCollision.br = true;
+      } else {
+        if (wallCollision.br) wallCollision.br = false;
       }
+    } else {
+      if (wallCollision.br) wallCollision.br = false;
     }
   }
+
+  // const { top, right, bottom, left, ...rest } = wallCollision;
+  // console.log({ top, right, bottom, left });
+  // console.log(rest);
 
   frameID = requestAnimationFrame(drawDungeon);
 }
