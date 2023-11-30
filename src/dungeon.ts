@@ -188,8 +188,23 @@ function drawDungeon() {
     const topNeighbor = map[currentCell.row - 1][currentCell.col];
     const topNeighborIsWall = topNeighbor === 1;
 
-    if (topNeighborIsWall && checkLineIntersectsCircle(topLine, pOuterCircle)) {
-      console.log("top collision");
+    if (checkLineIntersectsCircle(topLine, pOuterCircle)) {
+      if (topNeighborIsWall) {
+        if (!wallCollision.top) {
+          // console.log("wall collision");
+          wallCollision.top = true;
+        }
+      } else {
+        // console.log("intersection, but no collision");
+        if (wallCollision.top) {
+          wallCollision.top = false;
+        }
+      }
+    } else {
+      //   console.log("no top intersection");
+      if (wallCollision.top) {
+        wallCollision.top = false;
+      }
     }
   }
 
@@ -198,10 +213,22 @@ function drawDungeon() {
     const bottomNeighbor = map[currentCell.row + 1][currentCell.col];
     const bottomNeighborIsWall = bottomNeighbor === 1;
 
-    if (bottomNeighborIsWall && checkLineIntersectsCircle(bottomLine, pOuterCircle)) {
-      console.log("bottom collision");
-      if (!wallCollision.bottom) {
-        wallCollision.bottom = true;
+    if (checkLineIntersectsCircle(bottomLine, pOuterCircle)) {
+      if (bottomNeighborIsWall) {
+        if (!wallCollision.bottom) {
+          //   console.log("bottom collision");
+          wallCollision.bottom = true;
+        }
+      } else {
+        //   console.log("intersection, but no collision");
+        if (wallCollision.bottom) {
+          wallCollision.bottom = false;
+        }
+      }
+    } else {
+      //   console.log("no bottom intersection");
+      if (wallCollision.bottom) {
+        wallCollision.bottom = false;
       }
     }
   }
@@ -211,10 +238,22 @@ function drawDungeon() {
     const leftNeighbor = map[currentCell.row][currentCell.col - 1];
     const leftNeighborIsWall = leftNeighbor === 1;
 
-    if (leftNeighborIsWall && checkLineIntersectsCircle(leftLine, pOuterCircle)) {
-      console.log("left collision");
-      if (!wallCollision.left) {
-        wallCollision.left = true;
+    if (checkLineIntersectsCircle(leftLine, pOuterCircle)) {
+      if (leftNeighborIsWall) {
+        if (!wallCollision.left) {
+          //   console.log("left collision");
+          wallCollision.left = true;
+        }
+      } else {
+        //   console.log("intersection, but no collision");
+        if (wallCollision.left) {
+          wallCollision.left = false;
+        }
+      }
+    } else {
+      //   console.log("no left intersection");
+      if (wallCollision.left) {
+        wallCollision.left = false;
       }
     }
   }
@@ -224,14 +263,26 @@ function drawDungeon() {
     const rightNeighbor = map[currentCell.row][currentCell.col + 1];
     const rightNeighborIsWall = rightNeighbor === 1;
 
-    if (rightNeighborIsWall && checkLineIntersectsCircle(rightLine, pOuterCircle)) {
-      console.log("right collision");
-      if (!wallCollision.right) {
-        wallCollision.right = true;
+    if (checkLineIntersectsCircle(rightLine, pOuterCircle)) {
+      if (rightNeighborIsWall) {
+        if (!wallCollision.right) {
+          //   console.log("right collision");
+          wallCollision.right = true;
+        }
+      } else {
+        //   console.log("intersection, but no collision");
+        if (wallCollision.right) {
+          wallCollision.right = false;
+        }
+      }
+    } else {
+      //   console.log("no right intersection");
+      if (wallCollision.right) {
+        wallCollision.right = false;
       }
     }
   }
-
+  console.log(wallCollision);
   frameID = requestAnimationFrame(drawDungeon);
 }
 
