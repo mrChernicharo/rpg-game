@@ -19,6 +19,10 @@ const wallCollision: { [k: string]: boolean } = {
   right: false,
   bottom: false,
   left: false,
+  tl: false,
+  tr: false,
+  bl: false,
+  br: false,
 };
 
 const CELL_SIZE = 100;
@@ -28,7 +32,7 @@ const [cols, rows] = [map[0].length, map.length];
 
 let px = 0;
 let py = 0;
-let speed = 2;
+let speed = 3;
 
 console.log(rows, cols);
 
@@ -176,6 +180,17 @@ function drawDungeon() {
   ctx.fill();
   ctx.closePath();
 
+  //   player outline
+  ctx.beginPath();
+  ctx.arc(pCircle.cx, pCircle.cy, pCircle.r * 2, 0, Math.PI * 2);
+  ctx.strokeStyle = "red";
+  ctx.lineWidth = 10;
+  ctx.stroke();
+  ctx.closePath();
+
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = "black";
+
   const hasTopNeighbor = currentCell.row > 0;
   if (hasTopNeighbor) {
     const topNeighbor = map[currentCell.row - 1][currentCell.col];
@@ -276,64 +291,14 @@ function drawDungeon() {
     }
   }
 
-  //   player outline
-  ctx.beginPath();
-  ctx.arc(pCircle.cx, pCircle.cy, pCircle.r * 2, 0, Math.PI * 2);
-  ctx.strokeStyle = "red";
-  ctx.lineWidth = 10;
-  ctx.stroke();
-  ctx.closePath();
-
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = "black";
-
-  const hasBLNeighbor = hasBottomNeighbor && hasLeftNeighbor;
-  if (hasBLNeighbor) {
-    const [nRow, nCol] = [currentCell.row + 1, currentCell.col - 1];
-    const BLNeighbor = map[nRow][nCol];
-
-    if (BLNeighbor === 1 && ctx.isPointInPath(nCol * CELL_SIZE + CELL_SIZE - px, nRow * CELL_SIZE - py)) {
-      console.log("this BottomLeftNeighbor is too damn close");
-
-      if (!wallCollision.left) {
-        wallCollision.left = true;
-      }
-      if (!wallCollision.bottom) {
-        wallCollision.bottom = true;
-      }
-    }
-  }
-
-  const hasBRNeighbor = hasBottomNeighbor && hasRightNeighbor;
-  if (hasBRNeighbor) {
-    const [nRow, nCol] = [currentCell.row + 1, currentCell.col + 1];
-    const BRNeighbor = map[nRow][nCol];
-
-    if (BRNeighbor === 1 && ctx.isPointInPath(nCol * CELL_SIZE - px, nRow * CELL_SIZE - py)) {
-      //   console.log("this BottomRightNeighbor is too damn close");
-
-      if (!wallCollision.right) {
-        wallCollision.right = true;
-      }
-      if (!wallCollision.bottom) {
-        wallCollision.bottom = true;
-      }
-    }
-  }
-
   const hasTLNeighbor = hasTopNeighbor && hasLeftNeighbor;
   if (hasTLNeighbor) {
     const [nRow, nCol] = [currentCell.row - 1, currentCell.col - 1];
     const TLNeighbor = map[nRow][nCol];
 
     if (TLNeighbor === 1 && ctx.isPointInPath(nCol * CELL_SIZE + CELL_SIZE - px, nRow * CELL_SIZE + CELL_SIZE - py)) {
-      console.log("this TopLeftNeighbor is too close");
-
-      if (!wallCollision.left) {
-        wallCollision.left = true;
-      }
-      if (!wallCollision.top) {
-        wallCollision.top = true;
+      if (!wallCollision.tl) {
+        wallCollision.tl = true;
       }
     }
   }
@@ -344,13 +309,32 @@ function drawDungeon() {
     const TRNeighbor = map[nRow][nCol];
 
     if (TRNeighbor === 1 && ctx.isPointInPath(nCol * CELL_SIZE - px, nRow * CELL_SIZE + CELL_SIZE - py)) {
-      console.log("this TopRightNeighbor is too close");
-
-      if (!wallCollision.right) {
-        wallCollision.right = true;
+      if (!wallCollision.tr) {
+        wallCollision.tr = true;
       }
-      if (!wallCollision.top) {
-        wallCollision.top = true;
+    }
+  }
+
+  const hasBLNeighbor = hasBottomNeighbor && hasLeftNeighbor;
+  if (hasBLNeighbor) {
+    const [nRow, nCol] = [currentCell.row + 1, currentCell.col - 1];
+    const BLNeighbor = map[nRow][nCol];
+
+    if (BLNeighbor === 1 && ctx.isPointInPath(nCol * CELL_SIZE + CELL_SIZE - px, nRow * CELL_SIZE - py)) {
+      if (!wallCollision.bl) {
+        wallCollision.bl = true;
+      }
+    }
+  }
+
+  const hasBRNeighbor = hasBottomNeighbor && hasRightNeighbor;
+  if (hasBRNeighbor) {
+    const [nRow, nCol] = [currentCell.row + 1, currentCell.col + 1];
+    const BRNeighbor = map[nRow][nCol];
+
+    if (BRNeighbor === 1 && ctx.isPointInPath(nCol * CELL_SIZE - px, nRow * CELL_SIZE - py)) {
+      if (!wallCollision.br) {
+        wallCollision.br = true;
       }
     }
   }
