@@ -46,16 +46,16 @@ window.onkeyup = (e: KeyboardEvent) => {
 };
 
 function handlePlayerMovement() {
-  if (keyMap.w || keyMap.ArrowUp) {
+  if (!wallCollision.top && (keyMap.w || keyMap.ArrowUp)) {
     py -= speed;
   }
-  if (keyMap.s || keyMap.ArrowDown) {
+  if (!wallCollision.bottom && (keyMap.s || keyMap.ArrowDown)) {
     py += speed;
   }
-  if (keyMap.a || keyMap.ArrowLeft) {
+  if (!wallCollision.left && (keyMap.a || keyMap.ArrowLeft)) {
     px -= speed;
   }
-  if (keyMap.d || keyMap.ArrowRight) {
+  if (!wallCollision.right && (keyMap.d || keyMap.ArrowRight)) {
     px += speed;
   }
 }
@@ -112,31 +112,31 @@ function drawDungeon() {
   }
 
   const topLine = {
-    ax: currentCell.x - px,
+    ax: currentCell.x - CELL_SIZE - px,
     ay: currentCell.y - py,
-    bx: currentCell.x + CELL_SIZE - px,
+    bx: currentCell.x + CELL_SIZE + CELL_SIZE - px,
     by: currentCell.y - py,
   };
 
   const bottomLine = {
-    ax: currentCell.x - px,
+    ax: currentCell.x - CELL_SIZE - px,
     ay: currentCell.y + CELL_SIZE - py,
-    bx: currentCell.x + CELL_SIZE - px,
+    bx: currentCell.x + CELL_SIZE + CELL_SIZE - px,
     by: currentCell.y + CELL_SIZE - py,
   };
 
   const leftLine = {
     ax: currentCell.x - px,
-    ay: currentCell.y - py,
+    ay: currentCell.y - CELL_SIZE - py,
     bx: currentCell.x - px,
-    by: currentCell.y + CELL_SIZE - py,
+    by: currentCell.y + CELL_SIZE + CELL_SIZE - py,
   };
 
   const rightLine = {
     ax: currentCell.x + CELL_SIZE - px,
-    ay: currentCell.y - py,
+    ay: currentCell.y - CELL_SIZE - py,
     bx: currentCell.x + CELL_SIZE - px,
-    by: currentCell.y + CELL_SIZE - py,
+    by: currentCell.y + CELL_SIZE + CELL_SIZE - py,
   };
 
   ctx.beginPath();
@@ -163,7 +163,7 @@ function drawDungeon() {
   ctx.beginPath();
   ctx.moveTo(rightLine.ax, rightLine.ay);
   ctx.lineTo(rightLine.bx, rightLine.by);
-  ctx.strokeStyle = "lightblue";
+  ctx.strokeStyle = "orange";
   ctx.stroke();
   ctx.closePath();
 
@@ -174,13 +174,6 @@ function drawDungeon() {
   ctx.arc(pCircle.cx, pCircle.cy, pCircle.r, 0, Math.PI * 2);
   ctx.fillStyle = "blue";
   ctx.fill();
-  ctx.closePath();
-
-  // player outline
-  ctx.beginPath();
-  ctx.arc(pCircle.cx, pCircle.cy, pCircle.r * 2, 0, Math.PI * 2);
-  ctx.fillStyle = "blue";
-  ctx.stroke();
   ctx.closePath();
 
   const hasTopNeighbor = currentCell.row > 0;
@@ -282,7 +275,86 @@ function drawDungeon() {
       }
     }
   }
-  console.log(wallCollision);
+
+  //   player outline
+  ctx.beginPath();
+  ctx.arc(pCircle.cx, pCircle.cy, pCircle.r * 2, 0, Math.PI * 2);
+  ctx.strokeStyle = "red";
+  ctx.lineWidth = 10;
+  ctx.stroke();
+  ctx.closePath();
+
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = "black";
+
+  const hasBLNeighbor = hasBottomNeighbor && hasLeftNeighbor;
+  if (hasBLNeighbor) {
+    const [nRow, nCol] = [currentCell.row + 1, currentCell.col - 1];
+    const BLNeighbor = map[nRow][nCol];
+
+    if (BLNeighbor === 1 && ctx.isPointInPath(nCol * CELL_SIZE + CELL_SIZE - px, nRow * CELL_SIZE - py)) {
+      console.log("this BottomLeftNeighbor is too damn close");
+
+      if (!wallCollision.left) {
+        wallCollision.left = true;
+      }
+      if (!wallCollision.bottom) {
+        wallCollision.bottom = true;
+      }
+    }
+  }
+
+  const hasBRNeighbor = hasBottomNeighbor && hasRightNeighbor;
+  if (hasBRNeighbor) {
+    const [nRow, nCol] = [currentCell.row + 1, currentCell.col + 1];
+    const BRNeighbor = map[nRow][nCol];
+
+    if (BRNeighbor === 1 && ctx.isPointInPath(nCol * CELL_SIZE - px, nRow * CELL_SIZE - py)) {
+      //   console.log("this BottomRightNeighbor is too damn close");
+
+      if (!wallCollision.right) {
+        wallCollision.right = true;
+      }
+      if (!wallCollision.bottom) {
+        wallCollision.bottom = true;
+      }
+    }
+  }
+
+  const hasTLNeighbor = hasTopNeighbor && hasLeftNeighbor;
+  if (hasTLNeighbor) {
+    const [nRow, nCol] = [currentCell.row - 1, currentCell.col - 1];
+    const TLNeighbor = map[nRow][nCol];
+
+    if (TLNeighbor === 1 && ctx.isPointInPath(nCol * CELL_SIZE + CELL_SIZE - px, nRow * CELL_SIZE + CELL_SIZE - py)) {
+      console.log("this TopLeftNeighbor is too close");
+
+      if (!wallCollision.left) {
+        wallCollision.left = true;
+      }
+      if (!wallCollision.top) {
+        wallCollision.top = true;
+      }
+    }
+  }
+
+  const hasTRNeighbor = hasTopNeighbor && hasRightNeighbor;
+  if (hasTRNeighbor) {
+    const [nRow, nCol] = [currentCell.row - 1, currentCell.col + 1];
+    const TRNeighbor = map[nRow][nCol];
+
+    if (TRNeighbor === 1 && ctx.isPointInPath(nCol * CELL_SIZE - px, nRow * CELL_SIZE + CELL_SIZE - py)) {
+      console.log("this TopRightNeighbor is too close");
+
+      if (!wallCollision.right) {
+        wallCollision.right = true;
+      }
+      if (!wallCollision.top) {
+        wallCollision.top = true;
+      }
+    }
+  }
+
   frameID = requestAnimationFrame(drawDungeon);
 }
 
