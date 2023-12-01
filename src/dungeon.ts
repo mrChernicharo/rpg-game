@@ -1,7 +1,8 @@
 import { DUNGEON_MAPS } from "./data";
-import { ctx, canvas } from "./dom";
+import { ctx, canvas, playPauseBtn, getModalOverlay } from "./dom";
 
 let frameID = -1;
+let isPaused = true;
 
 const keyMap: { [k: string]: boolean } = {
   w: false,
@@ -34,7 +35,7 @@ let px = 0;
 let py = 0;
 let speed = 3;
 
-console.log(rows, cols);
+console.log({ rows, cols });
 
 const MID_W = canvas.width / 2;
 const MID_H = canvas.height / 2;
@@ -47,6 +48,19 @@ window.onkeydown = (e: KeyboardEvent) => {
 
 window.onkeyup = (e: KeyboardEvent) => {
   keyMap[e.key] = false;
+};
+
+playPauseBtn.onclick = () => {
+  if (isPaused) {
+    isPaused = false;
+    playPauseBtn.textContent = "Pause";
+    playLoop();
+  } else {
+    isPaused = true;
+    playPauseBtn.textContent = "Play";
+
+    cancelAnimationFrame(frameID);
+  }
 };
 
 function handlePlayerMovement() {
@@ -82,6 +96,11 @@ function handlePlayerMovement() {
     px += speed;
     py -= speed;
   }
+}
+
+function playLoop() {
+  drawDungeon();
+  frameID = requestAnimationFrame(playLoop);
 }
 
 const CELL_COLORS = ["orange", "brown"];
@@ -359,8 +378,6 @@ function drawDungeon() {
   // const { top, right, bottom, left, ...rest } = wallCollision;
   // console.log({ top, right, bottom, left });
   // console.log(rest);
-
-  frameID = requestAnimationFrame(drawDungeon);
 }
 
 function checkLineIntersectsCircle(

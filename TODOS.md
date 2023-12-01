@@ -9,12 +9,17 @@ statuses (poison, slow, )
 small-hero-selection-list
 equip the goddamn heroes
 
+ALL_HEROES VS Party.heroes
 Party {
 heroes: Character[],
 formation: { [charId]: Position }
 }
 
-ALL_HEROES VS Party.heroes
+======================
+
+max_hp
+action attack melee | ranged
+heroClasses -> heroFactory
 
 # ffmpeg
 

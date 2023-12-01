@@ -77,8 +77,11 @@ export enum InventoryItemName {
   Shuriken = "Shuriken",
 
   // Weapons
+  Dagger = "Dagger",
   ShortSword = "ShortSword",
   LongSword = "LongSword",
+  IronAxe = "IronAxe",
+  Mace = "Mace",
 
   // DiamondSword = "DiamondSword",
   // RuneBlade = "RuneBlade",
@@ -98,8 +101,9 @@ export enum InventoryItemName {
   // HeavenSword = "HeavenSword",
   // ApocalypseEdge = "ApocalypseEdge",
   // BraveBlade = "BraveBlade",
-  // RuneStaff = "RuneStaff",
-  // WizardRod = "WizardRod",
+  RuneStaff = "RuneStaff",
+  WizardRod = "WizardRod",
+  MythrilRod = "MythrilRod",
   // Nirvana = "Nirvana",
   // HolyLance = "HolyLance",
   // Orichalcum = "Orichalcum",
@@ -127,6 +131,7 @@ export enum InventoryItemName {
   DarkCloak = "DarkCloak",
   BlackRobe = "BlackRobe",
   WhiteCape = "WhiteCape",
+  LinnenTunic = "LinnenTunic",
 
   // head
   MythrilHelm = "MythrilHelm",

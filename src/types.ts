@@ -10,6 +10,7 @@ import {
   StatusName,
   EquipmentSlot,
   AttributeName,
+  HeroClassName,
 } from "./enums";
 
 export type Position = {
@@ -41,10 +42,18 @@ export type HeroEquipment = {
   accessory2: EquipmentItem | null;
 };
 
+export type HeroTemplate = {
+  name: HeroClassName;
+  attributes: HeroAttributes;
+  equipment: HeroEquipment;
+};
+
 export type Character = {
   id: string;
   name: string;
   level: number;
+  maxHp: number;
+  maxMp: number;
   hp: number;
   mp: number;
   speed: number;

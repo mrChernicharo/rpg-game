@@ -34,6 +34,7 @@ import {
 import { panes } from "./infoPane";
 import { CharacterTurn, Character, Turn, Action, Status, StatusTurn } from "../types";
 import { calcTurnDuration, calculateNextTurnTime, idMaker, wait } from "../utils";
+import { heroTemplates } from "../hero-classes";
 
 export async function processAction(actionData: { actorId: string; targetId: string; action: Action }) {
   const { action, actorId, targetId } = actionData;
@@ -384,6 +385,7 @@ async function initializeTimeline() {
 }
 
 export async function startBattle() {
+  console.log(heroTemplates);
   drawCharacters();
   await initializeTimeline();
   await wait(1000);

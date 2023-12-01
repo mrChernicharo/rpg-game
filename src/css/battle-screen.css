@@ -11,7 +11,7 @@
 
 #aside {
   width: 132px;
-  /* border: 1px dashed darkblue; */
+  border: 1px dashed #333;
 }
 
 #battle-ui.ready-to-act > ul:not(#bottom-pane) {
@@ -97,9 +97,10 @@
 
 #bottom-pane {
   height: 200px;
-  border: 1px solid green;
+  border: 1px solid #333;
   position: relative;
   padding-top: 3rem;
+  max-width: 374px;
 }
 
 #bottom-pane > #list-content {

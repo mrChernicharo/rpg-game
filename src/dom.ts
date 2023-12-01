@@ -13,6 +13,8 @@ export const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 canvas.width = Math.min(window.innerWidth, 500);
 canvas.height = Math.min(window.innerHeight, 500);
 
+export const playPauseBtn = document.querySelector("#play-pause") as HTMLButtonElement;
+
 ///////////////////////////////////////////////////////
 
 export const getMainMenuHeroesUL = () => document.querySelector("#main-menu-screen > #heroes");
