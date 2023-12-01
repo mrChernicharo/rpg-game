@@ -1,6 +1,6 @@
-import { HeroClassName, Col, Lane } from "../enums";
-import { createNewHero } from "../hero-classes";
-import { Character } from "../types";
+import { HeroClassName, Col, Lane } from "../shared/enums";
+import { createNewHero } from "../shared/hero-classes";
+import { Character } from "../shared/types";
 
 export const HERO_LIST: Character[] = [
   {

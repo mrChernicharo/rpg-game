@@ -10,9 +10,9 @@ import {
   StatusName,
   EquipmentSlot,
   AttributeName,
-} from "../enums";
-import { Action, Character, EquipmentItem, InventoryItem, Status } from "../types";
-import { idMaker } from "../utils";
+} from "../shared/enums";
+import { Action, Character, EquipmentItem, InventoryItem, Status } from "../shared/types";
+import { idMaker } from "../shared/utils";
 
 const STATUS_ICONS: Record<StatusName, string> = {
   [StatusName.Poison]: "🧪",
@@ -909,11 +909,11 @@ const DUNGEON_MAPS = [
     name: "sandbox",
     map: [
       [1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 2, 1],
       [1, 0, 0, 0, 1, 1],
       [1, 0, 1, 0, 0, 1],
       [1, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 1],
+      [1, 0, 2, 0, 0, 1],
       [1, 0, 0, 0, 0, 1],
       [1, 0, 0, 0, 0, 1],
       [1, 0, 0, 0, 0, 1],
@@ -922,7 +922,7 @@ const DUNGEON_MAPS = [
       [1, 0, 0, 0, 0, 1],
       [1, 0, 0, 0, 0, 1],
       [1, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 1],
+      [1, 0, 2, 0, 0, 1],
       [1, 0, 0, 0, 0, 1],
       [1, 0, 0, 0, 0, 1],
       [1, 1, 1, 1, 1, 1],
@@ -959,7 +959,7 @@ const DUNGEON_MAPS = [
   },
 
   {
-    name: "dungeon01",
+    name: "dungeon02",
     map: [
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
       [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],

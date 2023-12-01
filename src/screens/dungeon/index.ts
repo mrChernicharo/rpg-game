@@ -1,5 +1,8 @@
-import { DUNGEON_MAPS } from "./data/static";
-import { ctx, canvas, playPauseBtn, getModalOverlay } from "./dom";
+import { DUNGEON_MAPS } from "../../data/static";
+import { ctx, canvas, playPauseBtn, getModalOverlay } from "../../shared/dom";
+import { GameScreen } from "../../shared/enums";
+import { showScreen } from "../main";
+import { startBattle } from "../battle";
 
 let frameID = -1;
 let isPaused = true;
@@ -27,20 +30,19 @@ const wallCollision: { [k: string]: boolean } = {
 };
 
 const CELL_SIZE = 100;
-const map = DUNGEON_MAPS[2].map;
+const HALF_CELL = CELL_SIZE / 2;
+const MID_W = canvas.width / 2;
+const MID_H = canvas.height / 2;
+const map = DUNGEON_MAPS[0].map;
 const [cols, rows] = [map[0].length, map.length];
-// ctx.save();
+
+const CELL_COLORS = ["white", "brown", "orange"];
+const pCircle = { cx: MID_W, cy: MID_H, r: 20 };
+const pOuterCircle = { cx: MID_W, cy: MID_H, r: 40 };
 
 let px = -100;
 let py = -100;
 let speed = 3;
-
-console.log({ rows, cols });
-
-const MID_W = canvas.width / 2;
-const MID_H = canvas.height / 2;
-const FUL_W = canvas.width;
-const FUL_H = canvas.height;
 
 window.onkeydown = (e: KeyboardEvent) => {
   keyMap[e.key] = true;
@@ -50,17 +52,21 @@ window.onkeyup = (e: KeyboardEvent) => {
   keyMap[e.key] = false;
 };
 
-playPauseBtn.onclick = () => {
-  if (isPaused) {
-    isPaused = false;
-    playPauseBtn.textContent = "Pause";
-    playLoop();
-  } else {
-    isPaused = true;
-    playPauseBtn.textContent = "Play";
+function play() {
+  console.log("dungeon play");
+  isPaused = false;
+  playPauseBtn.textContent = "Pause";
+  playLoop();
+}
 
-    cancelAnimationFrame(frameID);
-  }
+function pause() {
+  console.log("pause dungeon");
+  isPaused = true;
+  playPauseBtn.textContent = "Play";
+}
+
+playPauseBtn.onclick = () => {
+  isPaused ? play() : pause();
 };
 
 function handlePlayerMovement() {
@@ -100,43 +106,14 @@ function handlePlayerMovement() {
 
 function playLoop() {
   drawDungeon();
-  frameID = requestAnimationFrame(playLoop);
+  if (isPaused) {
+    cancelAnimationFrame(frameID);
+  } else {
+    frameID = requestAnimationFrame(playLoop);
+  }
 }
 
-const CELL_COLORS = ["orange", "brown"];
-const pCircle = { cx: MID_W, cy: MID_H, r: 20 };
-const pOuterCircle = { cx: MID_W, cy: MID_H, r: 40 };
-
-function drawDungeon() {
-  handlePlayerMovement();
-  ctx.clearRect(0, 0, 1000, 1000);
-
-  // let closestX, closestY
-  let smallestDist = Infinity;
-  let currentCell = { row: 0, col: 0, x: 0, y: 0 };
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      const cell = map[row][col];
-
-      const [x, y, w, h] = [col * CELL_SIZE - px, row * CELL_SIZE - py, CELL_SIZE, CELL_SIZE];
-      const [cellCenterX, cellCenterY] = [x + CELL_SIZE / 2, y + CELL_SIZE / 2];
-
-      ctx.beginPath();
-      ctx.rect(x, y, w, h);
-      ctx.fillStyle = CELL_COLORS[cell];
-      ctx.fill();
-      ctx.closePath();
-
-      //   console.log(row, col, getDistance(cellCenterX, cellCenterY, pCircle.cx, pCircle.cy));
-
-      const distToPlayer = getDistance(cellCenterX, cellCenterY, pCircle.cx, pCircle.cy);
-      if (distToPlayer <= smallestDist) {
-        smallestDist = distToPlayer;
-        currentCell = { row, col, x: col * CELL_SIZE, y: row * CELL_SIZE };
-      }
-    }
-  }
-
+function drawGridLines() {
   // draw vertical lines
   for (let col = 0; col < cols + 1; col++) {
     ctx.beginPath();
@@ -153,7 +130,105 @@ function drawDungeon() {
     ctx.stroke();
     ctx.closePath();
   }
+}
 
+function drawPlayer() {
+  // player
+  ctx.beginPath();
+  ctx.arc(pCircle.cx, pCircle.cy, pCircle.r, 0, Math.PI * 2);
+  ctx.fillStyle = "blue";
+  ctx.fill();
+  ctx.closePath();
+
+  //   player outline
+  // ctx.beginPath();
+  // ctx.arc(pCircle.cx, pCircle.cy, pCircle.r * 2, 0, Math.PI * 2);
+  // ctx.strokeStyle = "red";
+  // ctx.lineWidth = 10;
+  // ctx.stroke();
+  // ctx.closePath();
+}
+
+function drawDungeon() {
+  handlePlayerMovement();
+  ctx.clearRect(0, 0, 1000, 1000);
+
+  // let closestX, closestY
+  let startedBattle = false;
+  let smallestDist = Infinity;
+  let currentCell = { row: 0, col: 0, x: 0, y: 0 };
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const cell = map[row][col];
+
+      const [x, y, w, h] = [col * CELL_SIZE - px, row * CELL_SIZE - py, CELL_SIZE, CELL_SIZE];
+      const [cellCenterX, cellCenterY] = [x + HALF_CELL, y + HALF_CELL];
+
+      ctx.beginPath();
+      ctx.rect(x, y, w, h);
+      ctx.fillStyle = CELL_COLORS[cell];
+      ctx.fill();
+      ctx.closePath();
+
+      const distToPlayer = getDistance(cellCenterX, cellCenterY, pCircle.cx, pCircle.cy);
+      if (distToPlayer <= smallestDist) {
+        smallestDist = distToPlayer;
+        currentCell = { row, col, x: col * CELL_SIZE, y: row * CELL_SIZE };
+      }
+
+      // enemy cell
+      if (cell === 2) {
+        const enemyRadius = 15;
+
+        ctx.beginPath();
+        ctx.arc(cellCenterX, cellCenterY, enemyRadius, 0, Math.PI * 2);
+        ctx.fillStyle = "red";
+        ctx.fill();
+        ctx.closePath();
+
+        if (distToPlayer <= enemyRadius * 3) {
+          console.log("START BATTLE!!!");
+          startedBattle = true;
+        }
+      }
+    }
+  }
+
+  drawGridLines();
+  drawPlayer();
+  verifyCollision(currentCell);
+
+  if (startedBattle) {
+    pause();
+    showScreen(GameScreen.Battle);
+    startBattle();
+  }
+}
+
+function checkLineIntersectsCircle(
+  line: { ax: number; ay: number; bx: number; by: number },
+  circle: { cx: number; cy: number; r: number }
+) {
+  let { ax, ay, bx, by } = line;
+  let { cx, cy, r } = circle;
+
+  ax -= cx;
+  ay -= cy;
+  bx -= cx;
+  by -= cy;
+  const a = (bx - ax) ** 2 + (by - ay) ** 2;
+  const b = 2 * (ax * (bx - ax) + ay * (by - ay));
+  const c = ax ** 2 + ay ** 2 - r ** 2;
+  const disc = b ** 2 - 4 * a * c;
+  if (disc <= 0) return false;
+  const sqrtdisc = Math.sqrt(disc);
+  const t1 = (-b + sqrtdisc) / (2 * a);
+  const t2 = (-b - sqrtdisc) / (2 * a);
+  if ((0 < t1 && t1 < 1) || (0 < t2 && t2 < 1)) return true;
+  return false;
+}
+
+function verifyCollision(currentCell: { row: number; col: number; x: number; y: number }) {
   const topLine = {
     ax: currentCell.x - CELL_SIZE - px,
     ay: currentCell.y - py,
@@ -211,21 +286,6 @@ function drawDungeon() {
   // ctx.closePath();
 
   // ctx.strokeStyle = "black";
-
-  // player
-  ctx.beginPath();
-  ctx.arc(pCircle.cx, pCircle.cy, pCircle.r, 0, Math.PI * 2);
-  ctx.fillStyle = "blue";
-  ctx.fill();
-  ctx.closePath();
-
-  //   player outline
-  ctx.beginPath();
-  ctx.arc(pCircle.cx, pCircle.cy, pCircle.r * 2, 0, Math.PI * 2);
-  ctx.strokeStyle = "red";
-  ctx.lineWidth = 10;
-  ctx.stroke();
-  ctx.closePath();
 
   ctx.lineWidth = 1;
   ctx.strokeStyle = "black";
@@ -374,33 +434,6 @@ function drawDungeon() {
       if (wallCollision.br) wallCollision.br = false;
     }
   }
-
-  // const { top, right, bottom, left, ...rest } = wallCollision;
-  // console.log({ top, right, bottom, left });
-  // console.log(rest);
-}
-
-function checkLineIntersectsCircle(
-  line: { ax: number; ay: number; bx: number; by: number },
-  circle: { cx: number; cy: number; r: number }
-) {
-  let { ax, ay, bx, by } = line;
-  let { cx, cy, r } = circle;
-
-  ax -= cx;
-  ay -= cy;
-  bx -= cx;
-  by -= cy;
-  const a = (bx - ax) ** 2 + (by - ay) ** 2;
-  const b = 2 * (ax * (bx - ax) + ay * (by - ay));
-  const c = ax ** 2 + ay ** 2 - r ** 2;
-  const disc = b ** 2 - 4 * a * c;
-  if (disc <= 0) return false;
-  const sqrtdisc = Math.sqrt(disc);
-  const t1 = (-b + sqrtdisc) / (2 * a);
-  const t2 = (-b - sqrtdisc) / (2 * a);
-  if ((0 < t1 && t1 < 1) || (0 < t2 && t2 < 1)) return true;
-  return false;
 }
 
 // d=√((x2 – x1)² + (y2 – y1)²).

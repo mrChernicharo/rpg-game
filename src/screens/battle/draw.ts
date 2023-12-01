@@ -1,4 +1,4 @@
-import { STATUS_ICONS } from "../data/static";
+import { STATUS_ICONS } from "../../data/static";
 import {
   battleLanesUI,
   getSlotElementById,
@@ -8,12 +8,12 @@ import {
   dismissBtn,
   getSlotDefenseOverlayById,
   getNumbersOverlayById,
-} from "../dom";
-import { StatusName } from "../enums";
+} from "../../shared/dom";
+import { StatusName } from "../../shared/enums";
 import { getAllCharacters, getTimeline, getCharacterById } from "./globals";
 import { panes } from "./infoPane";
-import { Action, Character, PaneInfo } from "../types";
-import { wait } from "../utils";
+import { Action, Character, PaneInfo } from "../../shared/types";
+import { wait } from "../../shared/utils";
 
 function drawCharacters(): void {
   getAllCharacters().forEach((entity) => {

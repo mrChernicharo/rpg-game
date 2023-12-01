@@ -1,12 +1,12 @@
-import { STATUS_DICT, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT } from "../data/static";
-import { battleUI, slots } from "../dom";
+import { STATUS_DICT, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT } from "../../data/static";
+import { battleUI, slots } from "../../shared/dom";
 import { drawBottomPane } from "./draw";
-import { ActionName, _AttackName, StatusName } from "../enums";
+import { ActionName, _AttackName, StatusName } from "../../shared/enums";
 import { getCharacterById, shouldSelectTarget, setShouldSelectTarget, currentTurnInfo, inventory } from "./globals";
 import { panes } from "./infoPane";
-import { processAction, updateTimeline } from "./battle";
-import { Action, Status } from "../types";
-import { wait } from "../utils";
+import { Action, Status } from "../../shared/types";
+import { wait } from "../../shared/utils";
+import { updateTimeline, processAction } from "./timeline";
 
 // window.onclick = () => {
 //   console.log(TurnInfo);

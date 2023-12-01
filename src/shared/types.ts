@@ -42,7 +42,7 @@ export type HeroEquipment = {
   accessory2: EquipmentItem | null;
 };
 export type DetailedAbilities = {
-  magic?: MagicSpellName[];
+  magic: MagicSpellName[];
   _attack?: _AttackName[];
   summon?: string[];
   invoke?: string[];

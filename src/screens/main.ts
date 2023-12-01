@@ -1,6 +1,6 @@
-import { startBattle } from "./battle/battle";
+import { startBattle } from "./battle";
 import { addInventoryItem, getAllHeroes, inventory, subtractFromInventory } from "./battle/globals";
-import { EQUIPMENT_ITEM_DICT, INVENTORY_LIST } from "./data/static";
+import { EQUIPMENT_ITEM_DICT, INVENTORY_LIST } from "../data/static";
 import {
   getAllScreens,
   getBattleScreenBtn,
@@ -12,11 +12,11 @@ import {
   getSkillsMenuHeroSelectionUL,
   mainMenuBtns,
   showModal,
-} from "./dom";
-import { EquipmentSlot, GameScreen, InventoryItemName, InventoryItemType } from "./enums";
-import { getXPToNextLevel } from "./hero-classes";
-import { Character, EquipmentItemWithQuantity, MenuState } from "./types";
-import { capitalize } from "./utils";
+} from "../shared/dom";
+import { EquipmentSlot, GameScreen, InventoryItemName, InventoryItemType } from "../shared/enums";
+import { getXPToNextLevel } from "../shared/hero-classes";
+import { Character, EquipmentItemWithQuantity, MenuState } from "../shared/types";
+import { capitalize } from "../shared/utils";
 
 export const menuState: MenuState = {
   selectedHero: null,

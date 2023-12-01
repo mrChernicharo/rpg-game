@@ -1,40 +1,39 @@
-import { getSlotDefenseOverlayById, getSlotElementById } from "../dom";
+import { getSlotElementById, getSlotDefenseOverlayById } from "../../shared/dom";
+import { StatusName, MagicSpellName, InventoryItemName, ActionName } from "../../shared/enums";
+import { Action, Status, Character, StatusTurn, Turn, CharacterTurn } from "../../shared/types";
+import { idMaker, calcTurnDuration, wait, calculateNextTurnTime } from "../../shared/utils";
 import {
-  drawAMagicEffect,
   drawActionPane,
-  drawAttackEffect,
-  drawBottomPane,
   drawCharacters,
-  drawDefenseEffect,
+  drawAttackEffect,
   drawItemEffect,
-  drawNumber,
-  drawSelectedCharacterOutline,
+  drawAMagicEffect,
   drawStatusEffect,
   drawStealEffect,
-  drawTimeline,
+  drawBottomPane,
+  drawDefenseEffect,
+  drawNumber,
+  drawSelectedCharacterOutline,
   drawTurnCount,
+  drawTimeline,
 } from "./draw";
-import { ActionName, _AttackName, InventoryItemName, MagicSpellName, StatusName } from "../enums";
 import { createNewStatus, onActionTargetSelected } from "./events";
 import {
   getCharacterById,
-  currentTurnInfo,
-  allCharacters,
-  incrementTurnCount,
   timeline,
-  turnCount,
-  setTimeline,
-  addInventoryItem,
-  getDefenseStatusIdx,
-  performStealAttempt,
-  subtractFromInventory,
   getCharacterStatusIdxByName,
+  getDefenseStatusIdx,
+  subtractFromInventory,
+  performStealAttempt,
+  addInventoryItem,
   inventory,
+  currentTurnInfo,
+  incrementTurnCount,
+  turnCount,
+  allCharacters,
+  setTimeline,
 } from "./globals";
 import { panes } from "./infoPane";
-import { CharacterTurn, Character, Turn, Action, Status, StatusTurn } from "../types";
-import { calcTurnDuration, calculateNextTurnTime, idMaker, wait } from "../utils";
-import { heroTemplates } from "../hero-classes";
 
 export async function processAction(actionData: { actorId: string; targetId: string; action: Action }) {
   const { action, actorId, targetId } = actionData;
@@ -363,7 +362,7 @@ export async function updateTimeline() {
   startTurn(currentTurn);
 }
 
-async function initializeTimeline() {
+export async function initializeTimeline() {
   const initialCharacterTurns: CharacterTurn[] = allCharacters.map((c) => ({
     type: "character",
     entity: { id: c.id, name: c.name, type: getCharacterById(c.id)!.type },
@@ -382,12 +381,4 @@ async function initializeTimeline() {
     allCharacters: allCharacters.slice(),
     timeline: timeline.slice(),
   });
-}
-
-export async function startBattle() {
-  console.log(heroTemplates);
-  drawCharacters();
-  await initializeTimeline();
-  await wait(1000);
-  await updateTimeline();
 }

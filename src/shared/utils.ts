@@ -1,10 +1,3 @@
-export function idMaker(length = 12) {
-  const ID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-";
-  return Array(length)
-    .fill(0)
-    .map((_) => ID_CHARS.split("")[Math.round(Math.random() * ID_CHARS.length)])
-    .join("");
-}
 /**
 
 1 sec == 4 ticks | 1 tick == 0.25sec
@@ -41,4 +34,12 @@ export function rowDice(num: number) {
 
 export function capitalize(str: string) {
   return str[0].toUpperCase() + str.slice(1).toLocaleLowerCase();
+}
+
+export function idMaker(length = 12) {
+  const ID_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-";
+  return Array(length)
+    .fill(0)
+    .map((_) => ID_CHARS.split("")[Math.round(Math.random() * ID_CHARS.length)])
+    .join("");
 }

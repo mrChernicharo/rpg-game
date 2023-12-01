@@ -1,5 +1,5 @@
-import { EQUIPMENT_ITEM_DICT } from "./data/static";
-import { ActionName, Col, HeroClassName, Lane } from "./enums";
+import { EQUIPMENT_ITEM_DICT } from "../data/static";
+import { ActionName, Col, HeroClassName, Lane, MagicSpellName } from "./enums";
 import { Character, HeroTemplate, Position } from "./types";
 import { idMaker } from "./utils";
 
@@ -54,7 +54,9 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
       accessory2: null,
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Barbarian]],
-    abilities: {},
+    abilities: {
+      magic: [],
+    },
   },
   [HeroClassName.Knight]: {
     name: HeroClassName.Knight,
@@ -77,7 +79,9 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
       accessory2: null,
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Knight]],
-    abilities: {},
+    abilities: {
+      magic: [],
+    },
   },
   [HeroClassName.Mage]: {
     name: HeroClassName.Mage,
@@ -100,7 +104,9 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
       accessory2: null,
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Mage]],
-    abilities: {},
+    abilities: {
+      magic: [MagicSpellName.Thunder],
+    },
   },
   [HeroClassName.Sorcerer]: {
     name: HeroClassName.Sorcerer,
@@ -123,7 +129,9 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
       accessory2: null,
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Sorcerer]],
-    abilities: {},
+    abilities: {
+      magic: [MagicSpellName.Fire],
+    },
   },
   [HeroClassName.Druid]: {
     name: HeroClassName.Druid,
@@ -146,7 +154,9 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
       accessory2: null,
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Druid]],
-    abilities: {},
+    abilities: {
+      magic: [],
+    },
   },
   [HeroClassName.Ranger]: {
     name: HeroClassName.Ranger,
@@ -169,7 +179,9 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
       accessory2: null,
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Ranger]],
-    abilities: {},
+    abilities: {
+      magic: [],
+    },
   },
   [HeroClassName.Thief]: {
     name: HeroClassName.Thief,
@@ -192,7 +204,9 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
       accessory2: null,
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Thief]],
-    abilities: {},
+    abilities: {
+      magic: [],
+    },
   },
   [HeroClassName.Cleric]: {
     name: HeroClassName.Cleric,
@@ -215,7 +229,9 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
       accessory2: null,
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Cleric]],
-    abilities: {},
+    abilities: {
+      magic: [MagicSpellName.Cure],
+    },
   },
 };
 

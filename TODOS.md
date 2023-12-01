@@ -20,6 +20,20 @@ formation: { [charId]: Position }
 max_hp
 action attack melee | ranged
 heroClasses -> heroFactory
+all that math...
+
+=====================
+battle win condition
+go to battle screen from dungeon screen
+go to dungeon screen when battle is over
+
+disable character on death:
+
+- cannot target dead enemies
+- remove dead character from timeline
+- add resurected character back to timeline
+  enemy attacks
+  skills, \_attack...
 
 # ffmpeg
 
