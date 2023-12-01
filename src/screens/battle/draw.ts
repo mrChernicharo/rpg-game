@@ -43,12 +43,16 @@ function drawCharacters(): void {
     bottomSection.textContent = `HP ${entity.hp} MP ${entity.mp}`;
     img.src = entity.imgUrl;
 
-    if (entity.hp <= 0) {
-      slot?.classList.add("dead");
-    } else if (slot?.classList.contains("dead")) {
-      slot?.classList.remove("dead");
-    }
+    drawDeath(entity, slot);
   });
+}
+
+function drawDeath(entity: Character, slot: Element) {
+  if (entity.hp <= 0) {
+    slot?.classList.add("dead");
+  } else if (slot?.classList.contains("dead")) {
+    slot?.classList.remove("dead");
+  }
 }
 
 function drawTimeline(): void {

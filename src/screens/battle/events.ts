@@ -54,15 +54,14 @@ export async function onCharacterAction(e: any) {
   const character = getCharacterById(characterId);
   currentTurnInfo.character = character;
 
-  // console.log("onCharacterAction", character.name);
-
   drawBottomPane(panes.text(`${character.name}'s turn`));
   await wait(1000);
 
   if (character.type === "enemy" || character.type === "npc") {
-    // console.log("enemy", character);
+    console.log("onCharacterAction", character.name);
+    console.log("enemy", character);
     //  decideEnemyAction
-    return updateTimeline();
+    await updateTimeline();
   }
 
   if (character.type === "hero") {

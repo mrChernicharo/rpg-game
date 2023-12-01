@@ -58,51 +58,6 @@ export async function processAction(actionData: { actorId: string; targetId: str
   await updateTimeline();
 }
 
-function insertStatusTurn(status: Status, target: Character) {
-  console.log(":::insert status into timeline", { status, target, timeline: timeline.slice() });
-
-  const nowTick = timeline[0].nextTurnAt;
-  // const statusRef = STATUS_DICT[status.name as StatusName]
-
-  const statusTurn: StatusTurn = {
-    type: "status",
-    characterId: target.id,
-    entity: { id: idMaker(), name: status.name, type: "status" },
-    turnDuration: calcTurnDuration(status.speed!),
-    nextTurnAt: nowTick + calcTurnDuration(status.speed!),
-    turnsPlayed: 0,
-    turnCount: status.turnCount,
-  };
-
-  let insertionIdx = timeline.length;
-  let smallestPositiveTimeDiff = Infinity;
-
-  for (let i = 0; i < timeline.length; i++) {
-    const timeDiff = timeline[i].nextTurnAt - statusTurn.nextTurnAt;
-
-    if (timeDiff > 0 && timeDiff < smallestPositiveTimeDiff) {
-      smallestPositiveTimeDiff = timeDiff;
-      insertionIdx = i;
-    }
-  }
-  timeline.splice(insertionIdx, 0, statusTurn);
-}
-
-function updateStatusTurn(statusName: StatusName, target: Character) {
-  const existingStatusTurnIdx = timeline.findIndex((turn) => turn.type === "status" && turn.characterId === target.id);
-  const existingCharacterStatusIdx = getCharacterStatusIdxByName(target.id, statusName);
-
-  console.log("UPDATING EXISTING STATUS before", JSON.stringify({ ...target.statuses }, null, 2));
-  // status: getCharacterStatusIdxByName(target.id, statusName),
-
-  // simply keep the previous status. update its turnPlayed count, and update character.status to match it
-  if (existingStatusTurnIdx > -1 && existingCharacterStatusIdx > -1) {
-    timeline[existingStatusTurnIdx].turnsPlayed = 0;
-    target.statuses[existingCharacterStatusIdx].turnsPlayed = 0;
-    console.log("UPDATING EXISTING STATUS after", JSON.stringify({ ...target.statuses }, null, 2));
-  }
-}
-
 async function computeEntityChanges(action: Action, actor: Character, target: Character) {
   console.log("COMPUTE ENTITY CHANGES", {
     action: { ...action },
@@ -189,6 +144,51 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
   }
   if (actor.mp < 0) {
     actor.mp = 0;
+  }
+}
+
+function insertStatusTurn(status: Status, target: Character) {
+  console.log(":::insert status into timeline", { status, target, timeline: timeline.slice() });
+
+  const nowTick = timeline[0].nextTurnAt;
+  // const statusRef = STATUS_DICT[status.name as StatusName]
+
+  const statusTurn: StatusTurn = {
+    type: "status",
+    characterId: target.id,
+    entity: { id: idMaker(), name: status.name, type: "status" },
+    turnDuration: calcTurnDuration(status.speed!),
+    nextTurnAt: nowTick + calcTurnDuration(status.speed!),
+    turnsPlayed: 0,
+    turnCount: status.turnCount,
+  };
+
+  let insertionIdx = timeline.length;
+  let smallestPositiveTimeDiff = Infinity;
+
+  for (let i = 0; i < timeline.length; i++) {
+    const timeDiff = timeline[i].nextTurnAt - statusTurn.nextTurnAt;
+
+    if (timeDiff > 0 && timeDiff < smallestPositiveTimeDiff) {
+      smallestPositiveTimeDiff = timeDiff;
+      insertionIdx = i;
+    }
+  }
+  timeline.splice(insertionIdx, 0, statusTurn);
+}
+
+function updateStatusTurn(statusName: StatusName, target: Character) {
+  const existingStatusTurnIdx = timeline.findIndex((turn) => turn.type === "status" && turn.characterId === target.id);
+  const existingCharacterStatusIdx = getCharacterStatusIdxByName(target.id, statusName);
+
+  console.log("UPDATING EXISTING STATUS before", JSON.stringify({ ...target.statuses }, null, 2));
+  // status: getCharacterStatusIdxByName(target.id, statusName),
+
+  // simply keep the previous status. update its turnPlayed count, and update character.status to match it
+  if (existingStatusTurnIdx > -1 && existingCharacterStatusIdx > -1) {
+    timeline[existingStatusTurnIdx].turnsPlayed = 0;
+    target.statuses[existingCharacterStatusIdx].turnsPlayed = 0;
+    console.log("UPDATING EXISTING STATUS after", JSON.stringify({ ...target.statuses }, null, 2));
   }
 }
 
@@ -348,6 +348,11 @@ export async function updateTimeline() {
       insertionIdx = i;
     }
   }
+
+  const character = getCharacterById(currentTurn.entity.id);
+  const characterTurns = timeline.filter((t) => t.type === "character");
+  let lastInLine = characterTurns[characterTurns.length - 1];
+  console.log("%%%%%", { currentTurn, character, timeline, lastInLine, insertionIdx });
 
   // reinsert turn
   timeline.splice(insertionIdx, 0, nextTurn);

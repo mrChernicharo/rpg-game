@@ -55,7 +55,7 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Barbarian]],
     abilities: {
-      magic: [],
+      magic: [MagicSpellName.Bio],
     },
   },
   [HeroClassName.Knight]: {
@@ -80,7 +80,7 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Knight]],
     abilities: {
-      magic: [],
+      magic: [MagicSpellName.Bio],
     },
   },
   [HeroClassName.Mage]: {
@@ -105,7 +105,7 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Mage]],
     abilities: {
-      magic: [MagicSpellName.Thunder],
+      magic: [MagicSpellName.Bio, MagicSpellName.Thunder],
     },
   },
   [HeroClassName.Sorcerer]: {
@@ -130,7 +130,7 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Sorcerer]],
     abilities: {
-      magic: [MagicSpellName.Fire],
+      magic: [MagicSpellName.Bio, MagicSpellName.Fire],
     },
   },
   [HeroClassName.Druid]: {
@@ -155,7 +155,7 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Druid]],
     abilities: {
-      magic: [],
+      magic: [MagicSpellName.Bio],
     },
   },
   [HeroClassName.Ranger]: {
@@ -180,7 +180,7 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Ranger]],
     abilities: {
-      magic: [],
+      magic: [MagicSpellName.Bio],
     },
   },
   [HeroClassName.Thief]: {
@@ -205,7 +205,7 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Thief]],
     abilities: {
-      magic: [],
+      magic: [MagicSpellName.Bio],
     },
   },
   [HeroClassName.Cleric]: {
@@ -230,7 +230,7 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Cleric]],
     abilities: {
-      magic: [MagicSpellName.Cure],
+      magic: [MagicSpellName.Bio, MagicSpellName.Cure],
     },
   },
 };
@@ -298,7 +298,7 @@ export function getXPToLevelList() {
 export function getXPToNextLevel(xp: number) {
   let level = 0;
   while (xpToLevel[level] <= xp) {
-    console.log({ level, xp: xpToLevel[level], diff: xpToLevel[level + 1] - xpToLevel[level] });
+    // console.log({ level, xp: xpToLevel[level], diff: xpToLevel[level + 1] - xpToLevel[level] });
 
     if (xpToLevel[level + 1] > xp) return Math.ceil(xpToLevel[level + 1] - xp);
 

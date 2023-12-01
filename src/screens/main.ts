@@ -348,5 +348,8 @@ function closeEquipmentSelectionWindow() {
 }
 
 drawMainMenu();
-showScreen(GameScreen.Dungeon);
+
+showScreen(GameScreen.Battle); // shouldn't start here!!!!
+startBattle(); // <- please remove when you're done
+// showScreen(GameScreen.Dungeon);
 // showScreen(GameScreen.MainMenu);
