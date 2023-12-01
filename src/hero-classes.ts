@@ -268,6 +268,7 @@ export function calcSpeed(agility: number, level: number) {
   return agility * 0.6 + level * 0.4 + 25;
 }
 
+const xpToLevel = getXPToLevelList();
 export function getXPToLevelList() {
   const results = [];
   let i = 0;
@@ -277,16 +278,17 @@ export function getXPToLevelList() {
   }
   return results;
 }
-const xpToLevel = getXPToLevelList();
+
 export function getXPToNextLevel(xp: number) {
   let level = 0;
   while (xpToLevel[level] <= xp) {
     console.log({ level, xp: xpToLevel[level], diff: xpToLevel[level + 1] - xpToLevel[level] });
 
-    if (xpToLevel[level + 1] > xp) return xpToLevel[level + 1] - xp;
+    if (xpToLevel[level + 1] > xp) return Math.ceil(xpToLevel[level + 1] - xp);
 
     level++;
   }
+  return 0;
 }
 
 export function getLevel(xp: number) {
@@ -295,9 +297,9 @@ export function getLevel(xp: number) {
 
 export function getXP(level: number) {
   const factor = 0.05;
-  return (factor * level ** 2 + factor * level) * 1000;
+  return Math.floor((factor * level ** 2 + factor * level) * 1000);
 
-  // other possible formulas:
+  // other possible xp/level Formulas:
 
   //   const factor = 0.01;
   //   return (factor * level ** 2 + factor * level) * 1000;

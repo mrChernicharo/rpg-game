@@ -18,7 +18,7 @@ export const HERO_LIST: Character[] = [
       HeroClassName.Ranger,
       "/sprites/sprite-09.webp",
       { col: Col.Right, lane: Lane.Back },
-      10
+      9
     ),
   },
   {
@@ -27,7 +27,7 @@ export const HERO_LIST: Character[] = [
       HeroClassName.Sorcerer,
       "/sprites/sprite-11.webp",
       { col: Col.Left, lane: Lane.Back },
-      10
+      11
     ),
   },
   {
@@ -36,7 +36,7 @@ export const HERO_LIST: Character[] = [
       HeroClassName.Druid,
       "/sprites/sprite-04.webp",
       { col: Col.Center, lane: Lane.Back },
-      10
+      12
     ),
   },
 ];

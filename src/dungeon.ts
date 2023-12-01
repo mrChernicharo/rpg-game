@@ -27,12 +27,12 @@ const wallCollision: { [k: string]: boolean } = {
 };
 
 const CELL_SIZE = 100;
-const map = DUNGEON_MAPS[0].map;
+const map = DUNGEON_MAPS[2].map;
 const [cols, rows] = [map[0].length, map.length];
 // ctx.save();
 
-let px = 0;
-let py = 0;
+let px = -100;
+let py = -100;
 let speed = 3;
 
 console.log({ rows, cols });
@@ -182,35 +182,35 @@ function drawDungeon() {
     by: currentCell.y + CELL_SIZE + CELL_SIZE - py,
   };
 
-  ctx.beginPath();
-  ctx.moveTo(topLine.ax, topLine.ay);
-  ctx.lineTo(topLine.bx, topLine.by);
-  ctx.strokeStyle = "red";
-  ctx.stroke();
-  ctx.closePath();
+  // ctx.beginPath();
+  // ctx.moveTo(topLine.ax, topLine.ay);
+  // ctx.lineTo(topLine.bx, topLine.by);
+  // ctx.strokeStyle = "red";
+  // ctx.stroke();
+  // ctx.closePath();
 
-  ctx.beginPath();
-  ctx.moveTo(bottomLine.ax, bottomLine.ay);
-  ctx.lineTo(bottomLine.bx, bottomLine.by);
-  ctx.strokeStyle = "lightgreen";
-  ctx.stroke();
-  ctx.closePath();
+  // ctx.beginPath();
+  // ctx.moveTo(bottomLine.ax, bottomLine.ay);
+  // ctx.lineTo(bottomLine.bx, bottomLine.by);
+  // ctx.strokeStyle = "lightgreen";
+  // ctx.stroke();
+  // ctx.closePath();
 
-  ctx.beginPath();
-  ctx.moveTo(leftLine.ax, leftLine.ay);
-  ctx.lineTo(leftLine.bx, leftLine.by);
-  ctx.strokeStyle = "lightblue";
-  ctx.stroke();
-  ctx.closePath();
+  // ctx.beginPath();
+  // ctx.moveTo(leftLine.ax, leftLine.ay);
+  // ctx.lineTo(leftLine.bx, leftLine.by);
+  // ctx.strokeStyle = "lightblue";
+  // ctx.stroke();
+  // ctx.closePath();
 
-  ctx.beginPath();
-  ctx.moveTo(rightLine.ax, rightLine.ay);
-  ctx.lineTo(rightLine.bx, rightLine.by);
-  ctx.strokeStyle = "orange";
-  ctx.stroke();
-  ctx.closePath();
+  // ctx.beginPath();
+  // ctx.moveTo(rightLine.ax, rightLine.ay);
+  // ctx.lineTo(rightLine.bx, rightLine.by);
+  // ctx.strokeStyle = "orange";
+  // ctx.stroke();
+  // ctx.closePath();
 
-  ctx.strokeStyle = "black";
+  // ctx.strokeStyle = "black";
 
   // player
   ctx.beginPath();
