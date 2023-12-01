@@ -1,6 +1,6 @@
-import { EQUIPMENT_ITEM_DICT } from "./data";
-import { HeroClassName } from "./enums";
-import { Character, HeroTemplate } from "./types";
+import { EQUIPMENT_ITEM_DICT } from "./data/static";
+import { ActionName, Col, HeroClassName, Lane } from "./enums";
+import { Character, HeroTemplate, Position } from "./types";
 import { idMaker } from "./utils";
 
 const {
@@ -19,6 +19,18 @@ const {
   Mace,
   LinnenTunic,
 } = EQUIPMENT_ITEM_DICT;
+
+const commonHeroActions = [ActionName.Attack, ActionName.Magic, ActionName.Item, ActionName.Defend];
+const classSpecificActions = {
+  [HeroClassName.Barbarian]: [],
+  [HeroClassName.Knight]: [],
+  [HeroClassName.Mage]: [],
+  [HeroClassName.Sorcerer]: [ActionName.Summon],
+  [HeroClassName.Druid]: [ActionName.Invoke],
+  [HeroClassName.Ranger]: [],
+  [HeroClassName.Thief]: [ActionName.Steal],
+  [HeroClassName.Cleric]: [],
+};
 
 export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
   [HeroClassName.Barbarian]: {
@@ -41,6 +53,8 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
       accessory: null,
       accessory2: null,
     },
+    actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Barbarian]],
+    abilities: {},
   },
   [HeroClassName.Knight]: {
     name: HeroClassName.Knight,
@@ -62,6 +76,8 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
       accessory: null,
       accessory2: null,
     },
+    actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Knight]],
+    abilities: {},
   },
   [HeroClassName.Mage]: {
     name: HeroClassName.Mage,
@@ -83,6 +99,8 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
       accessory: null,
       accessory2: null,
     },
+    actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Mage]],
+    abilities: {},
   },
   [HeroClassName.Sorcerer]: {
     name: HeroClassName.Sorcerer,
@@ -104,6 +122,8 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
       accessory: null,
       accessory2: null,
     },
+    actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Sorcerer]],
+    abilities: {},
   },
   [HeroClassName.Druid]: {
     name: HeroClassName.Druid,
@@ -125,6 +145,8 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
       accessory: null,
       accessory2: null,
     },
+    actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Druid]],
+    abilities: {},
   },
   [HeroClassName.Ranger]: {
     name: HeroClassName.Ranger,
@@ -146,6 +168,8 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
       accessory: null,
       accessory2: null,
     },
+    actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Ranger]],
+    abilities: {},
   },
   [HeroClassName.Thief]: {
     name: HeroClassName.Thief,
@@ -167,6 +191,8 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
       accessory: null,
       accessory2: null,
     },
+    actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Thief]],
+    abilities: {},
   },
   [HeroClassName.Cleric]: {
     name: HeroClassName.Cleric,
@@ -188,6 +214,8 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
       accessory: null,
       accessory2: null,
     },
+    actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Cleric]],
+    abilities: {},
   },
 };
 
@@ -202,69 +230,70 @@ function determineHeroMaxMP(wisdom: number, level: number) {
   return Math.ceil((level + wisdom) ** 2 * 0.025 + (level + wisdom) * 0.5 + baseMP);
 }
 
-function createNewHero(heroName: string, heroClass: HeroClassName, imgUrl: string, level = 1) {
+export function createNewHero(
+  heroName: string,
+  heroClass: HeroClassName,
+  imgUrl: string,
+  position: Position,
+  level = 1
+) {
   const heroTemplate = heroTemplates[heroClass];
   const maxHp = determineHeroMaxHP(heroTemplate.attributes.vigor, level);
   const maxMp = determineHeroMaxMP(heroTemplate.attributes.wisdom, level);
 
-  const newHero: Partial<Character> = {
+  const newHero: Character = {
     id: idMaker(),
-    name: heroName,
     type: "hero",
+    name: heroName,
+    class: heroClass,
+    imgUrl,
     maxHp,
     maxMp,
     hp: maxHp,
     mp: maxMp,
     level,
-    // speed: 62,
     xp: getXP(level),
-    imgUrl,
+    speed: calcSpeed(heroTemplate.attributes.agility, level),
     attributes: { ...heroTemplate.attributes },
     equipment: { ...heroTemplate.equipment },
-    // position: {
-    //   lane: Lane.Front,
-    //   col: Col.Center,
-    // },
+    position,
     statuses: [],
-    // actions: [
-    //   ActionName.Attack,
-    //   ActionName.Magic,
-    //   ActionName.Steal,
-    //   ActionName.Item,
-    //   ActionName.Defend,
-    //   ActionName._Attack,
-    // ],
-    abilities: {
-      //   [ActionName._Attack]: [_AttackName.Slash, _AttackName.Arrow],
-      //   [ActionName.Magic]: [
-      //     MagicSpellName.Bio,
-      //     MagicSpellName.Regen,
-      //     MagicSpellName.Aero,
-      //     MagicSpellName.Cure,
-      //     MagicSpellName.Drain,
-      //     MagicSpellName.Haste,
-      //   ],
-    },
+    actions: heroTemplate.actions,
+    abilities: heroTemplate.abilities,
   };
+  return newHero;
 }
 
-const xpToLevel = printXPToLevel();
-function getXPToNextLevel(xp: number) {
+export function calcSpeed(agility: number, level: number) {
+  return agility * 0.6 + level * 0.4 + 25;
+}
+
+export function getXPToLevelList() {
+  const results = [];
+  let i = 0;
+  while (i < 101) {
+    results.push(Math.round(getXP(i)));
+    i++;
+  }
+  return results;
+}
+const xpToLevel = getXPToLevelList();
+export function getXPToNextLevel(xp: number) {
   let level = 0;
   while (xpToLevel[level] <= xp) {
     console.log({ level, xp: xpToLevel[level], diff: xpToLevel[level + 1] - xpToLevel[level] });
 
-    if (xpToLevel[level + 1] >= xp) return xpToLevel[level + 1] - xp;
+    if (xpToLevel[level + 1] > xp) return xpToLevel[level + 1] - xp;
 
     level++;
   }
 }
 
-function getLevel(xp: number) {
+export function getLevel(xp: number) {
   return xpToLevel.findIndex((_, i, arr) => arr[i] < xp && arr[i + 1] > xp);
 }
 
-function getXP(level: number) {
+export function getXP(level: number) {
   const factor = 0.05;
   return (factor * level ** 2 + factor * level) * 1000;
 
@@ -277,43 +306,5 @@ function getXP(level: number) {
   //   return (factor * level ** 2 + factor * level) * 1000;
 }
 
-function printXPToLevel() {
-  const results = [];
-  let i = 0;
-  while (i < 101) {
-    results.push(Math.round(getXP(i)));
-    i++;
-  }
-  return results;
-}
-let n = 23099;
-console.log("level", getLevel(n), "curr xp", n, "to next level", getXPToNextLevel(n));
-
-// calcPG(2, 2, 1);
-// calcPG(81, 0.3333, 1);
-function calcPG(initialValue: number, growthFactor: number, n: number) {
-  return initialValue * Math.pow(growthFactor, n - 1);
-}
-// console.log({
-//   xp1000: getLevel(2000),
-//   lv10: getXP(10),
-// });
-/*
-0 - 0
-1 - 0.125
-2 - 0.25
-3 - 0.5
-4 - 1
-
-1-0
-2-
-  const hasLeveledUp = Math.trunc(Math.sqrt(kills)) > level;
-1-0
-5-1000
-10-2000
-15-4000
-20-8000
-25-
-30-
--
-*/
+// let n = 23099;
+// console.log("level", getLevel(n), "curr xp", n, "to next level", getXPToNextLevel(n));

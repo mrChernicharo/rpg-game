@@ -38,3 +38,7 @@ export function rowDice(num: number) {
   console.log(`row ${num} side dice`, result);
   return result;
 }
+
+export function capitalize(str: string) {
+  return str[0].toUpperCase() + str.slice(1).toLocaleLowerCase();
+}

@@ -1,6 +1,6 @@
 import { startBattle } from "./battle/battle";
 import { addInventoryItem, getAllHeroes, inventory, subtractFromInventory } from "./battle/globals";
-import { EQUIPMENT_ITEM_DICT, INVENTORY_LIST } from "./data";
+import { EQUIPMENT_ITEM_DICT, INVENTORY_LIST } from "./data/static";
 import {
   getAllScreens,
   getBattleScreenBtn,
@@ -12,7 +12,9 @@ import {
   showModal,
 } from "./dom";
 import { EquipmentSlot, GameScreen, InventoryItemName, InventoryItemType } from "./enums";
-import { Character, EquipmentItem, EquipmentItemWithQuantity, InventoryItem, MenuState } from "./types";
+import { getXPToNextLevel } from "./hero-classes";
+import { Character, EquipmentItemWithQuantity, MenuState } from "./types";
+import { capitalize } from "./utils";
 
 export const menuState: MenuState = {
   selectedHero: null,
@@ -101,6 +103,7 @@ export function drawMainMenu() {
         <div class="hero-info">
           <div>
             <span>${h.name}</span>
+            <span style="color: #6aa4fc">${capitalize(h.class)}</span>
           </div>
         
           <div>
@@ -114,7 +117,7 @@ export function drawMainMenu() {
           </div>
 
           <div>
-            <span>To next Level ${670} XP</span>
+            <span>To next Level ${getXPToNextLevel(h.xp)} XP</span>
           </div>
 
         </div>

@@ -1,4 +1,5 @@
-import { ENEMY_LIST, HERO_LIST, INVENTORY_LIST, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT } from "../data";
+import { HERO_LIST } from "../data/computed";
+import { ENEMY_LIST, INVENTORY_LIST, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT } from "../data/static";
 import { battleUI, getSlotElementById, slots } from "../dom";
 import { ActionName, InventoryItemName, StatusName } from "../enums";
 import { Character, Turn, InventoryItem, TurnInfo, Status, Action } from "../types";

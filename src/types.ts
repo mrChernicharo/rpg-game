@@ -41,11 +41,19 @@ export type HeroEquipment = {
   accessory: EquipmentItem | null;
   accessory2: EquipmentItem | null;
 };
+export type DetailedAbilities = {
+  magic?: MagicSpellName[];
+  _attack?: _AttackName[];
+  summon?: string[];
+  invoke?: string[];
+};
 
 export type HeroTemplate = {
   name: HeroClassName;
   attributes: HeroAttributes;
   equipment: HeroEquipment;
+  actions: ActionName[];
+  abilities: DetailedAbilities;
 };
 
 export type Character = {
@@ -61,14 +69,9 @@ export type Character = {
   position: Position;
   statuses: Status[];
   actions: ActionName[];
-  abilities: {
-    [ActionName.Magic]?: MagicSpellName[];
-    [ActionName._Attack]?: _AttackName[];
-    [ActionName.Invoke]?: string[];
-    [ActionName.Summon]?: string[];
-  };
+  abilities: DetailedAbilities;
 } & (
-  | { type: "hero"; xp: number; attributes: HeroAttributes; equipment: HeroEquipment }
+  | { type: "hero"; class: HeroClassName; xp: number; attributes: HeroAttributes; equipment: HeroEquipment }
   | { type: "enemy" }
   | { type: "npc" }
 );

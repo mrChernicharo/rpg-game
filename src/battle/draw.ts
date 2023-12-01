@@ -1,4 +1,4 @@
-import { STATUS_ICONS } from "../data";
+import { STATUS_ICONS } from "../data/static";
 import {
   battleLanesUI,
   getSlotElementById,

@@ -1,4 +1,4 @@
-import { DUNGEON_MAPS } from "./data";
+import { DUNGEON_MAPS } from "./data/static";
 import { ctx, canvas, playPauseBtn, getModalOverlay } from "./dom";
 
 let frameID = -1;

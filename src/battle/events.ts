@@ -1,4 +1,4 @@
-import { STATUS_DICT, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT } from "../data";
+import { STATUS_DICT, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT } from "../data/static";
 import { battleUI, slots } from "../dom";
 import { drawBottomPane } from "./draw";
 import { ActionName, _AttackName, StatusName } from "../enums";
