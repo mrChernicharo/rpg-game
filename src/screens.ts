@@ -6,8 +6,10 @@ import {
   getBattleScreenBtn,
   getDungeonScreenBtn,
   getEquipmentMenuHeroSelectionUL,
+  getMagicMenuHeroSelectionUL,
   getMainMenuHeroesUL,
   getMainMenuScreenBtn,
+  getSkillsMenuHeroSelectionUL,
   mainMenuBtns,
   showModal,
 } from "./dom";
@@ -87,6 +89,44 @@ export function showScreen(screen: GameScreen) {
   if (screen === GameScreen.ItemsMenu) {
     drawItemsMenu();
   }
+
+  if (screen == GameScreen.MagicMenu) {
+    drawSmallHeroSelectionWidget(getMagicMenuHeroSelectionUL());
+  }
+
+  if (screen == GameScreen.SkillsMenu) {
+    drawSmallHeroSelectionWidget(getSkillsMenuHeroSelectionUL());
+  }
+}
+
+export function drawSmallHeroSelectionWidget(container: Element) {
+  // TODO: pass container as arg
+  // const heroSelectionList = getEquipmentMenuHeroSelectionUL();
+  container.innerHTML = "";
+
+  getAllHeroes().forEach((h) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <div id=${h.id} class="hero-selection-list-item">
+        <button class="hero-img-small">
+          <img src=${h.imgUrl} width="48" height="48"/>
+        </button>
+      </div>
+    `;
+
+    container.append(li);
+
+    const heroIconBtns = Array.from(document.querySelectorAll(".hero-img-small")) as HTMLButtonElement[];
+
+    heroIconBtns.forEach((btn) => {
+      if (btn.parentElement!.id === h.id) {
+        btn.onclick = () => {
+          menuState.selectedHero = h;
+          onHeroSelected();
+        };
+      }
+    });
+  });
 }
 
 export function drawMainMenu() {
@@ -155,33 +195,8 @@ export function drawItemsMenu() {
 }
 
 export function drawEquipmentMenu() {
-  const heroSelectionList = getEquipmentMenuHeroSelectionUL();
-  heroSelectionList.innerHTML = "";
-
   // DRAW SMALL HERO SELECTION LIST
-  getAllHeroes().forEach((h) => {
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <div id=${h.id} class="hero-selection-list-item">
-        <button class="hero-img-small">
-          <img src=${h.imgUrl} width="48" height="48"/>
-        </button>
-      </div>
-    `;
-
-    heroSelectionList.append(li);
-
-    const heroIconBtns = Array.from(document.querySelectorAll(".hero-img-small")) as HTMLButtonElement[];
-
-    heroIconBtns.forEach((btn) => {
-      if (btn.parentElement!.id === h.id) {
-        btn.onclick = () => {
-          menuState.selectedHero = h;
-          onHeroSelected();
-        };
-      }
-    });
-  });
+  drawSmallHeroSelectionWidget(getEquipmentMenuHeroSelectionUL());
 
   // DRAW BLANK EQUIPMENT SUBMENU
   drawHeroEquipmentSubMenu();

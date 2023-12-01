@@ -29,6 +29,14 @@ export const mainMenuBtns = [equipmentMenuBtn, magicMenuBtn, skillsMenuBtn, item
 
 export const getEquipmentMenuHeroSelectionUL = () => document.querySelector("#equipment-menu-hero-selection-list")!;
 
+/////////////////////////////////////////////////////////
+
+export const getMagicMenuHeroSelectionUL = () => document.querySelector("#magic-menu-hero-selection-list")!;
+
+//////////////////////////////////////////////////////
+
+export const getSkillsMenuHeroSelectionUL = () => document.querySelector("#skills-menu-hero-selection-list")!;
+
 //////////////////////////////////////////////////////
 
 export const battleUI = document.querySelector("#battle-ui")!;

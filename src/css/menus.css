@@ -29,6 +29,8 @@
 
 /* EQUIPMENT MENU */
 
+#skills-menu-hero-selection-list,
+#magic-menu-hero-selection-list,
 #equipment-menu-hero-selection-list {
   display: flex;
 }
