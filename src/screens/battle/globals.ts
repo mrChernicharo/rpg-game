@@ -1,7 +1,7 @@
 import { HERO_LIST } from "../../data/computed";
 import { ENEMY_LIST, INVENTORY_LIST, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT } from "../../data/static";
 import { battleUI, getSlotElementById, slots } from "../../shared/dom";
-import { ActionName, InventoryItemName, StatusName } from "../../shared/enums";
+import { ActionName, InventoryItemName, Lane, StatusName } from "../../shared/enums";
 import { Character, Turn, InventoryItem, TurnInfo, Status, Action, CharacterTurn } from "../../shared/types";
 import { rowDice } from "../../shared/utils";
 
@@ -21,12 +21,53 @@ export let shouldSelectTarget = false;
 export function getTimeline() {
   return timeline;
 }
-export function getAllCharacters() {
-  return allCharacters;
+export function setTimeline(turns: Turn[]) {
+  timeline = turns;
 }
 export function incrementTurnCount() {
   turnCount++;
 }
+
+export function getAllCharacters() {
+  return allCharacters;
+}
+export function getAllCharactersAlive() {
+  return allCharacters.filter((c) => c.hp > 0);
+}
+
+export function getAllHeroes() {
+  const allHeroes = [];
+  for (const char of getAllCharacters()) {
+    if (char.type === "hero") {
+      allHeroes.push(char);
+    }
+  }
+  return allHeroes;
+}
+export function getAllHeroesAlive() {
+  return getAllHeroes().filter((h) => h.hp > 0);
+}
+
+export function getAllEnemies() {
+  const allEnemies: Character[] = [];
+  for (const char of allCharacters) {
+    if (char.type === "enemy") {
+      allEnemies.push(char);
+    }
+  }
+  return allEnemies;
+}
+export function getAllEnemiesAlive() {
+  return getAllEnemies().filter((e) => e.hp > 0);
+}
+
+export function getAllDeadHeroes() {
+  return getAllHeroes().filter((h) => h.hp <= 0);
+}
+export function getAllDeadEnemies() {
+  return getAllEnemies().filter((e) => e.hp <= 0);
+}
+
 export function getShouldSelectTarget() {
   return shouldSelectTarget;
 }
@@ -42,31 +83,35 @@ export function getPossibleTargets() {
     action = DETAILED_ACTION_DICT[actionName!]![actionDetail];
   }
 
-  const [enemiesInTheFront, enemiesInTheBack, allHeroesButMe] = [
-    getAllEnemies().filter((e) => e.position.lane === "front" && e.hp > 0),
-    getAllEnemies().filter((e) => e.position.lane === "back" && e.hp > 0),
-    getAllHeroes().filter((h) => h.id !== character!.id && h.hp > 0),
+  const [aliveEnemiesInTheFront, aliveEnemiesInTheBack] = [
+    getAllEnemiesAlive().filter((e) => e.position.lane === Lane.Front),
+    getAllEnemiesAlive().filter((e) => e.position.lane === Lane.Back),
   ];
 
   switch (action.type) {
     case "melee":
-      if (enemiesInTheFront.length > 0) {
-        return [...enemiesInTheFront, ...getAllHeroes()];
+      if (aliveEnemiesInTheFront.length > 0) {
+        return [...aliveEnemiesInTheFront, ...getAllHeroesAlive()];
       } else {
-        return [...enemiesInTheBack, ...getAllHeroes()];
+        return [...aliveEnemiesInTheBack, ...getAllHeroesAlive()];
       }
     case "ranged":
-    case "item":
     case "magical":
-      return [...enemiesInTheFront, ...enemiesInTheBack, ...getAllHeroes()];
+      return [...getAllEnemiesAlive(), ...getAllHeroesAlive()];
+    case "item":
+      if (actionDetail === "PhoenixDown") {
+        return [...getAllDeadEnemies(), ...getAllDeadHeroes()];
+      }
+
+      return [...getAllEnemiesAlive(), ...getAllHeroesAlive()];
     case "defend":
     case "move":
       return [character!];
     case "steal":
-      if (enemiesInTheFront.length > 0) {
-        return [...enemiesInTheFront];
+      if (aliveEnemiesInTheFront.length > 0) {
+        return [...aliveEnemiesInTheFront];
       } else {
-        return [...enemiesInTheBack];
+        return [...aliveEnemiesInTheBack];
       }
     // case "invoke":
     // case "summon":
@@ -119,9 +164,7 @@ export function setShouldSelectTarget(targetSelectionActive: boolean) {
     });
   }
 }
-export function setTimeline(turns: Turn[]) {
-  timeline = turns;
-}
+
 export function getCharacterById(id: string): Character {
   return getAllCharacters().find((c) => c.id === id)!;
 }
@@ -130,29 +173,12 @@ export function getCharacterStatusIdxByName(characterId: string, statusName: Sta
   if (!character) throw Error(`should've been able to find the user`);
   return character.statuses.findIndex((s) => s.name === statusName);
 }
-export function getAllHeroes() {
-  const allHeroes = [];
-  for (const char of allCharacters) {
-    if (char.type === "hero") {
-      allHeroes.push(char);
-    }
-  }
-  return allHeroes;
-}
-export function getAllEnemies() {
-  const allEnemies = [];
-  for (const char of allCharacters) {
-    if (char.type === "enemy") {
-      allEnemies.push(char);
-    }
-  }
-  return allEnemies;
-}
+
 export function subtractFromInventory(itemName: InventoryItemName) {
   const itemIdx = inventory.findIndex((obj) => obj.name === itemName)!;
   const inventoryItem = inventory[itemIdx];
 
-  console.log("subtractFromInventory", inventoryItem, inventory);
+  // console.log("subtractFromInventory", inventoryItem, inventory);
 
   if (inventoryItem?.quantity === 1) {
     inventory.splice(itemIdx, 1);

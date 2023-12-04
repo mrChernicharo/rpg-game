@@ -7,8 +7,7 @@ const inventoryItems = (itemList: InventoryItem[]) =>
     .map((item) => ({
       text: `${item.name} x${item.quantity}`,
       action: () => {
-        console.log("", item);
-
+        // console.log("", item);
         window.dispatchEvent(new CustomEvent("action-detail-selected", { detail: item.name }));
       },
     }));
@@ -22,7 +21,7 @@ const heroActionAbilityItems = (hero: Character, actionName: ActionName) => {
       return hero.abilities[actionName]!.map((ability) => ({
         text: ability,
         action: () => {
-          console.log("action detail selected", ability);
+          // console.log("action detail selected", ability);
           window.dispatchEvent(new CustomEvent("action-detail-selected", { detail: ability }));
         },
       }));
@@ -32,7 +31,7 @@ const heroActionAbilityItems = (hero: Character, actionName: ActionName) => {
 };
 
 const heroActionItems = (hero: Character) => {
-  console.log(hero.actions);
+  // console.log(hero.actions);
   return hero.actions.map((action) => ({
     text: action,
     action: () => {

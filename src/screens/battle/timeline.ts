@@ -41,12 +41,12 @@ export async function processAction(actionData: { actorId: string; targetId: str
   const actor = getCharacterById(actorId);
   const target = getCharacterById(targetId);
 
-  console.log("PROCESSING ACTION!!!", {
-    actionData,
-    action: { ...action },
-    actor: { ...actor },
-    target: { ...target },
-  });
+  // console.log("PROCESSING ACTION!!!", {
+  //   actionData,
+  //   action: { ...action },
+  //   actor: { ...actor },
+  //   target: { ...target },
+  // });
 
   await computeEntityChanges(action, actor, target);
 
@@ -60,13 +60,13 @@ export async function processAction(actionData: { actorId: string; targetId: str
 }
 
 async function computeEntityChanges(action: Action, actor: Character, target: Character) {
-  console.log("COMPUTE ENTITY CHANGES", {
-    action: { ...action },
-    actor: { ...actor },
-    target: { ...target },
-    targetStatuses: { ...target.statuses },
-    // targetStatuses: target.statuses[getCharacterStatusIdxByName(target.id, StatusName.Poison)],
-  });
+  // console.log("COMPUTE ENTITY CHANGES", {
+  //   action: { ...action },
+  //   actor: { ...actor },
+  //   target: { ...target },
+  //   targetStatuses: { ...target.statuses },
+  //   // targetStatuses: target.statuses[getCharacterStatusIdxByName(target.id, StatusName.Poison)],
+  // });
 
   if (["melee", "ranged"].includes(action.type)) {
     let attackPower = 0;
@@ -93,12 +93,12 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
     if (action.effects?.length) {
       for (const statusName of action.effects) {
         if (target.statuses.some((s) => s.name === statusName)) {
-          console.log("UPDATE EXISTING STATUS");
+          // console.log("UPDATE EXISTING STATUS");
           updateStatusTurn(statusName, target);
         } else {
           const newStatus = createNewStatus(statusName);
           target.statuses.push(newStatus);
-          console.log("ADD STATUS TURN", newStatus);
+          // console.log("ADD STATUS TURN", newStatus);
           insertStatusTurn(newStatus, target);
         }
       }
@@ -131,18 +131,7 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
         break;
       case InventoryItemName.PhoenixDown:
         if (target.hp <= 0) {
-          target.hp = 70;
-
-          const turnDuration = calcTurnDuration(target.speed);
-          const ressurectedCharTurn: CharacterTurn = {
-            type: "character",
-            entity: { id: target.id, name: target.name, type: target.type },
-            turnsPlayed: 0,
-            turnDuration,
-            nextTurnAt: timeline[0].nextTurnAt + turnDuration,
-          };
-
-          setTimeline([...getTimeline(), ressurectedCharTurn]);
+          resurrectTarget(target);
         }
         break;
     }
@@ -159,27 +148,45 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
 
   if (target.hp < 0) {
     target.hp = 0;
-    target.statuses = [];
-
-    const noDeadCharOrStatusTimeline = timeline.filter((turn) => {
-      if (turn.type === "status") {
-        return turn.characterId !== target.id;
-      }
-      // type character
-      else {
-        return turn.entity.id !== target.id;
-      }
-    });
-
-    setTimeline(noDeadCharOrStatusTimeline);
+    removeDeadTargetFromTimeline(target);
   }
   if (actor.mp < 0) {
     actor.mp = 0;
   }
 }
 
+function resurrectTarget(target: Character) {
+  target.hp = 70;
+
+  const turnDuration = calcTurnDuration(target.speed);
+  const ressurectedCharTurn: CharacterTurn = {
+    type: "character",
+    entity: { id: target.id, name: target.name, type: target.type },
+    turnsPlayed: 0,
+    turnDuration,
+    nextTurnAt: timeline[0].nextTurnAt + turnDuration,
+  };
+  setTimeline([...getTimeline(), ressurectedCharTurn]);
+}
+
+function removeDeadTargetFromTimeline(target: Character) {
+  target.statuses = [];
+
+  const noDeadCharOrStatusTimeline = timeline.filter((turn) => {
+    if (turn.type === "status") {
+      return turn.characterId !== target.id;
+    }
+    // type character
+    else {
+      return turn.entity.id !== target.id;
+    }
+  });
+
+  setTimeline(noDeadCharOrStatusTimeline);
+}
+
 function insertStatusTurn(status: Status, target: Character) {
-  console.log(":::insert status into timeline", { status, target, timeline: timeline.slice() });
+  // console.log(":::insert status into timeline", { status, target, timeline: timeline.slice() });
 
   const nowTick = timeline[0].nextTurnAt;
   // const statusRef = STATUS_DICT[status.name as StatusName]
@@ -224,6 +231,7 @@ function updateStatusTurn(statusName: StatusName, target: Character) {
 }
 
 async function handleActionEfx(action: Action, actor: Character, target: Character) {
+  console.log("handleActionEfx", action);
   switch (action.type) {
     case "melee":
     case "ranged":
@@ -348,11 +356,11 @@ export async function updateTimeline() {
   };
 
   if (currentTurn.type === "status") {
+    const character = getCharacterById(currentTurn.characterId);
     const characterStatusIdx = getCharacterStatusIdxByName(
       currentTurn.characterId,
       currentTurn.entity.name as StatusName
     );
-    const character = getCharacterById(currentTurn.characterId);
 
     if (characterStatusIdx > -1) {
       character.statuses[characterStatusIdx].turnsPlayed++;
@@ -360,10 +368,7 @@ export async function updateTimeline() {
 
     const shouldRemoveTurn = nextTurn.turnsPlayed >= (nextTurn as StatusTurn).turnCount;
     if (shouldRemoveTurn) {
-      console.log("REMOVE STATUS!!!!!!", { ...character });
-      console.log("target status before", { ...character.statuses });
       character.statuses.splice(characterStatusIdx, 1);
-      console.log("target status after", { ...character.statuses });
       return startTurn(currentTurn);
     }
   }
@@ -379,11 +384,6 @@ export async function updateTimeline() {
       insertionIdx = i;
     }
   }
-
-  const character = getCharacterById(currentTurn.entity.id);
-  const characterTurns = timeline.filter((t) => t.type === "character");
-  let lastInLine = characterTurns[characterTurns.length - 1];
-  console.log("%%%%%", { currentTurn, character, timeline, lastInLine, insertionIdx });
 
   // reinsert turn
   timeline.splice(insertionIdx, 0, nextTurn);

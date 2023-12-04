@@ -4,7 +4,7 @@ import { heroTemplates } from "../../shared/hero-classes";
 import { initializeTimeline, updateTimeline } from "./timeline";
 
 export async function startBattle() {
-  console.log(heroTemplates);
+  // console.log(heroTemplates);
   drawCharacters();
   await initializeTimeline();
   await wait(1000);
