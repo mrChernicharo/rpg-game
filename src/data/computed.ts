@@ -12,24 +12,24 @@ export const HERO_LIST: Character[] = [
       10
     ),
   },
-  {
-    ...createNewHero(
-      "Abigail",
-      HeroClassName.Ranger,
-      "/sprites/sprite-09.webp",
-      { col: Col.Right, lane: Lane.Back },
-      9
-    ),
-  },
-  {
-    ...createNewHero(
-      "Mikhal",
-      HeroClassName.Sorcerer,
-      "/sprites/sprite-11.webp",
-      { col: Col.Left, lane: Lane.Back },
-      11
-    ),
-  },
+  // {
+  //   ...createNewHero(
+  //     "Abigail",
+  //     HeroClassName.Ranger,
+  //     "/sprites/sprite-09.webp",
+  //     { col: Col.Right, lane: Lane.Back },
+  //     9
+  //   ),
+  // },
+  // {
+  //   ...createNewHero(
+  //     "Mikhal",
+  //     HeroClassName.Sorcerer,
+  //     "/sprites/sprite-11.webp",
+  //     { col: Col.Left, lane: Lane.Back },
+  //     11
+  //   ),
+  // },
   {
     ...createNewHero(
       "Savanah",

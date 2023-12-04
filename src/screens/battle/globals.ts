@@ -5,7 +5,7 @@ import { ActionName, InventoryItemName, StatusName } from "../../shared/enums";
 import { Character, Turn, InventoryItem, TurnInfo, Status, Action } from "../../shared/types";
 import { rowDice } from "../../shared/utils";
 
-export let turnCount = 0;
+export let totalTurnCount = 0;
 export let allCharacters: Character[] = [...ENEMY_LIST, ...HERO_LIST];
 export let timeline: Turn[] = [];
 export let inventory: InventoryItem[] = [...INVENTORY_LIST];
@@ -24,15 +24,15 @@ export function getTimeline() {
 export function getAllCharacters() {
   return allCharacters;
 }
-export function incrementTurnCount() {
-  turnCount++;
+export function incrementtotalTurnCount() {
+  totalTurnCount++;
 }
 export function getShouldSelectTarget() {
   return shouldSelectTarget;
 }
 export function getPossibleTargets() {
   const { actionName, actionDetail, character } = currentTurnInfo;
-  console.log("getPossibleTargets", { currentTurnInfo });
+  // console.log("getPossibleTargets", { currentTurnInfo });
 
   let action: Action;
 
@@ -152,7 +152,7 @@ export function subtractFromInventory(itemName: InventoryItemName) {
   const itemIdx = inventory.findIndex((obj) => obj.name === itemName)!;
   const inventoryItem = inventory[itemIdx];
 
-  console.log("subtractFromInventory", inventoryItem, inventory);
+  // console.log("subtractFromInventory", inventoryItem, inventory);
 
   if (inventoryItem?.quantity === 1) {
     inventory.splice(itemIdx, 1);

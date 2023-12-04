@@ -21,7 +21,7 @@ for (const slot of slots) {
 }
 
 export const dismissFn = () => {
-  console.log("dismiss");
+  // console.log("dismiss");
   battleUI?.classList.remove(`ready-to-act`);
   slots.forEach((s) => {
     if (s.classList.contains("selectable-target")) {
@@ -55,11 +55,11 @@ export async function onCharacterAction(e: any) {
   currentTurnInfo.character = character;
 
   drawBottomPane(panes.text(`${character.name}'s turn`));
-  await wait(1000);
 
   if (character.type === "enemy" || character.type === "npc") {
-    console.log("onCharacterAction", character.name);
-    console.log("enemy", character);
+    await wait(2000);
+    // console.log("onCharacterAction", character.name);
+    // console.log("enemy", character);
     //  decideEnemyAction
     await updateTimeline();
   }
@@ -72,7 +72,7 @@ export async function onCharacterAction(e: any) {
 
 export async function onActionSelected(e: any) {
   const actionName = e.detail;
-  console.log("onActionSelected", { actionName, TurnInfo: currentTurnInfo });
+  // console.log("onActionSelected", { actionName, TurnInfo: currentTurnInfo });
 
   if (!currentTurnInfo.character) {
     throw Error("no character data inside TurnInfo");
@@ -146,7 +146,7 @@ export async function onActionTargetSelected() {
   // RESET CURRENT ACTION DATA
   resetActionData("hard");
 
-  console.log("onActionTargetSelected", actionData);
+  // console.log("onActionTargetSelected", actionData);
   await processAction(actionData);
 }
 
@@ -172,6 +172,6 @@ export function createNewStatus(statusName: StatusName) {
     ...STATUS_DICT[statusName],
   } as Status;
 
-  console.log({ newStatus });
+  // console.log({ newStatus });
   return newStatus;
 }

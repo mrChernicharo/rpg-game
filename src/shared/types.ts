@@ -91,7 +91,7 @@ export type Action = (
       type: "status";
       name: StatusName;
       turnsPlayed: number;
-      turnCount: number;
+      totalTurnCount: number;
       speed?: number;
       power?: number;
     }
@@ -132,30 +132,41 @@ export type Action = (
 export type Status = {
   name: StatusName;
   turnsPlayed: number;
-  turnCount: number;
+  totalTurnCount: number;
   speed?: number;
   power?: number;
 };
 
-export type TurnEntity = {
+// turn entity
+
+export type StatusTurnEntity = {
+  type: "status";
   id: string;
   name: string;
-  type: "hero" | "enemy" | "npc" | "status";
 };
+export type CharacterTurnEntity = {
+  type: "hero" | "enemy" | "npc";
+  id: string;
+  name: string;
+  isDead: boolean;
+};
+export type TurnEntity = CharacterTurnEntity | StatusTurnEntity;
 
-export type TurnBase = {
-  entity: TurnEntity;
-  turnDuration: number;
-  nextTurnAt: number;
-  turnsPlayed: number;
-};
+// turn
+
 export type CharacterTurnBase = {
   type: "character";
 };
 export type StatusTurnBase = {
   type: "status";
-  turnCount: number;
+  totalTurnCount: number;
   characterId: string;
+};
+export type TurnBase = {
+  entity: TurnEntity;
+  turnDuration: number;
+  nextTurnAt: number;
+  turnsPlayed: number;
 };
 
 export type CharacterTurn = TurnBase & CharacterTurnBase;

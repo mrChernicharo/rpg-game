@@ -1,6 +1,6 @@
 import { getSlotElementById, getSlotDefenseOverlayById } from "../../shared/dom";
 import { StatusName, MagicSpellName, InventoryItemName, ActionName } from "../../shared/enums";
-import { Action, Status, Character, StatusTurn, Turn, CharacterTurn } from "../../shared/types";
+import { Action, Status, Character, StatusTurn, Turn, CharacterTurn, CharacterTurnEntity } from "../../shared/types";
 import { idMaker, calcTurnDuration, wait, calculateNextTurnTime } from "../../shared/utils";
 import {
   drawActionPane,
@@ -14,7 +14,7 @@ import {
   drawDefenseEffect,
   drawNumber,
   drawSelectedCharacterOutline,
-  drawTurnCount,
+  drawtotalTurnCount,
   drawTimeline,
 } from "./draw";
 import { createNewStatus, onActionTargetSelected } from "./events";
@@ -28,10 +28,11 @@ import {
   addInventoryItem,
   inventory,
   currentTurnInfo,
-  incrementTurnCount,
-  turnCount,
+  incrementtotalTurnCount,
+  totalTurnCount,
   allCharacters,
   setTimeline,
+  getTimeline,
 } from "./globals";
 import { panes } from "./infoPane";
 
@@ -40,12 +41,12 @@ export async function processAction(actionData: { actorId: string; targetId: str
   const actor = getCharacterById(actorId);
   const target = getCharacterById(targetId);
 
-  console.log("PROCESSING ACTION!!!", {
-    actionData,
-    action: { ...action },
-    actor: { ...actor },
-    target: { ...target },
-  });
+  // console.log("PROCESSING ACTION!!!", {
+  //   actionData,
+  //   action: { ...action },
+  //   actor: { ...actor },
+  //   target: { ...target },
+  // });
 
   await computeEntityChanges(action, actor, target);
 
@@ -59,13 +60,13 @@ export async function processAction(actionData: { actorId: string; targetId: str
 }
 
 async function computeEntityChanges(action: Action, actor: Character, target: Character) {
-  console.log("COMPUTE ENTITY CHANGES", {
-    action: { ...action },
-    actor: { ...actor },
-    target: { ...target },
-    targetStatuses: { ...target.statuses },
-    // targetStatuses: target.statuses[getCharacterStatusIdxByName(target.id, StatusName.Poison)],
-  });
+  // console.log("COMPUTE ENTITY CHANGES", {
+  //   action: { ...action },
+  //   actor: { ...actor },
+  //   target: { ...target },
+  //   targetStatuses: { ...target.statuses },
+  //   // targetStatuses: target.statuses[getCharacterStatusIdxByName(target.id, StatusName.Poison)],
+  // });
 
   if (["melee", "ranged"].includes(action.type)) {
     let attackPower = 0;
@@ -92,12 +93,12 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
     if (action.effects?.length) {
       for (const statusName of action.effects) {
         if (target.statuses.some((s) => s.name === statusName)) {
-          console.log("UPDATE EXISTING STATUS");
+          // console.log("UPDATE EXISTING STATUS");
           updateStatusTurn(statusName, target);
         } else {
           const newStatus = createNewStatus(statusName);
           target.statuses.push(newStatus);
-          console.log("ADD STATUS TURN", newStatus);
+          // console.log("ADD STATUS TURN", newStatus);
           insertStatusTurn(newStatus, target);
         }
       }
@@ -148,7 +149,7 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
 }
 
 function insertStatusTurn(status: Status, target: Character) {
-  console.log(":::insert status into timeline", { status, target, timeline: timeline.slice() });
+  // console.log(":::insert status into timeline", { status, target, timeline: timeline.slice() });
 
   const nowTick = timeline[0].nextTurnAt;
   // const statusRef = STATUS_DICT[status.name as StatusName]
@@ -160,7 +161,7 @@ function insertStatusTurn(status: Status, target: Character) {
     turnDuration: calcTurnDuration(status.speed!),
     nextTurnAt: nowTick + calcTurnDuration(status.speed!),
     turnsPlayed: 0,
-    turnCount: status.turnCount,
+    totalTurnCount: status.totalTurnCount,
   };
 
   let insertionIdx = timeline.length;
@@ -181,14 +182,14 @@ function updateStatusTurn(statusName: StatusName, target: Character) {
   const existingStatusTurnIdx = timeline.findIndex((turn) => turn.type === "status" && turn.characterId === target.id);
   const existingCharacterStatusIdx = getCharacterStatusIdxByName(target.id, statusName);
 
-  console.log("UPDATING EXISTING STATUS before", JSON.stringify({ ...target.statuses }, null, 2));
+  // console.log("UPDATING EXISTING STATUS before", JSON.stringify({ ...target.statuses }, null, 2));
   // status: getCharacterStatusIdxByName(target.id, statusName),
 
   // simply keep the previous status. update its turnPlayed count, and update character.status to match it
   if (existingStatusTurnIdx > -1 && existingCharacterStatusIdx > -1) {
     timeline[existingStatusTurnIdx].turnsPlayed = 0;
     target.statuses[existingCharacterStatusIdx].turnsPlayed = 0;
-    console.log("UPDATING EXISTING STATUS after", JSON.stringify({ ...target.statuses }, null, 2));
+    // console.log("UPDATING EXISTING STATUS after", JSON.stringify({ ...target.statuses }, null, 2));
   }
 }
 
@@ -222,7 +223,7 @@ async function handleActionEfx(action: Action, actor: Character, target: Charact
       if (action.name === ActionName.Defend) {
         actor.statuses.push({
           name: StatusName.Defense,
-          turnCount: 1,
+          totalTurnCount: 1,
           turnsPlayed: 0,
         });
         await drawDefenseEffect(actor);
@@ -235,13 +236,13 @@ async function handleActionEfx(action: Action, actor: Character, target: Charact
   }
 
   const slot = getSlotElementById(target.id);
-  const isPoisoned = target.statuses.some((s) => s.name === StatusName.Poison);
+  const isTargetAlive = target.hp > 0;
+  const isTargetPoisoned = target.statuses.some((s) => s.name === StatusName.Poison);
 
-  if (isPoisoned && !slot.classList.contains("poisoned")) {
+  if (isTargetAlive && isTargetPoisoned && !slot.classList.contains("poisoned")) {
     slot.classList.add("poisoned");
   }
-
-  if (slot.classList.contains("poisoned") && !isPoisoned) {
+  if (!isTargetAlive || (slot.classList.contains("poisoned") && !isTargetPoisoned)) {
     slot.classList.remove("poisoned");
   }
 
@@ -260,7 +261,7 @@ async function handleActionEfx(action: Action, actor: Character, target: Charact
 async function startTurn(turn: Turn) {
   if (turn.type === "status") {
     const character = getCharacterById(turn.characterId);
-    console.log("start Status Turn", character.name, { inventory });
+    // console.log("start Status Turn", character.name, { inventory });
 
     currentTurnInfo.isStatusAction = true;
     currentTurnInfo.actionName = ActionName.Status;
@@ -271,8 +272,9 @@ async function startTurn(turn: Turn) {
     onActionTargetSelected();
   } else {
     const character = getCharacterById(turn.entity.id);
+
     await drawSelectedCharacterOutline(character);
-    console.log(`start ${turn.type} Turn`, character.name);
+    // console.log(`start ${turn.type} Turn`, character.name);
 
     if (turn.entity.type === "hero") {
       const removeIdx = getDefenseStatusIdx(character.statuses);
@@ -298,79 +300,73 @@ async function startTurn(turn: Turn) {
 
 export async function updateTimeline() {
   // console.log("updateTimeline");
-  incrementTurnCount();
-  drawTurnCount(turnCount);
+  incrementtotalTurnCount();
+  drawtotalTurnCount(totalTurnCount);
+
+  timeline.sort((a, b) => a.nextTurnAt - b.nextTurnAt);
+
   drawTimeline();
 
-  // 1. dequeue first turn
-  const prevTimeline = timeline.slice();
-  const currentTurn = timeline.shift()!;
+  console.log([...timeline]);
 
-  // @TODO: 2. check if turn must be removed HERE! if so, remove it!
-  // const turnRemoved = await shouldRemoveTurn()
+  const currentTurn = timeline[0];
+  currentTurn.turnsPlayed++;
 
-  // update turn
-  const nextTurn: Turn = {
-    ...currentTurn,
-    nextTurnAt: calculateNextTurnTime(currentTurn),
-    turnsPlayed: currentTurn.turnsPlayed + 1,
-  };
+  await startTurn(currentTurn);
 
-  if (currentTurn.type === "status") {
-    const characterStatusIdx = getCharacterStatusIdxByName(
-      currentTurn.characterId,
-      currentTurn.entity.name as StatusName
-    );
-    const character = getCharacterById(currentTurn.characterId);
+  currentTurn.nextTurnAt = calculateNextTurnTime(currentTurn);
 
-    if (characterStatusIdx > -1) {
-      character.statuses[characterStatusIdx].turnsPlayed++;
-    }
-
-    const shouldRemoveTurn = nextTurn.turnsPlayed >= (nextTurn as StatusTurn).turnCount;
-    if (shouldRemoveTurn) {
-      console.log("REMOVE STATUS!!!!!!", { ...character });
-      console.log("target status before", { ...character.statuses });
-      character.statuses.splice(characterStatusIdx, 1);
-      console.log("target status after", { ...character.statuses });
-      return startTurn(currentTurn);
-    }
+  if (currentTurn.type === "status" && currentTurn.turnsPlayed >= currentTurn.totalTurnCount) {
+    handleTimelineStatusRemoval(currentTurn);
   }
+  updateDead();
 
-  let insertionIdx = timeline.length;
-  let smallestPositiveTimeDiff = Infinity;
+  timeline.sort((a, b) => a.nextTurnAt - b.nextTurnAt);
+}
 
-  for (let i = 0; i < timeline.length; i++) {
-    const timeDiff = timeline[i].nextTurnAt - nextTurn.nextTurnAt;
+function updateDead() {
+  const highestNextMove = Math.max(...timeline.map((t) => t.nextTurnAt));
 
-    if (timeDiff > 0 && timeDiff < smallestPositiveTimeDiff) {
-      smallestPositiveTimeDiff = timeDiff;
-      insertionIdx = i;
+  const statusRemoveIdxs: number[] = [];
+  timeline.forEach((turn, i) => {
+    const isDead = turn.type === "character" && getCharacterById(turn.entity.id).hp <= 0;
+
+    if (isDead) {
+      // update dead characters nextTurnAt so they are all at the end of the line
+      turn.nextTurnAt = highestNextMove + 0.1 * i;
+
+      getCharacterById(turn.entity.id).statuses = [];
+
+      for (let i = 0; i < timeline.length; i++) {
+        const t = timeline[i];
+        if (t.type === "status" && t.characterId === turn.entity.id) {
+          // get dead chararcter's related statuses indices
+          statusRemoveIdxs.push(i);
+        }
+      }
     }
+  });
+
+  // remove dead chararcter's related statuses
+  for (const idx of statusRemoveIdxs) {
+    timeline.splice(idx, 1);
   }
+}
 
-  const character = getCharacterById(currentTurn.entity.id);
-  const characterTurns = timeline.filter((t) => t.type === "character");
-  let lastInLine = characterTurns[characterTurns.length - 1];
-  console.log("%%%%%", { currentTurn, character, timeline, lastInLine, insertionIdx });
+function handleTimelineStatusRemoval(turn: StatusTurn) {
+  console.log("REMOVE STATUS!!!!!!");
 
-  // reinsert turn
-  timeline.splice(insertionIdx, 0, nextTurn);
+  const characterStatusIdx = getCharacterStatusIdxByName(turn.characterId, turn.entity.name as StatusName);
+  const character = getCharacterById(turn.characterId);
 
-  // console.log(
-  //   "\n prevTimeline \n",
-  //   prevTimeline,
-  //   "\n timeline \n",
-  //   timeline.slice()
-  // );
-
-  startTurn(currentTurn);
+  character.statuses.splice(characterStatusIdx, 1);
+  timeline.shift();
 }
 
 export async function initializeTimeline() {
   const initialCharacterTurns: CharacterTurn[] = allCharacters.map((c) => ({
     type: "character",
-    entity: { id: c.id, name: c.name, type: getCharacterById(c.id)!.type },
+    entity: { id: c.id, name: c.name, type: getCharacterById(c.id)!.type, isDead: false },
     turnDuration: calcTurnDuration(c.speed),
     nextTurnAt: calcTurnDuration(c.speed),
     turnsPlayed: 0,

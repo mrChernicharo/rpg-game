@@ -55,7 +55,7 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Barbarian]],
     abilities: {
-      magic: [MagicSpellName.Bio],
+      magic: [MagicSpellName.Bio, MagicSpellName.Regen],
     },
   },
   [HeroClassName.Knight]: {
@@ -80,7 +80,7 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Knight]],
     abilities: {
-      magic: [MagicSpellName.Bio],
+      magic: [MagicSpellName.Bio, MagicSpellName.Regen],
     },
   },
   [HeroClassName.Mage]: {
@@ -155,7 +155,7 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Druid]],
     abilities: {
-      magic: [MagicSpellName.Bio],
+      magic: [MagicSpellName.Bio, MagicSpellName.Regen],
     },
   },
   [HeroClassName.Ranger]: {
@@ -180,7 +180,7 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Ranger]],
     abilities: {
-      magic: [MagicSpellName.Bio],
+      magic: [MagicSpellName.Bio, MagicSpellName.Regen],
     },
   },
   [HeroClassName.Thief]: {
@@ -205,7 +205,7 @@ export const heroTemplates: { [k in HeroClassName]: HeroTemplate } = {
     },
     actions: [...commonHeroActions, ...classSpecificActions[HeroClassName.Thief]],
     abilities: {
-      magic: [MagicSpellName.Bio],
+      magic: [MagicSpellName.Bio, MagicSpellName.Regen],
     },
   },
   [HeroClassName.Cleric]: {

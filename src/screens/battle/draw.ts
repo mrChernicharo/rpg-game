@@ -3,7 +3,7 @@ import {
   battleLanesUI,
   getSlotElementById,
   timelineUI,
-  turnCountUI,
+  totalTurnCountUI,
   bottomSection,
   dismissBtn,
   getSlotDefenseOverlayById,
@@ -52,17 +52,24 @@ function drawDeath(entity: Character, slot: Element) {
     slot?.classList.add("dead");
   } else if (slot?.classList.contains("dead")) {
     slot?.classList.remove("dead");
+
+    // remove statuses classnames here
+    if (slot.classList.contains("poisoned")) {
+      slot.classList.remove("poisoned");
+    }
   }
 }
 
 function drawTimeline(): void {
-  // console.log(turnCount, ...turnSequence);
+  // console.log(totalTurnCount, ...turnSequence);
   timelineUI.innerHTML = "";
 
   for (let i = 0; i < getTimeline().length; i++) {
     const turn = getTimeline()[i];
-    const timeToNextTurn = turn.nextTurnAt - getTimeline()[0].nextTurnAt;
-    const timeToNextTurnStr = i === 0 ? " now" : ` ${timeToNextTurn.toFixed(2)}`;
+
+    const timeToNextTurnStr = turn.nextTurnAt.toFixed(2);
+    // const timeToNextTurn = turn.nextTurnAt - getTimeline()[0].nextTurnAt;
+    // const timeToNextTurnStr = i === 0 ? " now" : ` ${timeToNextTurn.toFixed(2)}`;
     // i === 0 ? " now" : i === 1 ? " next" : ` ${timeToNextTurn.toFixed(2)}`;
 
     const div = document.createElement("div");
@@ -194,7 +201,7 @@ function drawNumber(targetId: string, number: number, color = "white") {
   numSpan.style.color = color;
   numSpan.textContent = String(number);
 
-  console.log(":::DRAW NUMBER");
+  // console.log(":::DRAW NUMBER");
 
   overlay.append(numSpan);
 
@@ -203,16 +210,16 @@ function drawNumber(targetId: string, number: number, color = "white") {
   }, 1000);
 }
 
-function drawTurnCount(turn: number) {
-  if (turnCountUI?.classList.contains("hidden")) {
-    turnCountUI?.classList.remove("hidden");
+function drawtotalTurnCount(turn: number) {
+  if (totalTurnCountUI?.classList.contains("hidden")) {
+    totalTurnCountUI?.classList.remove("hidden");
   }
-  const outputEl = turnCountUI?.children[0] as HTMLOutputElement;
+  const outputEl = totalTurnCountUI?.children[0] as HTMLOutputElement;
   outputEl.textContent = String(turn);
 }
 
 async function drawActionPane(action: Action, actor: Character, target: Character) {
-  console.log("DRAW ACTION PANE", { actionName: action.name, action, actor, target });
+  // console.log("DRAW ACTION PANE", { actionName: action.name, action, actor, target });
 
   switch (action.type) {
     case "melee":
@@ -325,7 +332,7 @@ export {
   drawTimeline,
   drawCharacters,
   drawSelectedCharacterOutline,
-  drawTurnCount,
+  drawtotalTurnCount,
   drawAttackEffect,
   drawStealEffect,
   drawAMagicEffect,

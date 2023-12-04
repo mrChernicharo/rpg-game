@@ -44,7 +44,7 @@ export const battleUI = document.querySelector("#battle-ui")!;
 export const battleLanesUI = Array.from(document.querySelectorAll(".battle-lane"))!;
 export const timelineUI = document.querySelector("#timeline")!;
 
-export const turnCountUI = document.querySelector("#turn-count")!;
+export const totalTurnCountUI = document.querySelector("#turn-count")!;
 
 export const bottomSection = {
   text: document.querySelector("#bottom-pane > #text-content")!,

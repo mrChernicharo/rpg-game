@@ -31,10 +31,10 @@ getBattleScreenBtn().onclick = () => {
 
 function onHeroSelected() {
   const hero = menuState.selectedHero!;
-  console.log("menuState.selectedHero ->", hero.name, {
-    menuState,
-    hero,
-  });
+  // console.log("menuState.selectedHero ->", hero.name, {
+  //   menuState,
+  //   hero,
+  // });
 
   drawHeroEquipmentSubMenu(hero);
 }
@@ -255,7 +255,7 @@ function drawEquipmentWidget(hero: Character) {
         const itemName = equipmentSpriteImg.classList.toString().split(" ")[1] as InventoryItemName;
         const itemInfo = EQUIPMENT_ITEM_DICT[itemName]!;
 
-        console.log({ equipmentSpriteImg, slot, hero, itemInfo });
+        // console.log({ equipmentSpriteImg, slot, hero, itemInfo });
 
         // prettier-ignore
         const modalTemplate = `
@@ -294,7 +294,7 @@ function equipEquipment(hero: Character, slot: EquipmentSlot, itemName: Inventor
 
   hero.equipment[slot] = equipmentItem;
 
-  console.log("equip!");
+  // console.log("equip!");
 
   subtractFromInventory(itemName);
 
