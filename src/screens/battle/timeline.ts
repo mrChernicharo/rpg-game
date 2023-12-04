@@ -140,7 +140,7 @@ export async function updateTimeline() {
   incrementTurnCount();
   drawTurnCount(turnCount);
   drawTimeline();
-  checkWinCondition();
+  await checkWinCondition();
 
   // 1. dequeue first turn
   const prevTimeline = timeline.slice();
@@ -217,13 +217,13 @@ export async function initializeTimeline() {
   });
 }
 
-export function checkWinCondition() {
+export async function checkWinCondition() {
   if (getAllEnemiesAlive().length === 0) {
     // win
-    handleBattleWon();
+    await handleBattleWon();
   }
   if (getAllHeroesAlive().length === 0) {
     // lose
-    handleBattleLost();
+    await handleBattleLost();
   }
 }

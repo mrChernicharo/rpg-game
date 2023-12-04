@@ -81,8 +81,8 @@ export function drawSmallHeroSelectionWidget(container: Element) {
 }
 
 export function drawMainMenu() {
-  const heroesUl = getMainMenuHeroesUL();
-
+  const heroesUl = getMainMenuHeroesUL()!;
+  heroesUl.innerHTML = "";
   getAllHeroes().forEach((h) => {
     const li = document.createElement("li");
     li.innerHTML = `

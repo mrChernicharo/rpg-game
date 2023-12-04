@@ -16,8 +16,13 @@ import {
   updateBackToHomeLinks,
 } from "./menu";
 
-getDungeonScreenBtn().onclick = () => showScreen(GameScreen.Dungeon);
-getMainMenuScreenBtn().onclick = () => showScreen(GameScreen.MainMenu);
+getDungeonScreenBtn().onclick = () => {
+  showScreen(GameScreen.Dungeon);
+};
+getMainMenuScreenBtn().onclick = () => {
+  drawMainMenu();
+  showScreen(GameScreen.MainMenu);
+};
 getBattleScreenBtn().onclick = () => {
   showScreen(GameScreen.Battle);
   startBattle();
@@ -56,7 +61,7 @@ export function showScreen(screen: GameScreen) {
 
 drawMainMenu();
 
-showScreen(GameScreen.Battle); // shouldn't start here!!!!
-startBattle(); // <- please remove when you're done
-// showScreen(GameScreen.Dungeon);
+// showScreen(GameScreen.Battle); // shouldn't start here!!!!
+// startBattle(); // <- please remove when you're done
+showScreen(GameScreen.Dungeon);
 // showScreen(GameScreen.MainMenu);
