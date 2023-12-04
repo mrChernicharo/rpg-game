@@ -1,3 +1,5 @@
+import { Turn } from "./types";
+
 /**
 
 1 sec == 4 ticks | 1 tick == 0.25sec
@@ -16,7 +18,7 @@ export function calcTurnDuration(speed: number) {
   return 1000 / speed;
 }
 
-export function calculateNextTurnTime(turn: any) {
+export function calculateNextTurnTime(turn: Turn) {
   return turn.nextTurnAt + turn.turnDuration;
 }
 

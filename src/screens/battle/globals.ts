@@ -2,7 +2,7 @@ import { HERO_LIST } from "../../data/computed";
 import { ENEMY_LIST, INVENTORY_LIST, DETAILED_ACTION_DICT, SIMPLE_ACTION_DICT } from "../../data/static";
 import { battleUI, getSlotElementById, slots } from "../../shared/dom";
 import { ActionName, InventoryItemName, StatusName } from "../../shared/enums";
-import { Character, Turn, InventoryItem, TurnInfo, Status, Action } from "../../shared/types";
+import { Character, Turn, InventoryItem, TurnInfo, Status, Action, CharacterTurn } from "../../shared/types";
 import { rowDice } from "../../shared/utils";
 
 export let turnCount = 0;

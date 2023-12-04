@@ -32,6 +32,7 @@ import {
   turnCount,
   allCharacters,
   setTimeline,
+  getTimeline,
 } from "./globals";
 import { panes } from "./infoPane";
 
@@ -117,14 +118,31 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
 
     switch (action.name) {
       case InventoryItemName.Potion:
-        target.hp += 100;
+        if (target.hp > 0) {
+          target.hp += 100;
+          if (target.hp > target.maxHp) target.hp = target.maxHp;
+        }
         break;
       case InventoryItemName.Ether:
-        target.mp += 50;
+        if (target.hp > 0) {
+          target.mp += 50;
+          if (target.mp > target.maxMp) target.mp = target.maxMp;
+        }
         break;
       case InventoryItemName.PhoenixDown:
         if (target.hp <= 0) {
           target.hp = 70;
+
+          const turnDuration = calcTurnDuration(target.speed);
+          const ressurectedCharTurn: CharacterTurn = {
+            type: "character",
+            entity: { id: target.id, name: target.name, type: target.type },
+            turnsPlayed: 0,
+            turnDuration,
+            nextTurnAt: timeline[0].nextTurnAt + turnDuration,
+          };
+
+          setTimeline([...getTimeline(), ressurectedCharTurn]);
         }
         break;
     }
@@ -141,6 +159,19 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
 
   if (target.hp < 0) {
     target.hp = 0;
+    target.statuses = [];
+
+    const noDeadCharOrStatusTimeline = timeline.filter((turn) => {
+      if (turn.type === "status") {
+        return turn.characterId !== target.id;
+      }
+      // type character
+      else {
+        return turn.entity.id !== target.id;
+      }
+    });
+
+    setTimeline(noDeadCharOrStatusTimeline);
   }
   if (actor.mp < 0) {
     actor.mp = 0;
