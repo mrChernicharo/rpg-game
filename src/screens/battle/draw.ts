@@ -82,7 +82,7 @@ function drawTimeline(): void {
     timeText.textContent = timeToNextTurnStr;
 
     div.classList.add("turn-item");
-    div.append(nameText, timeText);
+    div.append(timeText, nameText);
 
     timelineUI.append(div);
   }

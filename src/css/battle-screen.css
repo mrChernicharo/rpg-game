@@ -125,11 +125,17 @@
 
 #timeline {
   text-align: left;
+  overflow: hidden;
+}
+
+#timeline > .turn-item {
+  width: max-content;
 }
 
 #timeline > .turn-item > .time-to-next-turn {
   font-weight: bold;
   color: goldenrod;
+  margin-right: 0.25rem;
 }
 
 /*************** OVERLAY ***************/
