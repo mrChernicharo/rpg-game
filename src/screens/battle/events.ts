@@ -4,7 +4,7 @@ import { drawBottomPane } from "./draw";
 import { ActionName, _AttackName, StatusName } from "../../shared/enums";
 import { getCharacterById, shouldSelectTarget, setShouldSelectTarget, currentTurnInfo, inventory } from "./globals";
 import { panes } from "./infoPane";
-import { Action, Status } from "../../shared/types";
+import { Action, Status, TurnInfo } from "../../shared/types";
 import { wait } from "../../shared/utils";
 import { updateTimeline, processAction } from "./timeline";
 
@@ -102,8 +102,12 @@ export async function onActionSelected(e: any) {
         currentTurnInfo.actionTarget = currentTurnInfo.character;
         onActionTargetSelected();
         break;
-      case ActionName.Attack:
-        currentTurnInfo.actionDetail = "melee";
+      case ActionName.RangedAttack:
+        setShouldSelectTarget(true);
+        // @TODO check hero equipment
+        drawBottomPane(panes.text(`Select target`), dismissFn);
+        break;
+      case ActionName.MeleeAttack:
         setShouldSelectTarget(true);
         // @TODO check hero equipment
         drawBottomPane(panes.text(`Select target`), dismissFn);
@@ -142,7 +146,7 @@ export async function onActionTargetSelected() {
   const actionData = {
     actorId: currentTurnInfo.character!.id,
     targetId: currentTurnInfo.actionTarget!.id,
-    action: createNewAction(currentTurnInfo.actionName as ActionName, currentTurnInfo.actionDetail || null) as Action,
+    action: createNewAction(currentTurnInfo) as Action,
   };
 
   // RESET CURRENT ACTION DATA
@@ -152,8 +156,12 @@ export async function onActionTargetSelected() {
   await processAction(actionData);
 }
 
-export function createNewAction(actionName: ActionName, actionDetail: string | null) {
-  if (actionDetail && actionName === ActionName.Attack) {
+export function createNewAction(turnInfo: TurnInfo) {
+  const { actionName, actionDetail, character } = turnInfo;
+
+  if (!actionName || !character) return;
+
+  if (actionDetail && [ActionName.MeleeAttack, ActionName.RangedAttack].includes(actionName)) {
     return SIMPLE_ACTION_DICT[actionName]!;
   } else if (actionDetail && actionName === ActionName.Status) {
     return {

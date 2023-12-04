@@ -20,7 +20,7 @@ const {
   LinnenTunic,
 } = EQUIPMENT_ITEM_DICT;
 
-const commonHeroActions = [ActionName.Attack, ActionName.Magic, ActionName.Item, ActionName.Defend];
+const commonHeroActions = [ActionName.Magic, ActionName.Item, ActionName.Defend];
 const classSpecificActions = {
   [HeroClassName.Barbarian]: [],
   [HeroClassName.Knight]: [],
@@ -274,7 +274,9 @@ export function createNewHero(
     equipment: { ...heroTemplate.equipment },
     position,
     statuses: [],
-    actions: heroTemplate.actions,
+    actions: [
+      heroTemplate.equipment.weapon?.weaponType === "melee" ? ActionName.MeleeAttack : ActionName.RangedAttack,
+    ].concat(heroTemplate.actions),
     abilities: heroTemplate.abilities,
   };
   return newHero;

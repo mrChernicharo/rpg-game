@@ -33,7 +33,7 @@ const heroActionAbilityItems = (hero: Character, actionName: ActionName) => {
 const heroActionItems = (hero: Character) => {
   // console.log(hero.actions);
   return hero.actions.map((action) => ({
-    text: action,
+    text: action.replace(/^(.*?)_/, ""), // trim melee_attack and ranged_attack
     action: () => {
       window.dispatchEvent(new CustomEvent("action-selected", { detail: action }));
     },

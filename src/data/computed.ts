@@ -22,13 +22,7 @@ export const HERO_LIST: Character[] = [
     ),
   },
   {
-    ...createNewHero(
-      "Mikhal",
-      HeroClassName.Sorcerer,
-      "/sprites/sprite-11.webp",
-      { col: Col.Left, lane: Lane.Back },
-      11
-    ),
+    ...createNewHero("Mikhal", HeroClassName.Thief, "/sprites/sprite-11.webp", { col: Col.Left, lane: Lane.Back }, 11),
   },
   {
     ...createNewHero(

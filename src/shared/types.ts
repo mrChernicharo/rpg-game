@@ -100,8 +100,12 @@ export type Action = (
       type: "item";
     }
   | {
-      name: ActionName.Attack;
-      type: "melee" | "ranged";
+      name: ActionName.MeleeAttack;
+      type: "melee";
+    }
+  | {
+      name: ActionName.RangedAttack;
+      type: "ranged";
     }
   | {
       name: ActionName.Steal;
@@ -197,6 +201,7 @@ export type EquipmentItem = {
   type: InventoryItemType.Equipment;
   imgURL: string;
   slot: EquipmentSlot;
+  weaponType?: "melee" | "ranged";
   power?: number;
   effects?: EquipmentEffect[];
 };

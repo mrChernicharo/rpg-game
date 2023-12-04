@@ -152,7 +152,8 @@ export enum InventoryItemName {
 
 export enum ActionName {
   _Attack = "_attack",
-  Attack = "attack",
+  MeleeAttack = "melee_attack",
+  RangedAttack = "ranged_attack",
   Magic = "magic",
   Defend = "defend",
   Steal = "steal",

@@ -77,7 +77,7 @@ export function getPossibleTargets() {
 
   let action: Action;
 
-  if (actionName === ActionName.Attack || !actionDetail) {
+  if (!actionDetail) {
     action = SIMPLE_ACTION_DICT[actionName!]!;
   } else {
     action = DETAILED_ACTION_DICT[actionName!]![actionDetail];

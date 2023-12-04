@@ -402,9 +402,14 @@ const DETAILED_ACTION_DICT: {
 
 const SIMPLE_ACTION_DICT: { [actionName in ActionName]?: Action } = {
   // other
-  [ActionName.Attack]: {
-    name: ActionName.Attack,
+  [ActionName.MeleeAttack]: {
+    name: ActionName.MeleeAttack,
     type: "melee",
+    targets: "single",
+  },
+  [ActionName.RangedAttack]: {
+    name: ActionName.RangedAttack,
+    type: "ranged",
     targets: "single",
   },
   [ActionName.Steal]: {
@@ -438,6 +443,7 @@ const EQUIPMENT_ITEM_DICT: { [itemName in InventoryItemName]?: EquipmentItem } =
     imgURL: "/icons/sword.webp",
     name: InventoryItemName.Dagger,
     power: 15,
+    weaponType: "melee",
     effects: [],
   },
   ShortSword: {
@@ -446,6 +452,7 @@ const EQUIPMENT_ITEM_DICT: { [itemName in InventoryItemName]?: EquipmentItem } =
     type: InventoryItemType.Equipment,
     imgURL: "/icons/sword.webp",
     name: InventoryItemName.ShortSword,
+    weaponType: "melee",
     power: 15,
     effects: [],
   },
@@ -455,6 +462,7 @@ const EQUIPMENT_ITEM_DICT: { [itemName in InventoryItemName]?: EquipmentItem } =
     type: InventoryItemType.Equipment,
     imgURL: "/icons/sword.webp",
     name: InventoryItemName.LongSword,
+    weaponType: "melee",
     power: 22,
     effects: [],
   },
@@ -464,6 +472,7 @@ const EQUIPMENT_ITEM_DICT: { [itemName in InventoryItemName]?: EquipmentItem } =
     type: InventoryItemType.Equipment,
     imgURL: "/icons/sword.webp",
     name: InventoryItemName.IronAxe,
+    weaponType: "melee",
     power: 15,
     effects: [],
   },
@@ -473,6 +482,7 @@ const EQUIPMENT_ITEM_DICT: { [itemName in InventoryItemName]?: EquipmentItem } =
     type: InventoryItemType.Equipment,
     imgURL: "/icons/sword.webp",
     name: InventoryItemName.Mace,
+    weaponType: "melee",
     power: 15,
     effects: [],
   },
@@ -608,6 +618,9 @@ const EQUIPMENT_ITEM_DICT: { [itemName in InventoryItemName]?: EquipmentItem } =
     type: InventoryItemType.Equipment,
     imgURL: "/icons/sword.webp",
     name: InventoryItemName.RuneStaff,
+    weaponType: "melee",
+    power: 18,
+    effects: [],
   },
   WizardRod: {
     id: idMaker(),
@@ -616,6 +629,8 @@ const EQUIPMENT_ITEM_DICT: { [itemName in InventoryItemName]?: EquipmentItem } =
     imgURL: "/icons/sword.webp",
     name: InventoryItemName.WizardRod,
     effects: [{ type: "attribute", attribute: AttributeName.Intelligence, power: 3 }],
+    weaponType: "melee",
+    power: 12,
   },
   MythrilRod: {
     id: idMaker(),
@@ -624,6 +639,8 @@ const EQUIPMENT_ITEM_DICT: { [itemName in InventoryItemName]?: EquipmentItem } =
     imgURL: "/icons/sword.webp",
     name: InventoryItemName.WizardRod,
     effects: [{ type: "attribute", attribute: AttributeName.Intelligence, power: 3 }],
+    weaponType: "melee",
+    power: 16,
   },
   // Nirvana: {
   //   id: idMaker(),
@@ -708,6 +725,7 @@ const EQUIPMENT_ITEM_DICT: { [itemName in InventoryItemName]?: EquipmentItem } =
     type: InventoryItemType.Equipment,
     imgURL: "/icons/arrow.webp",
     name: InventoryItemName.HunterBow,
+    weaponType: "ranged",
     power: 12,
     effects: [],
   },
@@ -717,6 +735,7 @@ const EQUIPMENT_ITEM_DICT: { [itemName in InventoryItemName]?: EquipmentItem } =
     type: InventoryItemType.Equipment,
     imgURL: "/icons/sword.webp",
     name: InventoryItemName.CompositeBow,
+    weaponType: "ranged",
     power: 18,
     effects: [],
   },
@@ -726,6 +745,7 @@ const EQUIPMENT_ITEM_DICT: { [itemName in InventoryItemName]?: EquipmentItem } =
     type: InventoryItemType.Equipment,
     imgURL: "/icons/arrow.webp",
     name: InventoryItemName.YoichiBow,
+    weaponType: "ranged",
     power: 25,
     effects: [{ type: "attribute", attribute: AttributeName.Dexterity, power: 5 }],
   },
@@ -735,6 +755,8 @@ const EQUIPMENT_ITEM_DICT: { [itemName in InventoryItemName]?: EquipmentItem } =
     type: InventoryItemType.Equipment,
     imgURL: "/icons/arrow.webp",
     name: InventoryItemName.ArtemisBow,
+    weaponType: "ranged",
+    power: 22,
     effects: [{ type: "element", element: Element.Lightning, nature: "damage", power: 12 }],
   },
   Revolver: {
@@ -743,6 +765,9 @@ const EQUIPMENT_ITEM_DICT: { [itemName in InventoryItemName]?: EquipmentItem } =
     type: InventoryItemType.Equipment,
     imgURL: "/icons/sword.webp",
     name: InventoryItemName.Revolver,
+    weaponType: "ranged",
+    power: 35,
+    effects: [],
   },
 
   // body

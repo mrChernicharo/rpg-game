@@ -41,12 +41,12 @@ export async function processAction(actionData: { actorId: string; targetId: str
   const actor = getCharacterById(actorId);
   const target = getCharacterById(targetId);
 
-  // console.log("PROCESSING ACTION!!!", {
-  //   actionData,
-  //   action: { ...action },
-  //   actor: { ...actor },
-  //   target: { ...target },
-  // });
+  console.log("PROCESSING ACTION!!!", {
+    actionData,
+    action: { ...action },
+    actor: { ...actor },
+    target: { ...target },
+  });
 
   await computeEntityChanges(action, actor, target);
 
@@ -71,12 +71,10 @@ async function computeEntityChanges(action: Action, actor: Character, target: Ch
   if (["melee", "ranged"].includes(action.type)) {
     let attackPower = 0;
 
-    if (action.name === "attack") {
-      if (action.type === "ranged") {
-        attackPower = 100; // + dexterity
-      } else if (action.type === "melee") {
-        attackPower = 100; // + strength
-      }
+    if (action.name === ActionName.MeleeAttack) {
+      attackPower = 100; // + strength
+    } else if (action.name === ActionName.RangedAttack) {
+      attackPower = 100; // + dexterity
     } else {
       let attackPower = (action as any).power;
 
@@ -291,8 +289,6 @@ async function handleActionEfx(action: Action, actor: Character, target: Charact
     } else {
       drawNumber(target.id, actionPow);
     }
-  } else {
-    drawNumber(target.id, 100);
   }
 }
 
