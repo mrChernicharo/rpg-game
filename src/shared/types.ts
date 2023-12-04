@@ -72,7 +72,7 @@ export type Character = {
   abilities: DetailedAbilities;
 } & (
   | { type: "hero"; class: HeroClassName; xp: number; attributes: HeroAttributes; equipment: HeroEquipment }
-  | { type: "enemy" }
+  | { type: "enemy"; rewardXp: number }
   | { type: "npc" }
 );
 
@@ -83,7 +83,6 @@ export type Action = (
       name: MagicSpellName;
       type: "magical";
       mpCost: number;
-      power?: number;
       effects?: StatusName[];
       element?: Element;
     }
@@ -92,7 +91,6 @@ export type Action = (
       name: StatusName;
       turnsPlayed: number;
       turnCount: number;
-      speed?: number;
       power?: number;
     }
   | {
@@ -126,11 +124,11 @@ export type Action = (
   | {
       name: _AttackName;
       type: "melee" | "ranged";
-      power: number;
       element?: Element;
     }
 ) & {
   targets: ActionTarget;
+  power: number;
 };
 
 export type Status = {

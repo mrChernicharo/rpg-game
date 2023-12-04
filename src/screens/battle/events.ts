@@ -6,7 +6,8 @@ import { getCharacterById, shouldSelectTarget, setShouldSelectTarget, currentTur
 import { panes } from "./infoPane";
 import { Action, Status, TurnInfo } from "../../shared/types";
 import { wait } from "../../shared/utils";
-import { updateTimeline, processAction } from "./timeline";
+import { updateTimeline } from "./timeline";
+import { processAction } from "./core";
 
 // window.onclick = () => {
 //   console.log(TurnInfo);
